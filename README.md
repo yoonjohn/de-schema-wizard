@@ -22,7 +22,7 @@ From the project root directory:
     sudo apparmor_parser -r -W sw-script-profile
     sudo docker-compose command
 
-We recommend you start with the example files in this project: **examples files**.  When you start up Schema Wizard, a guided tour will help you through your first schema creation.  And remember, always look for the ![Bus](/docs/readme-ext/white-tour-bus.jph "Tour Bus") and ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") for guidance!
+We recommend you start with the example files in this project: **examples files**.  When you start up Schema Wizard, a guided tour will help you through your first schema creation.  And remember, always look for the ![Bus](/docs/readme-ext/white-tour-bus.jpg "Tour Bus") and ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") for guidance!
     
 ## Use
 
