@@ -1,4 +1,4 @@
-[Main](../../readme.md)
+[Main](https://github.com/deleidos/de-schema-wizard/)
 
 # Details
 The following page will go into more detail with the key concepts of Schema Wizard.  While using the software, always look for the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") for guidance.  Schema Wizard also provides context sensitive help with the ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") button.
