@@ -1,64 +1,94 @@
-# DigitalEdge Schema Wizard
+# Schema Wizard
+## Version
 
-## Introduction
-The DigitalEdge Schema Wizard automates the process of evaluating, interpreting and mapping data sources, as well as the creation or updating of schemas. 
+3.0.0-beta-1
 
-The discovery process is accomplished when the software deeply profiles the data sets through computing a series of statistical characteristics across the data set, and evaluating the data fields to determine the interpretation of those fields in the given application domain. 
+## About
+Schema Wizard is an automation driven, human verified data modelling tool.
+* Provide data samples
+* Verify automated analysis
+* Merge similar fields 
+* Export your schema
 
-The examined data may be structured or unstructured and its content may come in various forms such as: comma separated values, JSON, XML, name/value pairs, plain text, and documents. Additionally, multiple instances of the data may come in compressed file formats. The data engineer can collect the samples as files prior to using Schema Wizard or may direct live streams into a Schema Wizard session.
+## Installation
 
-Armed with this information, it then automatically proposes a schema, or merges the data set into an existing schema. After the automated recommendations are made, the data engineer either confirms them or makes adjustments as needed.
+Requirements - 
+* Linux environment
+* Docker 1.11
+* AppArmor
 
-The result is a schema that merges multiple data sources, such as from different databases or data streams. Subsequently, the schemas are used by other tools in the DigitalEdge suite.
+From the project root directory:
 
-##  Getting Started
-To begin using the template, download or clone the  [deleidos/de-schema-wizard](https://github.com/deleidos/de-schema-wizard) project to your computer. If using archived containers (container.tar), then refer to Schema Wizard Application from .tar (Local archive).
+    sudo apparmor_parser -r -W sw-script-profile
+    sudo docker-compose command
 
-## Distribution
-The DigitalEdge Schema Wizard is packaged in three docker containers: an H2 database container, a reverse geocode container, and a webapp container. 
+We recommend you start with the example files in this project: **examples files**.  When you start up Schema Wizard, a guided tour will help you through your first schema creation.  And remember, always look for the ![Bus](/docs/readme-ext/white-tour-bus.jph "Tour Bus") and ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") for guidance!
+    
+## Use
 
-H2 provides persistence for the ‘Catalog’ of schemas along with metrics for the data sample files used in schema generation. It also provides working space for the services. The reverse geocode container provides the services with a lookup capability for matching coordinates to country codes and utilizes a Mongo database with preloaded data. The webapp is a Jetty instance that serves the presentation layer and embeds the services layer. The presentation layer’s client-side is written in AngularJS and the server-side implements Jersey in a Spring environment running under Jetty. The services are written in Java.
+For a fully detailed description of Schema Wizard's usage and capabilities, please refer to [this page](docs/readme-ext/detailed.md).
 
-### Schema Wizard Application from .tar (Local archive)
+## Supported Formats
+Schema Wizard is able to parse the following content types:
+* CSV (text/csv)
+* JSON (application/json)
+* CEF (application/cef)
+* well-formed XML (application/xml)
+* PCAP (application/vnd.tcpdump.pcap)
+* PDF (application/pdf)
+* ZIP (application/zip)
 
-#### Importing Docker images
-cat sw-h2.tar | sudo docker import - sw-h2:2.9.1a
-cat reverse-geo.tar | sudo docker import - reverse-geo:2.9.1a
-cat sw-webapp.tar | sudo docker import - sw-webapp:2.9.1a
- 
-#### Starting Docker containers from images
-H2 Container 
-sudo docker run -d -it -p 127.0.0.1:9123:9123 -e "H2_DB_DIR=/usr/local/h2" -e "H2_DB_NAME=data" --name sw-h2 sw-h2:2.9.1a /bin/bash
-sudo docker exec -it sw-h2 bash
-nohup java -classpath /usr/local/h2/h2-database-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.deleidos.hd.h2.H2Database -tcpAllowOthers -tcpPort 9123 &
-*Can take up to a minute
-exit
- 
-Reverse Geo-code container
-sudo docker run -d -p 27017:27017 --name reverse-geo reverse-geo:2.9.1a /usr/local/start_and_import.sh
- 
-Webapp Container 
-sudo docker run -d -it -p 80:8080 -e "H2_DB_DIR=/usr/local/h2" -e "H2_DB_NAME=data" --link sw-h2:h2-db --link reverse-geo:mongo-rg --name sw-webapp sw-webapp:2.9.1a /bin/bash
-sudo docker exec -it sw-webapp bash
-cd /opt/jetty
-nohup java -jar start.jar &
-*Can take up to a minute
-exit
+If Schema Wizard finds a content type that could contain other content types (e.g. a zip of CSV's or a PDF containing XML), it will recursively extract embedded content until it finds numeric or string fields.  It will extract any type of object or list that it finds until it can portray it as one of these data types.
 
-### Requirements
-In order to actively run the template, you will need the following libraries installed on your machine:
-1.	Mongo 3.2
-2.	Bower
-3.	JRE 8 
+Binary fields are not currently supported.  See [Known Issues](docs/readme-ext/known-issues.md).
 
-### Install Dependencies
-The template project requires external development tools and frontend framework code to operate correctly. The development tools include task runners and the karma testing suite while the front-end packages include bootstrap and angular, among others.
-·	Development tools are installed via npm, the node package manager. Tools are listed in package.json.
-·	Frontend code is installed via bower, a client-side code package manager. Front-end libraries are listed in bower.json.
-Using a command shell, navigate to the location of the template project.
-The template is preconfigured for npm to automatically run bower so we can simply execute:
-npm install
+## Supported Browsers
+![Chrome](/docs/readme-ext/chrome-icon.jpg "Chrome 51") ![Firefox](/docs/readme-ext/firefox-icon.jpg "Firefox 47") ![Opera](/docs/readme-ext/opera-icon.jpg "Opera 38") ![Internet Explorer](/docs/readme-ext/ie-icon.jpg "IE 11+") ![Safari](/docs/readme-ext/safari-icon.jpg "Safari 9.1")
 
+
+## Security Considerations
+### Interpretation Engine
+The Interpretation Engine executes arbitrary Python code provided by users of Schema Wizard.  There are constraints to prevent this code from affecting the rest of the application, but it should not yet be considered secure.  This feature has not been tested by security professionals.  For this reason Schema Wizard should not be exposed to anything other than trusted connections.
+
+### Unencrypted network traffic
+Schema Wizard is not configured to use SSL.  Sensitive material should not be processed in open networks.
+
+## Contribute
+Schema Wizard is happy to be a part of the open source community.  See [Contribute](docs/readme-ext/contribute.md) to help improve Schema Wizard.
+
+## Technologies
+Schema Wizard uses the following open sourced technologies:
+* [Docker][docker]
+* [Java][java]
+* [Python][python]
+* [H2][h2]
+* [MongoDB][mongo]
+* [Apache Tika][tika]
+* [Apache Maven][maven]
+* [Redis][redis]
+* [Jetty][jetty]
+* [Flask][flask]
+* [npm][npm]
+* [Bower][bower]
+* [Grunt][grunt]
+* [AngularJS][angular]
+
+## References
+### Detailed Explanation
+
+The [Detailed Explanation](docs/readme-ext/detailed.md) page offers a more thorough explanation of Schema Wizard.
+
+### Known Issues
+
+For a list of known issues, please visit our [Known Issues Page](docs/readme-ext/known-issues.md).
+
+### Develop Documentation
+
+To help develop Schema Wizard, start at the [Contribute](docs/readme-ext/contribute.md) page.
+
+## Credit
+* Credit for Geocoding dataset goes to [ThetmaticMapping][geodata].
+* Credit for conversion of [ThetmaticMapping][geodata] goes to [Ogre Web Client][ogre]
 
 ## Maintainers
 The DigitalEdge Schema Wizard is managed by the Leidos DigitalEdge Team. Leidos is headquartered at:
@@ -68,4 +98,25 @@ Reston, VA 20190
 (571) 526-6000
 
 ## License
-The DigitalEdge Schema Wizard is licensed for use under the Apache 2.0 license.
+Schema Wizard is licensed for use under the Apache 2.0 license.
+
+[//]: # (Links)
+
+   [java]: <https://www.java.com/>
+   [python]: <https://www.python.org/>
+   [docker]: <https://www.docker.com/>
+   [h2]: <http://www.h2database.com/>
+   [mongo]: <https://www.mongodb.com/>
+   [jetty]: <http://www.eclipse.org/jetty/>
+   [redis]: <http://redis.io/>
+   [tika]: <https://tika.apache.org/>
+   [angular]: <https://angularjs.org/>
+   [flask]: <http://flask.pocoo.org/>
+   [maven]: <https://maven.apache.org/>
+   [npm]: <https://www.npmjs.com/>
+   [bower]: <https://bower.io/>
+   [grunt]: <http://gruntjs.com/>
+   
+   [geodata]: <http://thematicmapping.org>
+   [ogre]: <http://ogre.adc4gis.com/>
+    

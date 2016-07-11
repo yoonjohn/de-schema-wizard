@@ -6,7 +6,6 @@
 **/coverage
 **/target
 !**/.gitkeep
-docs/~$.*
 
 h2-database/target
 h2-database/.classpath

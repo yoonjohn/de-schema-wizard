@@ -1,0 +1,338 @@
+<schema-guid> | <data-sample-guid> | <schema-guid> | <interpretation-guid> ::= <guid> ::= <string>
+<schema-name> | <data-sample-name> ::= <string>
+<data-sample-file-name> ::= <file-name> ::= <string>
+<data-sample-file-type> ::= <string>
+<version-string> ::= <string>
+<description-string> ::= <string>
+<field-name> ::= <string>
+
+<catalog> ::=
+    {
+        "schemaCatalog"       : <schema-catalog-list>,
+        "dataSamplesCatalog"  : <data-samples-catalog-list>,
+        "domainsCatalog"      : <domain-catalog-list>
+    }
+
+<schema-catalog-list> ::=
+    [
+        <schema-meta-data>
+    ]
+
+<data-samples-catalog-list> ::=
+    [
+        <data-sample-meta-data>
+    ]
+
+<domain-catalog-list> ::=
+    [
+        <domain-meta-data>
+    ]
+
+<schema-meta-data> ::=
+    {
+        "sId"           : <schema-guid>,
+        "sName"         : <schema-name>,
+        "sVersion"      : <version-string>,
+        "sLastUpdate"   : <date>,
+        "sDescription"  : <description-string>
+        "sDataSamples"  :
+            [
+                <data-sample-guid>
+            ]
+    }
+
+<data-sample-meta-data> ::=
+    {
+        "dsId"           : <data-sample-guid>,
+        "dsName"         : <data-sample-name>,
+        "dsFileName"     : <data-sample-file-name>,
+        "dsFileType"     : <data-sample-file-type>,
+		"dsFileSize"     : <integer>
+        "dsVersion"      : <version-string>,
+        "dsLastUpdate"   : <date>,
+        "dsDescription"  : <description-string>
+    }
+
+<domain-meta-data> ::=
+    {
+        "dId"              : <domain-guid>,
+        "dName"            : <string>,
+        "dVersion"         : <version-string>,
+        "dLastUpdate"      : <date>,
+        "dDescription"     : <description-string>
+    }
+
+<schema> ::=
+    {
+        "sId"              : <schema-guid>,
+        "sName"            : <schema-name>,
+        "sVersion"         : <version-string>,
+        "sLastUpdate"      : <date>,
+        "sDescription"     : <description-string>,
+		"sTotalSampleRecs" : <integer>,
+		"sDomainName"      : <string>,
+        "sProfile"         :
+            {
+                "<field-name>": <field-descriptor>
+            },
+        "sDataSamples"     :
+            [
+                <data-sample-meta-data>
+            ]
+    }
+
+<data-sample> ::=
+    {
+        "dsId"                : <data-sample-guid>,
+        "dsName"              : <data-sample-name>,
+        "dsFileName"          : <data-sample-file-name>,
+        "dsFileType"          : <data-sample-file-type>,
+        "dsFileSize"          : <integer>,
+        "dsVersion"           : <version-string>,
+        "dsLastUpdate"        : <date>,
+        "dsDescription"       : <description-string>,
+		"dsNumbRecords"       : <integer>,
+        "dsProfile"           :
+            {
+                "<field-name>" : <field-descriptor>
+            }
+    }
+
+<field-descriptor> ::=
+    {
+        "main-type"         : <main-type-value>,
+        "detail"            : <detail-json<>>,
+        "original-name"     : <field-name>,
+        "alias-names"       :
+            [
+                <alias-name-details>
+            ],
+        "presence"          : <number>,
+        "interpretations"    :
+            [
+                <interpretation-json>
+            ],
+        "matching-fields"   :
+            [
+                <matching-field-details>
+            ],
+        "used-in-schema"      : <boolean>,
+        "merged-into-schema"  : <boolean>
+    }
+
+<domain> ::=
+    {
+        "dId"              : <domain-guid>,
+        "dName"            : <string>,
+        "dVersion"         : <version-string>,
+        "dLastUpdate"      : <date>,
+        "dDescription"     : <description-string>,
+        "dInterpretations" :
+            [
+                <interpretation-descriptor>
+            ]
+    }
+
+<interpretation-descriptor> ::=
+    {
+        "iId"              : <interpretation-guid>,
+        "iDomainId"        : <domain-guid>,
+        "iName"            : <string>,
+		"iDescription"     : <description-string>,
+        "iConstraints"     : <interpretation-constraints>,
+        "iScript"          : <interpretation-script>,
+        "iValid"           : <boolean>,
+        "iSampleData"      :
+            [
+                <string>
+            ]
+        "iMatchingNames"   :
+            [
+                <field-name>
+            ]
+		"iConfidence"      : <confidence-percentage>
+    }
+
+<interpretation-constraints> ::=
+    {
+        "main-type"           : <main-type-value>,
+        "detail-type"         : <detail-type-value>,
+        "length"              : <number>,
+        "min"                 : <number>,
+        "min-length"          : <number>,
+        "max"                 : <number>,
+        "max-length"          : <number>,
+        "num-distinct-values" : <number>,
+        "mime-type"           : <number>,
+        "hash"                : <string>,
+        "entropy"             : <entropy>,
+        "quantized"           : <tri-state>,
+        "ordinal"             : <tri-state>,
+        "categorical"         : <tri-state>,
+        "relational"          : <tri-state>,
+        "regex"               : <regular-expression>
+    }
+
+<tri-state> ::= "True" | "False" | "Unknown"
+
+<alias-name-details> ::=
+    {
+        "alias-name" : <string>,
+        "dsId"       : <data-sample-guid>,
+    }
+
+<matching-field-details> ::=
+    {
+        "matching-field" : <field-name>,
+        "confidence"     : <confidence-percentage>
+    }
+	
+<tri-state> ::= "True" | "False" | "Unknown" 
+
+<confidence-percentage> ::= 0 | 1 | ... | 99 | 100
+
+<interpretation-script-validation-results> ::=
+    [
+        <discrepancies>
+    ]
+
+<discrepancies> ::=
+    {
+        "row"  :      <row-number>,
+        "text  :     <annotation>,
+        "type  :     <discrepancy-type>
+    }
+
+<discrepancy-type> ::= "error" | "warning" | "info"
+
+<row-number> ::= <integer>
+
+<annotation> :: = <string>
+
+<interpretation-script-test-results> ::=
+	{
+		"script-trace"   : <string>
+		"script-result"  : <script-result>
+	}
+
+<script-result> ::= "true" | "false"
+
+<main-type-value> ::= "number" | "string" | "binary"
+
+<detail-type-value<string>> ::= "date-time" | "boolean" | "term" | "phrase"
+
+<detail-type-value<number>> ::= "integer" | "decimal" | "exponent"
+
+<detail-type-value<binary>> ::= "image" | "video" | "audio"
+
+<detail-json<string>> ::=
+	{
+		"detail-type"         : <detail-type-value<string>>,
+		"min-length"          : <number>,
+		"max-length"          : <number>,
+		"average-length"      : <number>,
+		"std-dev-length"      : <number>,
+		"num-distinct-values" : <number>,
+		"char-freq-histogram" : <histogram>,
+		"freq-histogram"      : <historgram>
+	}
+
+<detail-json<number>> ::=
+	{
+		"detail-type"         : <detail-type-value<number>>,
+		"min"                 : <number>,
+		"max"                 : <number>,
+		"average"             : <number>,
+		"std-dev"             : <number>,
+		"num-distinct-values" : <number>,
+		"freq-histogram"      : <historgram>
+	}
+
+<detail-json<binary>> ::=
+	{
+		"detail-type"         : <detail-type-value<binary>>,
+		"mime-type"           : <number>,
+		"length"              : <number>,
+		"hash"                : <string>,
+		"entropy"             : <entropy>,
+		"byte-freq-histogram" : <histogram>
+	}
+
+<interpretation-json> ::=
+	{
+		"interpretation"  : <string>,
+		"@class"          : <string>
+	}
+
+<histogram-type> ::= "line" | "bar" | "horizontalbar" | "map"
+<x-axis-title> ::= <string>
+<y-axis-label> ::= <string>
+<full-length-y-axis-label> ::= <string>
+<x-axis-data> ::= <integer>
+
+<histogram> ::=
+    {
+        "type"   : <histogram-type>,
+        "series" : <x-axis-title>,
+        "labels" :
+            [
+              <y-axis-label>
+            ],
+        "data"   :
+            [
+                <x-axis-data>
+            ],
+        "region-data" : <region-data>,
+		"long-labels" :
+		    [
+			  <full-length-y-axis-label>
+			]
+    }
+
+<region-data> ::=
+	{
+		"latitude-key" : <string>,
+		"longitude-key" : <string>,
+		"cols" : <cols-list>,
+		"rows" : <rows-list>
+	}
+
+<cols-list> ::=
+	[
+		<cols-object>
+	]
+
+<cols-object> ::=
+	{
+		"label" : <cols-label>
+	}
+
+<rows-list> ::=
+	[
+		<row-entry>
+	]
+
+<row-entry> ::=
+	{
+		"c" : <c-list>
+	}
+
+<c-list> ::=
+	[
+		<c-entry>
+	]
+
+<c-entry> ::=
+	{
+		"v" : <v-value>
+	}
+
+<cols-label> ::= <string>
+<v-value> ::= <string> | <number>
+
+<error-handling> :==
+    {
+        "errorId"    : <guid>,
+        "errorTitle" : <string>,
+        "errorMsg"   : <string>
+    }

@@ -1,0 +1,29 @@
+#Interfaces used in the Interpretation Engine
+
+<raw-bool-string> ::= "True" | "False"
+<script-result> ::= "true" | "false"
+
+#The raw response from an untrusted execution environment
+<expected_untrusted_result> ::=
+    {
+	    "result": <raw-bool-string>
+	    "error": <raw-bool-string>
+		"exception": <string>
+		"line" : <integer>
+	}
+
+# The result after it has been processed by the sidekick
+<processed-result> ::=
+    {
+	    "result": <bool>
+	    "error": <bool>
+		"message": <string>
+	}
+	
+	
+#Overlap with Schema Wizard API JSON Interface
+<interpretation-script-test-results> ::=
+	{
+		"script-trace"   : <string>
+		"script-result"  : <script-result>
+	}
