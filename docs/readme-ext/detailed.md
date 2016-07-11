@@ -1,7 +1,7 @@
-[Main](/readme.md)
+[Main](readme.md)
 
 # Details
-The following page will go into more detail with the key concepts of Schema Wizard.  While using the software, always look for the ![Bus](/docs/readme-ext/white-tour-bus.jpg "Tour Bus") for guidance.  Schema Wizard also provides context sensitive help with the ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") button.
+The following page will go into more detail with the key concepts of Schema Wizard.  While using the software, always look for the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") for guidance.  Schema Wizard also provides context sensitive help with the ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") button.
 
 ## Data Samples
 The starting point for using Schema Wizard is uploading data samples.  Schema Wizard will use these samples to create your schema, so clean samples with a sweeping distribution of values will lead yield the best possible schema.  Though metrics that represent the samples are persisted after their analysis, the original files will be discarded. 

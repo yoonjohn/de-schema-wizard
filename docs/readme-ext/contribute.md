@@ -1,4 +1,4 @@
-[Main](/readme.md)
+[Main](readme.md)
 
 # Contribute
 To contribute to Schema Wizard, you will have to set up your environment to build and test the software.  A production deployment of Schema Wizard can only be run where Docker can run, but development deployments can be run in either Windows or Unix environments.  However, Schema Wizard relies on some native dependencies, so there are some minor differences between the two.
