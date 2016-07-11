@@ -22,7 +22,7 @@ From the project root directory:
     sudo apparmor_parser -r -W sw-script-profile
     sudo docker-compose command
 
-We recommend you start with the example files in this project: **examples files**.  When you start up Schema Wizard, a guided tour will help you through your first schema creation.  And remember, always look for the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") and ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") for guidance!
+We recommend you start with the example files in this project: **examples files**.  When you start up Schema Wizard, a guided tour will help you through your first schema creation.  And remember, always check the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") and ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") for guidance!
     
 ## Use
 
@@ -44,14 +44,6 @@ Binary fields are not currently supported.  See [Known Issues](docs/readme-ext/k
 
 ## Supported Browsers
 ![Chrome](/docs/readme-ext/chrome-icon.jpg "Chrome 51") ![Firefox](/docs/readme-ext/firefox-icon.jpg "Firefox 47") ![Opera](/docs/readme-ext/opera-icon.jpg "Opera 38") ![Internet Explorer](/docs/readme-ext/ie-icon.jpg "IE 11+") ![Safari](/docs/readme-ext/safari-icon.jpg "Safari 9.1")
-
-
-## Security Considerations
-### Interpretation Engine
-The Interpretation Engine executes arbitrary Python code provided by users of Schema Wizard.  There are constraints to prevent this code from affecting the rest of the application, but it should not yet be considered secure.  This feature has not been tested by security professionals.  For this reason Schema Wizard should not be exposed to anything other than trusted connections.
-
-### Unencrypted network traffic
-Schema Wizard is not configured to use SSL.  Sensitive material should not be processed in open networks.
 
 ## Contribute
 Schema Wizard is happy to be a part of the open source community.  See [Contribute](docs/readme-ext/contribute.md) to help improve Schema Wizard.
