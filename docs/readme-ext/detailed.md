@@ -1,10 +1,18 @@
-[Back to Main](https://github.com/deleidos/de-schema-wizard/)
+[Main](https://github.com/deleidos/de-schema-wizard/)
 
 # Details
 The following page will go into more detail with the key concepts of Schema Wizard.  While using the software, always look for the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") for guidance.  Schema Wizard also provides context sensitive help with the ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") button.
 
 ## Data Samples
 The starting point for using Schema Wizard is uploading data samples.  Schema Wizard will use these samples to create your schema, so clean samples with a sweeping distribution of values will lead yield the best possible schema.  Though metrics that represent the samples are persisted after their analysis, the original files will be discarded. 
+
+### Detection
+When Schema Wizard is given an arbitrary file, the first step is detecting its content type.  Schema Wizard uses [Apache Tika][tika] to detect file content type.  The detection stage loops through every detector and gives it a chance to identify the proposed sample.  Ideally, Schema Wizard only adds to the detection capabilities of Tika, but it is important to note that a single flawed detector can have negative affects on the entire application.  
+
+### Parsing
+Schema Wizard also uses Tika to parse files.  Note that not all formats supported in Tika are supported in Schema Wizard.  However, Schema Wizard will use Tika to extract any embedded content that it can find.  This diagram shows the detection and parsing process:
+[File Detection and Parsing](file_parsing_flowchart.JPG)
+For example, consider a Microsoft Word file containing JSON data.  Though "Microsoft Word" is not supported (because Schema Wizard cannot parse *ever* MS Word file), Schema Wizard will be able to parse this document.  It uses Tika to extract the embedded text from the document, and then it parses this content as if it were a plain text JSON file.
 
 ## Interpretation Engine
 
@@ -76,10 +84,9 @@ The final effort to interpret a data field is the name matching phase.  This pha
 
 Though an exact match will benefit the Interpretation Engine’s confidence in assigning interpretations, it is not required.  The name matching phase uses the Jaro-Winkler string matching algorithm.  This algorithm generates a “distance” between two strings, which ultimately represents (on a scale of 0-1) how similar the strings are.  The Interpretation Engine performs this function on all possible names, and it returns an ordered list of matches that exceed 70% confidence.  It is up to the user to verify the Interpretation Engine’s choice. 
 
-## Matching and Merging
-
-Once the samples are processed and the interpretations are determined, they are presented to the user for verification.  The user may verify or discard each sample based on the information that Schema Wizard displays.  After checking each sample individually, the user is presented with a matching tool that attempts to recognize similar fields across data samples.  A "merge" in this context affects the resulting schema.  Merged fields will accumulate statistics under the same name, and they will be presented as a single field in the schema.
 
 ## Schema
 
-Schema objects are the final result of a successful workflow using Schema Wizard.
+[//]: # (Links)
+
+   [tika]: <https://tika.apache.org/>
