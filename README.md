@@ -7,7 +7,7 @@
 [Known Issues And Security](docs/readme-ext/known-issues.md)
 ## Version
 
-3.0.0-beta-1
+3.0.0-beta1
 
 ## About
 Schema Wizard is an automation driven, human verified data modelling tool.
@@ -26,7 +26,7 @@ Requirements -
 From the project root directory:
 
     sudo apparmor_parser -r -W sw-script-profile
-    sudo docker-compose command
+    sudo docker-compose up
 
 We recommend you start with the example files in this project: **examples files**.  When you start up Schema Wizard, a guided tour will help you through your first schema creation.  And remember, always check the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") and ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") for guidance!
     
@@ -72,7 +72,7 @@ Schema Wizard uses the following open sourced technologies:
 * [Bower][bower]
 * [Grunt][grunt]
 * [AngularJS][angular]
-
+* [Ace][ace]
 * Credit for Geocoding dataset goes to [ThetmaticMapping][geodata].
 * Credit for conversion of [ThetmaticMapping][geodata] goes to [Ogre Web Client][ogre]
 
@@ -110,7 +110,8 @@ Schema Wizard is licensed for use under the Apache 2.0 license.
    [npm]: <https://www.npmjs.com/>
    [bower]: <https://bower.io/>
    [grunt]: <http://gruntjs.com/>
+   [ace]: <https://ace.c9.io/>
    
    [geodata]: <http://thematicmapping.org>
    [ogre]: <http://ogre.adc4gis.com/>
-    
+   
