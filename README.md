@@ -2,7 +2,7 @@
 
 [Detailed Documentation Page](docs/readme-ext/detailed.md)
 
-[Contribute Page](docs/readme-ext/contribute.md)
+[Developer Page](docs/readme-ext/contribute.md)
 
 [Known Issues Page](docs/readme-ext/known-issues.md)
 ## Version
