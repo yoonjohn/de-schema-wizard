@@ -37,18 +37,23 @@ This is a one time install as long as you do not delete your local Maven reposit
 Schema Wizard is composed of eight projects: three Java, one Java/JavaScript, and four Python projects. 
 
 ### Java Projects
-h2-database: Configures and starts up the H2 database.
-data-profiler: The "brains" of the operation. It is composed of data accumulators and profilers and also is the sole interactor of the H2 database.
-data-model-factory: Composed of the service layer, data analyzers, detectors, parsers, and splitters.  This project handles automated file detection/parsing.  There are two API entrypoints that are meant to offer plugability to detection and parsing.  **com.deleidos.dmf.framework.AbstractMarkSupportAnalyticsDetector** is the entrypoint for any detectors, and **com.deleidos.dmf.framework.AbstractAnalyticsParser** is the entrypoint for additional parser.  If Apache Tika can detect the file type, you need only implement a parser.  Otherwise, you must subclass both of these abstract classes.  Once you write the classes, add the fully resolved class names to the appropriate **data-model-factory/src/main/resources/META-INF/services/** service files.  For the time being, the javadocs in these classes are the reference material to help a developer add to Schema Wizard.
+**h2-database**: Configures and starts up the H2 database.
+
+**data-profiler**: The "brains" of the operation. It is composed of data accumulators and profilers and also is the sole interactor of the H2 database.
+
+**data-model-factory**: Composed of the service layer, data analyzers, detectors, parsers, and splitters.  This project handles automated file detection/parsing.  There are two API entrypoints that are meant to offer plugability to detection and parsing.  **com.deleidos.dmf.framework.AbstractMarkSupportAnalyticsDetector** is the entrypoint for any detectors, and **com.deleidos.dmf.framework.AbstractAnalyticsParser** is the entrypoint for additional parser.  If Apache Tika can detect the file type, you need only implement a parser.  Otherwise, you must subclass both of these abstract classes.  Once you write the classes, add the fully resolved class names to the appropriate **data-model-factory/src/main/resources/META-INF/services/** service files.  For the time being, the javadocs in these classes are the reference material to help a developer add to Schema Wizard.
 
 ### Java/JavaScript Project
-schema-wizard: The basis of the web application and communicates with the Java service layer (data-model-factory)
+**schema-wizard**: The basis of the web application and communicates with the Java service layer (data-model-factory)
 
 ### Python Projects
-interpretation-engine: Comprised of a service layer and logic to parse and conduct analysis on profiles created by the Schema Wizard data-profiler.
-interpretation-engine-mongodb: Initializes the Mongo database with initial imports, either reverse-geocoding data or reverse-geocoding data and initial Domains.
-interpretation-engine-sidekick: Responsible for creating, communicating, and terminating the untrusted container.
-interpretation-engine-untrusted: Code that runs in an untrusted container to test the validity of a custom Interpretation.
+**interpretation-engine**: Comprised of a service layer and logic to parse and conduct analysis on profiles created by the Schema Wizard data-profiler.
+
+**interpretation-engine-mongodb**: Initializes the Mongo database with initial imports, either reverse-geocoding data or reverse-geocoding data and initial Domains.
+
+**interpretation-engine-sidekick**: Responsible for creating, communicating, and terminating the untrusted container.
+
+**interpretation-engine-untrusted**: Code that runs in an untrusted container to test the validity of a custom Interpretation.
 
 ## Building
 Schema Wizard uses Apache Maven for build and dependency management. To build the project, navigate to the root project directory and run the command:
