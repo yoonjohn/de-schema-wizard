@@ -76,9 +76,9 @@ In the validation script, the “field_profile” is passed to validateInterpret
 |detail_type|All|String|“integer”, “decimal”, “exponent”, “boolean”, “term”, “phrase”|
 |example_values|All|List|A list of some unique example values found in the data sample.  If the sample has more than 100 distinct values, Schema Wizard will attempt to populate this list with an even distribution of values across the sample.|
 |num_distinct_values|All|Integer|Number of distinct values found for the number|
-|number_min|Number|Integer;Float|The minimum numerical value|
-|number_max|Number|Integer;Float|The maximum numerical value|
-|number_average|Number|Integer;Float|The average of all numerical values in the sample|
+|number_min|Number|Integer or Float|The minimum numerical value|
+|number_max|Number|Integer or Float|The maximum numerical value|
+|number_average|Number|Integer or Float|The average of all numerical values in the sample|
 |number_std_dev|Number|Float|The standard deviation of the values|
 |string_min_len|String|Integer|The minimum length of all the string values|
 |string_max_len|String|Integer|The maximum length of all the string values|
@@ -88,10 +88,12 @@ In the validation script, the “field_profile” is passed to validateInterpret
 #### Phase 3 – Name Matching Validation
 The final effort to interpret a data field is the name matching phase.  This phase compares the extracted field name to a list of possible names that the interpretation may represent.  For example, the “latitude” interpretation will appear in some data samples as “lat.”  If a data scientist becomes aware of a significantly different naming possibility for a field, he may add the name to the list of matching names in the interpretation.
 
-Though an exact match will benefit the Interpretation Engine’s confidence in assigning interpretations, it is not required.  The name matching phase uses the Jaro-Winkler string matching algorithm.  This algorithm generates a “distance” between two strings, which ultimately represents (on a scale of 0-1) how similar the strings are.  The Interpretation Engine performs this function on all possible names, and it returns an ordered list of matches that exceed 70% confidence.  It is up to the user to verify the Interpretation Engine’s choice. 
-
+Though an exact match will benefit the Interpretation Engine’s confidence in assigning interpretations, it is not required.  The name matching phase uses the Jaro-Winkler string matching algorithm.  This algorithm generates a “distance” between two strings, which ultimately represents (on a scale of 0-1) how similar the strings are.  The Interpretation Engine performs this function on all possible names, and it returns an ordered list of matches that exceed 70% confidence.  With this plugability, the user should be able to define custom interpretations in her data sets.
 
 ## Schema
+A schema is the final output of a Schema Wizard workflow.  Schemas are very similar to samples at a glance.  However, there are a few differences that make a schema more valuable.  First of all, a schema can contain merged fields.  This means that the statistics shown in a schema represent values across multiple data samples.  File formats do not matter to a schema, so the metrics could have come from any variety of samples.  Note that sample metadata is still preserved in the schema object.  This field merge is stored as part of the schema object.  A schema field contains a list of 'alias names.'  These names are references to any sample fields that were merged together.  Unless a field is manually created, it will always have at least the name of sample from which it was derived.
+
+In addition to producing a schema, a user may also choose to modify an existing schema.  This uses a new sample to improve, change, or add to an existing schema.  Modifying an existing schema does impose certain complications with metrics.  The number of distinct values may not be calcuable, and histogram representations of the data will appear skewed if existing values are drastically different than new values.  However, modifying an existing schema allows a user to enhanced their data model as new data sources are introduced.
 
 
 [//]: # (Links)
