@@ -38,7 +38,7 @@ Schema Wizard is able to parse the following content types:
 * PDF (application/pdf)
 * ZIP (application/zip)
 
-If Schema Wizard finds a content type that could contain other content types (e.g. a zip of CSV's or a PDF containing XML), it will recursively extract embedded content until it finds numeric or string fields.  It will extract any type of object or list that it finds until it can portray it as one of these data types.
+If Schema Wizard finds a content type that could contain other content types (e.g. a zip of CSV's or a PDF containing XML), it will recursively extract embedded content until it finds numeric or string fields.  For more information on Schema Wizard's parsing strategy, see [Parsing Details](docs/readme-ext/detailed.md).
 
 Binary fields are not currently supported.  See [Known Issues](docs/readme-ext/known-issues.md).
 
