@@ -17,14 +17,15 @@ Schema Wizard also uses Tika to parse files.  Note that not all formats supporte
 For illustrative purposes, consider a zip of PDF files that contain XML.  Schema Wizard will first detect and parse the zip file, extracting all of the PDF files.  Then, it will iterate through the extracted files.  For each PDF, it uses Tika to extract the embedded text, and then it parses this content as if it were a plain text XML file.
 
 ### Main Types
-When parsing has been completed, all values will be classified as a number or string field.  This is considered a main type.
+When parsing has been completed, all values will be classified as a **number** or **string** field.  This is considered a main type.
 
 ### Detail Types
 Each main type has associated detail types:
-* Number - integer, decimal, exponent
-* String - boolean, term (no spaces), phrase (contains spaces)
+* Number - **integer**, **decimal**, **exponent**
+* String - **boolean**, **term** (no spaces), **phrase** (contains spaces)
 
 ## Interpretation Engine
+The Interpretation Engine brings more meaning to your data.  Using a pluggable framework, it inspects field and identifies significant information elements in data sets.  This adds value to the fields in your samples and schemas.  The following section will explain the details of the Interpretation Engine and what you need to know to use it.
 
 ### Domains
 
