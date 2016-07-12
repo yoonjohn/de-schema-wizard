@@ -16,6 +16,14 @@ Schema Wizard also uses Tika to parse files.  Note that not all formats supporte
 
 For illustrative purposes, consider a zip of PDF files that contain XML.  Schema Wizard will first detect and parse the zip file, extracting all of the PDF files.  Then, it will iterate through the extracted files.  For each PDF, it uses Tika to extract the embedded text, and then it parses this content as if it were a plain text XML file.
 
+### Main Types
+When parsing has been completed, all values will be classified as a number or string field.  This is considered a main type.
+
+### Detail Types
+Each main type has associated detail types:
+* Number - integer, decimal, exponent
+* String - boolean, term (no spaces), phrase (contains spaces)
+
 ## Interpretation Engine
 
 ### Domains
@@ -44,7 +52,7 @@ String
 * Maximum Length: the maximum possible length of the string value
 * Regex: a regex that will match all possible values of this interpretation
 
-Binary **in progress**
+Binary **in progress - currently not supported**
 * Length: the length (in bytes) of the binary object
 * Mime Type: the mime type of the binary object
 * Hash: the matching MD5 hash of the binary object
@@ -88,6 +96,7 @@ Though an exact match will benefit the Interpretation Engine’s confidence in a
 
 
 ## Schema
+
 
 [//]: # (Links)
 
