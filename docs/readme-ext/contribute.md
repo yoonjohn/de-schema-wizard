@@ -39,7 +39,7 @@ Schema Wizard is composed of eight projects: three Java, one Java/JavaScript, an
 ### Java Projects
 h2-database: Configures and starts up the H2 database.
 data-profiler: The "brains" of the operation. It is composed of data accumulators and profilers and also is the sole interactor of the H2 database.
-data-model-factory: Composed of the service layer, data analyzers, detectors, parsers, and splitters.  This project handles automated file detection/parsing.  There are two API entrypoints that are meant to offer plugability to detection and parsing.  com.deleidos.dmf.framework.AbstractMarkSupportAnalyticsDetector is
+data-model-factory: Composed of the service layer, data analyzers, detectors, parsers, and splitters.  This project handles automated file detection/parsing.  There are two API entrypoints that are meant to offer plugability to detection and parsing.  com.deleidos.dmf.framework.AbstractMarkSupportAnalyticsDetector is the entrypoint for any detectors, and com.deleidos.dmf.framework.AbstractAnalyticsParser is the entrypoint for additional parser.  If Apache Tika can detect the file type, you need only implement a parser.  Otherwise, you must subclass both of these abstract classes.  Once you write the classes, add the fully resolved class names to the appropriate data-model-factory/src/main/resources/META-INF/services/* service files.  Hopefully, the minimal javadocs in each of these classes are enough to guide a developer to create basic extensions.
 
 ### Java/JavaScript Project
 schema-wizard: The basis of the web application and communicates with the Java service layer (data-model-factory)
@@ -64,9 +64,12 @@ Unit tests are run by default when executing:
 
     mvn clean install
 
-In order to run integration tests, first start all of the necessary servers locally (H2, MongoDB, Python Interpretation Engine) and then run the respective command for your environment in the root project directory:
+In order to run integration tests, first start all of the necessary servers locally (H2, MongoDB, Python Interpretation Engine), and then run the respective command for your environment in the root project directory:
 
     mvn clean install -P integration-tests-windows
+	
+or
+	
     mvn clean install -P integration-tests-unix
 
 ## Schema Wizard Deployment
