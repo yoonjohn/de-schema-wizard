@@ -1,4 +1,10 @@
 # Schema Wizard
+
+[Detailed Documentation Page](docs/readme-ext/detailed.md)
+
+[Contribute Page](docs/readme-ext/contribute.md)
+
+[Known Issues Page](docs/readme-ext/known-issues.md)
 ## Version
 
 3.0.0-beta-1
@@ -68,11 +74,8 @@ Schema Wizard uses the following open sourced technologies:
 * [AngularJS][angular]
 
 ## Contribute
+
 Schema Wizard is happy to be a part of the open source community.  See [Contribute](docs/readme-ext/contribute.md) to help improve Schema Wizard.
-
-## Detailed Explanation
-
-The [Detailed Explanation](docs/readme-ext/detailed.md) page offers a more thorough explanation of Schema Wizard.
 
 ## Known Issues
 
