@@ -7,14 +7,14 @@ The following page will go into more detail with the key concepts of Schema Wiza
 The starting point for using Schema Wizard is uploading data samples.  Schema Wizard will use these samples to create your schema, so clean samples with a sweeping distribution of values will lead yield the best possible schema.  Though metrics that represent the samples are persisted after their analysis, the original files will be discarded. 
 
 ### Detection
-When Schema Wizard is given an arbitrary file, the first step is detecting its content type.  Schema Wizard uses [Apache Tika][tika] to detect file content type.  The detection stage loops through every detector and gives it a chance to identify the proposed sample.  Ideally, Schema Wizard only adds to the detection capabilities of Tika, but it is important to note that a single flawed detector can have negative affects on the entire application.  
+When Schema Wizard is given an arbitrary file, the first step is detecting its content type.  Schema Wizard uses [Apache Tika][tika] to detect file content type.  The detection stage loops through every detector and gives it a chance to identify the proposed sample.  Once a sample has been detected as a supported type, it will move on to the parsing stage.
 
 ### Parsing
-Schema Wizard also uses Tika to parse files.  Note that not all formats supported in Tika are supported in Schema Wizard.  However, Schema Wizard will use Tika to extract any embedded content that it can find.  Assume all of your content is supported, this diagram shows the detection and parsing process:
+Schema Wizard also uses Tika to parse files.  Note that not all formats supported in Tika are supported in Schema Wizard.  However, Schema Wizard will use Tika to extract any embedded content that it can find.  Assuming all of your content is supported, this diagram shows the detection and parsing process:
 
 ![File Detection and Parsing](file_processing_flowchart.JPG "File Detection and Parsing")
 
-For illustrative purposes, consider a zip of PDF files that contain XML.  Schema Wizard will first detect and parse the zip file, extracting all of its contents.  Then, it will iterate through the extracted files.  For each PDF files, it uses Tika to extract the embedded text, and then it parses this content as if it were a plain text XML file.
+For illustrative purposes, consider a zip of PDF files that contain XML.  Schema Wizard will first detect and parse the zip file, extracting all of the PDF files.  Then, it will iterate through the extracted files.  For each PDF, it uses Tika to extract the embedded text, and then it parses this content as if it were a plain text XML file.
 
 ## Interpretation Engine
 
