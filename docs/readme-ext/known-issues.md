@@ -1,4 +1,4 @@
-[Back to Main](https://github.com/deleidos/de-schema-wizard/)
+[Back to Main](https://github.com/deleidos/de-schema-wizard/#schema-wizard)
 
 # Security Considerations
 It is very important to understand the security implications that come with Schema Wizard.  Please carefully review the following:
