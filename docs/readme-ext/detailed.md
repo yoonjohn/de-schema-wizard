@@ -75,12 +75,11 @@ In the validation script, the “field_profile” is passed to validateInterpret
 |main_type|All|String|“number”, “string”|
 |detail_type|All|String|“integer”, “decimal”, “exponent”, “boolean”, “term”, “phrase”|
 |example_values|All|List|A list of some unique example values found in the data sample.  If the sample has more than 100 distinct values, Schema Wizard will attempt to populate this list with an even distribution of values across the sample.|
-|number_num_distinct_values|Number|Integer|Number of distinct values found for the number|
+|num_distinct_values|All|Integer|Number of distinct values found for the number|
 |number_min|Number|Integer;Float|The minimum numerical value|
 |number_max|Number|Integer;Float|The maximum numerical value|
 |number_average|Number|Integer;Float|The average of all numerical values in the sample|
 |number_std_dev|Number|Float|The standard deviation of the values|
-|string_num_distinct_values|String|Integer|Number of distinct values found for the string|
 |string_min_len|String|Integer|The minimum length of all the string values|
 |string_max_len|String|Integer|The maximum length of all the string values|
 |string_average_len|String|Float|The standard deviation of the length of the string values|
