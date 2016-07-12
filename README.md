@@ -1,10 +1,10 @@
 # Schema Wizard
 
-[Detailed Documentation Page](docs/readme-ext/detailed.md)
+[Detailed User Guide](docs/readme-ext/detailed.md)
 
-[Developer Page](docs/readme-ext/contribute.md)
+[Developer Documentation](docs/readme-ext/contribute.md)
 
-[Known Issues Page](docs/readme-ext/known-issues.md)
+[Known Issues And Security](docs/readme-ext/known-issues.md)
 ## Version
 
 3.0.0-beta-1
