@@ -1,4 +1,4 @@
-[Main](https://github.com/deleidos/de-schema-wizard/)
+[Back to Main](https://github.com/deleidos/de-schema-wizard/)
 
 # Details
 The following page will go into more detail with the key concepts of Schema Wizard.  While using the software, always look for the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") for guidance.  Schema Wizard also provides context sensitive help with the ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") button.
@@ -76,5 +76,10 @@ The final effort to interpret a data field is the name matching phase.  This pha
 
 Though an exact match will benefit the Interpretation Engine’s confidence in assigning interpretations, it is not required.  The name matching phase uses the Jaro-Winkler string matching algorithm.  This algorithm generates a “distance” between two strings, which ultimately represents (on a scale of 0-1) how similar the strings are.  The Interpretation Engine performs this function on all possible names, and it returns an ordered list of matches that exceed 70% confidence.  It is up to the user to verify the Interpretation Engine’s choice. 
 
+## Matching and Merging
+
+Once the samples are processed and the interpretations are determined, they are presented to the user for verification.  The user may verify or discard each sample based on the information that Schema Wizard displays.  After checking each sample individually, the user is presented with a matching tool that attempts to recognize similar fields across data samples.  A "merge" in this context affects the resulting schema.  Merged fields will accumulate statistics under the same name, and they will be presented as a single field in the schema.
 
 ## Schema
+
+Schema objects are the final result of a successful workflow using Schema Wizard.
