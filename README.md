@@ -26,27 +26,29 @@ We recommend you start with the example files in this project: **examples files*
     
 ## Use
 
-For a fully detailed description of Schema Wizard's usage and capabilities, please refer to [this page](docs/readme-ext/detailed.md).
+For a fully detailed description of Schema Wizard's usage and capabilities, please refer to the [Detailed Documentation](docs/readme-ext/detailed.md).
 
 ## Supported Formats
-Schema Wizard is able to parse the following content types:
-* CSV (text/csv)
-* JSON (application/json)
-* CEF (application/cef)
-* well-formed XML (application/xml)
-* PCAP (application/vnd.tcpdump.pcap)
-* PDF (application/pdf)
-* ZIP (application/zip)
+Schema Wizard uses a best effort detection and parsing model.  For any file Schema Wizard receives, it will attempt to extract fields as either numbers or strings.  Binary fields are not currently supported.  
+
+Basic Formats:
+* CSV (text/csv) - Comma Separated Values
+* JSON (application/json) - JavaScript Object Notation
+* CEF (application/cef) - Common Events Format
+* XML (application/xml) - **well formed** Extensible Markup Lanuage
+ 
+Application Formats:
+* PCAP (application/vnd.tcpdump.pcap) - Packet Capture
+* PDF (application/pdf) - content must be one of the "Basic Formats"
+* MS Word (application/vnd.openxmlformats-officedocument.wordprocessingml.document) - content must be one of the "Basic Formats" 
+
+Compressed Formats:
+* ZIP (application/zip) - archive of any of the above formats
 
 If Schema Wizard finds a content type that could contain other content types (e.g. a zip of CSV's or a PDF containing XML), it will recursively extract embedded content until it finds numeric or string fields.  For more information on Schema Wizard's parsing strategy, see [Parsing Details](docs/readme-ext/detailed.md).
 
-Binary fields are not currently supported.  See [Known Issues](docs/readme-ext/known-issues.md).
-
 ## Supported Browsers
 ![Chrome](/docs/readme-ext/chrome-icon.jpg "Chrome 51") ![Firefox](/docs/readme-ext/firefox-icon.jpg "Firefox 47") ![Opera](/docs/readme-ext/opera-icon.jpg "Opera 38") ![Internet Explorer](/docs/readme-ext/ie-icon.jpg "IE 11+") ![Safari](/docs/readme-ext/safari-icon.jpg "Safari 9.1")
-
-## Contribute
-Schema Wizard is happy to be a part of the open source community.  See [Contribute](docs/readme-ext/contribute.md) to help improve Schema Wizard.
 
 ## Technologies
 Schema Wizard uses the following open sourced technologies:
@@ -65,18 +67,16 @@ Schema Wizard uses the following open sourced technologies:
 * [Grunt][grunt]
 * [AngularJS][angular]
 
-## References
-### Detailed Explanation
+## Contribute
+Schema Wizard is happy to be a part of the open source community.  See [Contribute](docs/readme-ext/contribute.md) to help improve Schema Wizard.
+
+## Detailed Explanation
 
 The [Detailed Explanation](docs/readme-ext/detailed.md) page offers a more thorough explanation of Schema Wizard.
 
-### Known Issues
+## Known Issues
 
 For a list of known issues, please visit our [Known Issues Page](docs/readme-ext/known-issues.md).
-
-### Develop Documentation
-
-To help develop Schema Wizard, start at the [Contribute](docs/readme-ext/contribute.md) page.
 
 ## Credit
 * Credit for Geocoding dataset goes to [ThetmaticMapping][geodata].
