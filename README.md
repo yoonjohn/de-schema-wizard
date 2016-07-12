@@ -32,7 +32,7 @@ We recommend you start with the example files in this project: **examples files*
     
 ## Use
 
-In addition to automated data sample processing, Schema Wizard has an advanced feature called the [Interpretation Engine](docs/readme-ext/detailed.md#interpretation-engine).  When you are ready to get into the more advanced features of Schema Wizard, head ofer to the [Detailed Documentation](docs/readme-ext/detailed.md) for more information. 
+In addition to automated data sample processing, Schema Wizard has an advanced feature called the [Interpretation Engine](docs/readme-ext/detailed.md#interpretation-engine).  When you are ready to get into the more advanced features of Schema Wizard, head over to the [Detailed Documentation](docs/readme-ext/detailed.md) for more information. 
 
 ## Supported Formats
 Schema Wizard uses a best effort detection and parsing model.  For any file Schema Wizard receives, it will attempt to extract fields as either numbers or strings.
