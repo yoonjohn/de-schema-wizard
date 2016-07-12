@@ -12,7 +12,7 @@ When Schema Wizard is given an arbitrary file, the first step is detecting its c
 ### Parsing
 Schema Wizard also uses Tika to parse files.  Note that not all formats supported in Tika are supported in Schema Wizard.  However, Schema Wizard will use Tika to extract any embedded content that it can find.  This diagram shows the detection and parsing process:
 
-![File Detection and Parsing](file_parsing_flowchart.JPG "File Detection and Parsing")
+![File Detection and Parsing](file_processing_flowchart.JPG "File Detection and Parsing")
 
 For example, consider a Microsoft Word file containing JSON data.  Though "Microsoft Word" is not supported (because Schema Wizard cannot parse *ever* MS Word file), Schema Wizard will be able to parse this document.  It uses Tika to extract the embedded text from the document, and then it parses this content as if it were a plain text JSON file.
 
