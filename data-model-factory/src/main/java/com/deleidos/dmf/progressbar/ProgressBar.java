@@ -31,7 +31,6 @@ public class ProgressBar {
 	private int currentStateSplits;
 	private boolean isSamplePass;
 	private String name;
-	//private ProgressState currentState;
 	private ProgressState currentStateClazz;
 
 	public ProgressBar(String name, int sampleIndex, int totalSamples, ProgressState initialState) { 
@@ -40,8 +39,7 @@ public class ProgressBar {
 		this.denominator = totalSamples * 100;
 		this.globalNumerator = sampleIndex * 100;
 		this.currentSampleNumerator = 0;
-		//this.currentState = ProgressState.STAGE1;
-		this.currentStateClazz = ProgressState.detectStage;
+		this.currentStateClazz = initialState;
 		this.name = name;
 		this.currentStateSplits = 1;
 		this.currentStateSplitIndex = 0;
@@ -59,7 +57,7 @@ public class ProgressBar {
 
 	@JsonIgnore
 	// prevents any non-monotonical increases and weighs down split states based on how many splits there are
-	// TODO sooooo unhappy with this...but it works for now
+	// TODO very unhappy with how messy this is...but it works for now
 	public void updateCurrentSampleNumerator(int currentSampleNumerator) {
 		if(this.currentStateSplits == 1) {// || !currentStateClazz.equals(ProgressState.sampleParsingStage)) {
 			
@@ -106,43 +104,10 @@ public class ProgressBar {
 		if(currentStateClazz.equals(ProgressState.lock) 
 				&& !progressUpdate.equals(ProgressState.unlock)) {
 			//if embedded parsing has not been explicitly stopped, do not change the state
-
 			return;
-
 		} else {
-
-
 			currentStateClazz = progressUpdate;
 			updateCurrentSampleNumerator(currentStateClazz.getStartValue());
-			/*switch(progressUpdate) {
-			case STAGE1: {
-				updateCurrentSampleNumerator(0);
-				break;
-			}
-			case LOCK: {
-				updateCurrentSampleNumerator(25);
-				break;
-			}
-			case STAGE2: {
-				updateCurrentSampleNumerator(25);
-				break;
-			}
-			case STAGE3: {
-				updateCurrentSampleNumerator(50);
-				break;
-			}
-			case UNLOCKED: {
-				break;
-			}
-			case COMPLETE: {
-				updateCurrentSampleNumerator(100);
-				break;
-			}
-			case ERROR: {
-				updateCurrentSampleNumerator(-1);
-				break;
-			}
-			}*/
 		}
 	}
 

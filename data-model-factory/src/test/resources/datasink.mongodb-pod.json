@@ -1,0 +1,73 @@
+{
+    "apiVersion": "v1",
+    "id": "datasink-mongodb",
+    "kind": "Pod",
+    "metadata": {
+        "labels": {
+            "digitaledge-domain": "ctndweather.logs.sh.com",
+            "digitaledge-fqdn": "mongodb-writer-node1.ctndweather.logs.sh.com"
+        },
+        "name": "datasink-mongodb"
+    },
+    "spec": {
+        "version": "v1",
+        "id": "datasink-mongodb",
+        "volumes": [
+            {
+                "name": "certs",
+                "source": {
+                    "hostDir": {
+                        "path": "/etc/de/cert"
+                    }
+                }
+            }
+        ],
+        "containers": [
+            {
+                "image": "digitaledge/ctndweather:rtws-nightly.2015-08-10_1837",
+                "memory": 8053063680,
+                "name": "ctndweather",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/tmp/certs",
+                        "name": "certs"
+                    }
+                ],
+                "env": [
+                    {
+                        "name": "RTWS_APPLIANCE_SYSTEM",
+                        "value": "ctndweather.logs.sh.com"
+                    },
+                    {
+                        "name": "RTWS_APPLIANCE_HOST_FQDN",
+                        "value": "$APPLIANCE_HOST_FQDN"
+                    },
+                    {
+                        "name": "RTWS_FQDN",
+                        "value": "mongodb-writer-node1.ctndweather.logs.sh.com"
+                    },
+                    {
+                        "name": "RTWS_PROCESS_GROUP",
+                        "value": "datasink.mongodb"
+                    },
+                    {
+                        "name": "RTWS_RELEASE",
+                        "value": "rtws-nightly.2015-08-10_1837"
+                    },
+                    {
+                        "name": "RTWS_DOMAIN",
+                        "value": "ctndweather.logs.sh.com"
+                    },
+                    {
+                        "name": "RTWS_CONTAINER_MAX_MEMORY",
+                        "value": "7680 RTWS_INGEST_CONFIG"
+                    },
+                    {
+                        "name": "RTWS_BYPASS",
+                        "value": ""
+                    }
+                ]
+            }
+        ]
+    }
+}

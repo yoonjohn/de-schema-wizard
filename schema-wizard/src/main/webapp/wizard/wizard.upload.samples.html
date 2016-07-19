@@ -1,0 +1,38 @@
+<div style="margin: 6px; width: 100%;">
+    <h4 style="margin: 2px 0px;">Schema Wizard: Upload Sample(s) Step</h4>
+    <div class="panel-primary"
+         style="width: 604px; margin: 0 auto; margin-top: -25px; margin-bottom: 2px; padding: 1px;">
+        <img style="border: none;" src="assets/img/wizard-upload.png"/>
+    </div>
+    <div class="panel-primary container" style="float: left; width:99%; margin: 0 auto; padding:6px;">
+        <div style="width: 500px; margin: 0 auto;">
+            <p>The Create New Schema Wizard steps the user through the following tasks:</p>
+            <ul style="margin-left: 30px;">
+                <li>
+                    Upload one or more sample files containing representative data
+                </li>
+                <li>
+                    Analyze sample files on the server which discover the following:
+                    <ul style="margin-left: 45px;">
+                        <li>file format type,</li>
+                        <li>names of fields, and</li>
+                        <li>characterizations for fields</li>
+                    </ul>
+                </li>
+                <li>
+                    Verify the quality of the sample data
+                </li>
+                <li>
+                    Propose a candidate for the schema
+                </li>
+                <li>
+                    Allow the user to modify the candidate schema
+                </li>
+                <li>
+                    Save the schema
+                </li>
+            </ul>
+        </div>
+        <ng-include src="'file-upload/file-upload.html'"></ng-include>
+    </div>
+</div>

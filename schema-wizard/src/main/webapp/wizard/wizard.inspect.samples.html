@@ -1,0 +1,108 @@
+<div style="margin: 6px; width: 100%;">
+    <h4 style="margin: 2px 0px;">
+        Schema Wizard: Inspect Sample(s) Step<br>
+        Data Sample {{currentSampleIndex + 1}} of {{model.dataSamples.length}}
+    </h4>
+    <div class="panel-primary"
+         style="width: 604px; margin: 0 auto; margin-top: -44px; margin-bottom: 2px; padding: 1px;">
+        <img style="border: none;" src="assets/img/wizard-inspect.png"/>
+    </div>
+    <div id="wizardInspectSamplesContainer"
+         class="panel-primary container" style="float: left; width:100%; margin: 0 auto; padding:6px;">
+        <div class="row" style="margin-bottom: 6px; padding-bottom: 0px;">
+            <div class="col-xs-8 panel-group" style="margin-right: 0px; margin-bottom: 0px;">
+                <div class="panel panel-info">
+                    <div class="panel-heading"
+                         tour-step
+                         tour-step-title={{inspectionTour.step2.title}}
+                         tour-step-content={{inspectionTour.step2.message}}
+                         tour-step-order="310"
+                         tour-step-placement="bottom"
+                         tour-step-orphan="false"
+                         tour-step-backdrop="false">
+                        <h3 class="panel-title">
+                            <!--TODO: don't slice once dsFileName no longer has file extension-->
+                            Data Sample Details - File: <i>{{sampleFiles[fileIndex].name }}</i> Type: <i>{{currentSample.dsFileType}}</i>
+                            <img style="border: none; float: right; margin-top: -3px; margin-right: 0px;"
+                                 src="assets/img/blue-tour-bus-22x22.png"
+                                 uib-tooltip="Take a tour of the Inspect Samples Page"
+                                 tooltip-placement="bottom"
+                                 ng-click="tour.startAt('300')"
+                                 tour-step-template-url="'schema-wizard/schema-wizard.tour-first-step.template.html'"
+                                 tour-step="300"
+                                 tour-step-title={{inspectionTour.step1.title}}
+                                 tour-step-order="300"
+                                 tour-step-content={{inspectionTour.step1.message}}
+                                 tour-step-prevStep="300"
+                                 tour-step-orphan="true"
+                                 tour-step-backdrop="false">
+                        </h3>
+                    </div>
+                    <table id="data-sources-table-title" class="table drag-drop header-fixed">
+                        <tr>
+                            <th style="width: 20%;"
+                                tour-step
+                                tour-step-title={{inspectionTour.step3.title}}
+                                tour-step-content={{inspectionTour.step3.message}}
+                                tour-step-order="320"
+                                tour-step-placement="right"
+                                tour-step-orphan="false"
+                                tour-step-backdrop="false">Field
+                            </th>
+                            <th style="width: 6%;">Main Type</th>
+                            <th style="width: 6%;">Detail Type</th>
+                            <th style="width: 10%; text-align: center;">Min</th>
+                            <th style="width: 10%; text-align: center;">Max</th>
+                            <th style="width: 10%; text-align: center;">Avg</th>
+                            <th style="width: 9%; text-align: center;">Std Dev</th>
+                            <th style="width: 5%; text-align: center;">Distinct</th>
+                            <th style="width: 7%; text-align: center;">Presence</th>
+                            <th style="width: 17%;"
+                                tour-step
+                                tour-step-title={{inspectionTour.step5.title}}
+                                tour-step-content={{inspectionTour.step5.message}}
+                                tour-step-order="370"
+                                tour-step-placement="left"
+                                tour-step-orphan="false"
+                                tour-step-backdrop="false">
+                                Interpretation
+                            </th>
+                        </tr>
+                    </table>
+                    <div details-generic-table current-sample="currentSample" details-row="false"
+                         show-in-generic-details="showInGenericDetails"></div>
+                </div>
+            </div>
+            <div class="col-xs-4 panel-group" style="margin-left: -6px; margin-bottom: 0px; padding-left: 0px;">
+                <div details-panel panel-index="" detail-models-panel="detailModels.detailPanels.panel1"></div>
+            </div>
+        </div>
+        <ng-include src="'schema-wizard/schema-wizard.legend.html'"></ng-include>
+        <button class="btn btn-primary" style="float: right; margin-left: 4px; margin-right: 4px;"
+                ng-click="navigateTo('/startup')">
+            Cancel
+        </button>
+        <button class="btn btn-primary" style="float: right; margin-left: 4px;"
+                ng-click="wizardStateControl('wizard-inspect-samples')"
+                tour-step
+                tour-step-title={{inspectionTour.step7.title}}
+                tour-step-content={{inspectionTour.step7.message}}
+                tour-step-order="390"
+                tour-step-placement="top"
+                tour-step-orphan="false"
+                tour-step-backdrop="false">
+            Next
+        </button>
+        <button class="btn btn-primary" style="float: right; margin-left: 4px;"
+                ng-click="discardDataSource(currentSampleIndex)"
+                tour-step
+                tour-step-title={{inspectionTour.step6.title}}
+                tour-step-content={{inspectionTour.step6.message}}
+                tour-step-order="380"
+                tour-step-placement="top"
+                tour-step-orphan="false"
+                tour-step-backdrop="false">
+            Discard
+        </button>
+    </div>
+</div>

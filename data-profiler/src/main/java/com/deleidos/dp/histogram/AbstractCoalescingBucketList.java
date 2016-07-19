@@ -1,9 +1,12 @@
 package com.deleidos.dp.histogram;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Abstract class to track buckets as a histogram in RAM.  The coalescing histogram model is meant to give a best effort
+ * Abstract class to track buckets as a histogram in memory.  The coalescing histogram model is meant to give a best effort
  * representation without any initial parameters.  This means no minimum, maximum, or number of buckets are defined 
  * when the histogram is created.  The functionality of the histogram, <i>B</i>, depends on a low bound, <i>L</i> and a high bound
  * , <i>H</i> where <i>H</i> = 2*<i>L</i>.  At startup, <i>B</i> will put values into unique buckets until the lower bucket bound
@@ -51,11 +54,40 @@ public abstract class AbstractCoalescingBucketList extends AbstractBucketList {
 	 * should be <i>L</i> after this transformation.
 	 */
 	public abstract void coalesce();
+	
 	/**
 	 * Transform the unique valued histogram into a set of equally distributed ranges.  This method should only be called
 	 * once.
 	 */
 	public abstract void transformToRange();
+	
+	/**
+	 * Add the value to the histogram by following a binary search to the appropriate bucket.
+	 * @param bucketList
+	 * @param value
+	 * @return true if the value is added, false if there is not bucket in that the value belongs
+	 */
+	protected boolean binarySearchAdd(Object value) {
+		List<AbstractBucket> bucketList = this.getOrderedBuckets();
+		int min = 0;
+		int max = bucketList.size() - 1;
+		int half = max/2;
+		int c = 0;
+		while(min <= max) {
+			c = bucketList.get(half).belongs(value);
+			if(c > 0) {
+				min = half + 1;
+			} else if(c < 0){
+				max = half - 1;
+			} else {
+				bucketList.get(half).incrementCount();
+				return true;
+			}
+			half = (max - min)/2 + min;
+		}
+		return false;
+	}
+	
 	@JsonIgnore
 	public int getNumBucketsLow() {
 		return numBucketsLow;

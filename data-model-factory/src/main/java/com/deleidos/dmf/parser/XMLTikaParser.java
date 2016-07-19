@@ -24,6 +24,7 @@ import com.deleidos.dp.profiler.DefaultProfilerRecord;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +44,7 @@ public class XMLTikaParser extends AbstractAnalyticsParser {
 	InputStream inputStream;
 
 	@Override
-	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) {
+	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		this.inputStream = inputStream;
 	}
 
@@ -54,20 +55,16 @@ public class XMLTikaParser extends AbstractAnalyticsParser {
 	
 	@Override
 	public ProfilerRecord getNextProfilerRecord(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
-		return super.flattenedJsonToDefaultProfilerRecord(this.parseSingleRecordAsJson(inputStream, handler, metadata, context), context.getCharsRead());
+		try {
+			return xmlParse(context);
+		} catch (IOException e) {
+			throw new AnalyticsTikaProfilingException(e);
+		}
 		//return mapped();
 	}
 
-	@Override
-	public JSONObject parseSingleRecordAsJson(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) {
-		JSONObject json = null;
-		json = xmlParse();
-
-		return json;
-	}
-
 	// Private Methods
-	private JSONObject xmlParse() {
+	private ProfilerRecord xmlParse(TikaProfilerParameters params) throws IOException {
 		JSONObject json = null;
 		StringBuilder builder = new StringBuilder();
 		int tempChar = 0;
@@ -85,20 +82,14 @@ public class XMLTikaParser extends AbstractAnalyticsParser {
 		if (!xml.isEmpty()) {
 			json = XML.toJSONObject(xml);
 			
-			try {
-				json = flatten(json.toString());
-			} catch (JsonProcessingException e) {
-				logger.error("Error flattening JSON.");
-				e.printStackTrace();
-				return null;
-			} catch (IOException e) {
-				logger.error("Error reading stream");
-				e.printStackTrace();
-				return null;
-			}
+			HashMap<String, Object> map = SerializationUtility.getObjectMapper().readValue(json.toString(), new TypeReference<Map<String, Object>>(){});
+			
+			DefaultProfilerRecord defaultRecord = new DefaultProfilerRecord(map);
+			return defaultRecord;
+			
 		}
 
-		return json;
+		return null;
 	}
 
 	private JSONObject flatten(String content) throws JsonProcessingException, IOException {

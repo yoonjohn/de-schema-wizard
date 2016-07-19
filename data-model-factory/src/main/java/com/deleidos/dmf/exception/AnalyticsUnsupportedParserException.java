@@ -8,7 +8,7 @@ import org.apache.tika.exception.TikaException;
  * @author leegc
  *
  */
-public class AnalyticsUnsupportedParserException extends TikaException {
+public class AnalyticsUnsupportedParserException extends AnalyzerException {
 	private String type;
 
 	public AnalyticsUnsupportedParserException(String message) {

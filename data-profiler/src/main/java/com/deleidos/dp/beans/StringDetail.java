@@ -2,6 +2,8 @@ package com.deleidos.dp.beans;
 
 import java.math.BigDecimal;
 
+import org.apache.log4j.Logger;
+
 import com.deleidos.dp.histogram.CharacterBucketList;
 import com.deleidos.dp.histogram.TermBucketList;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,12 +15,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class StringDetail extends Detail {
+	private static final Logger logger = Logger.getLogger(StringDetail.class);
 	private int minLength;
 	private int maxLength;
 	private double averageLength;
 	private double stdDevLength;
-	private CharacterBucketList charFreqHistogram;
-	private TermBucketList termFreqHistogram;
+	private final Histogram charFreqHistogram = null; // no character histograms right now
+	private Histogram termFreqHistogram;
 
 	@JsonProperty("min-length")
 	public int getMinLength() {
@@ -61,22 +64,23 @@ public class StringDetail extends Detail {
 	}
 
 	@JsonProperty("char-freq-histogram")
-	public CharacterBucketList getCharFreqHistogram() {
+	public Histogram getCharFreqHistogram() {
 		return charFreqHistogram;
 	}
 
-	@JsonProperty("char-freq-histogram")
-	public void setCharFreqHistogram(CharacterBucketList charFreqHistogram) {
-		this.charFreqHistogram = charFreqHistogram;
-	}
+	/*@JsonProperty("char-freq-histogram")
+	public void setCharFreqHistogram(Histogram charFreqHistogram) {
+		logger.warn("Character histogram was set.  This method should not be.");
+		//this.charFreqHistogram = charFreqHistogram;
+	}*/
 
 	@JsonProperty("freq-histogram")
-	public TermBucketList getTermFreqHistogram() {
+	public Histogram getTermFreqHistogram() {
 		return termFreqHistogram;
 	}
 
 	@JsonProperty("freq-histogram")
-	public void setTermFreqHistogram(TermBucketList termFreqHistogram) {
+	public void setTermFreqHistogram(Histogram termFreqHistogram) {
 		this.termFreqHistogram = termFreqHistogram;
 	}
 

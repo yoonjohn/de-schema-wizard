@@ -1,0 +1,91 @@
+{
+    "record": {
+        "D_eventType" : {
+            "eventTypeKey" : 1,
+            "eventType" : "Flight" 
+        },
+        "D_object" : {
+            "objectKey" : 1,
+            "objectType" : "Airplane",
+            "objectIdName" : "Tail Number",
+            "objectIdValue" : "N628MQ" 
+        },
+        "NumGeos" : "2",
+        "geoList" : [
+            {
+                "geoAccuracy" : "AIRPORT",
+                "Airport" : "ABI",
+                "geoPlannedTime" : "01/01/11 05:50:00",
+                "geoActualTime" : "01/01/11 05:50:00",
+                "geoName" : "Flight Origin",
+                "geoShape" : {
+                    "latitude" : 32.414407,
+                    "longitude" : -99.680858 
+                },
+                "geoCity" : "Abilene",
+                "geoState" : "TX",
+                "geoCountry" : "USA" 
+            },
+            {
+                "geoAccuracy" : "AIRPORT",
+                "Airport" : "DFW",
+                "geoPlannedTime" : "01/01/11 06:40:00",
+                "geoActualTime" : "01/01/11 06:40:00",
+                "geoName" : "Flight Destination",
+                "geoShape" : {
+                    "latitude" : 32.897844,
+                    "longitude" : -97.042079 
+                },
+                "geoCity" : "Dallas",
+                "geoState" : "TX",
+                "geoCountry" : "USA" 
+            } 
+        ],
+        "NumContent" : "0",
+        "Content" : [
+            
+        ],
+        "extrinsic_USAirTravel" : {
+            "flight" : {
+                "FL_Date" : "1/1/2011",
+                "FL_num" : "3454",
+                "CRS_Dep_Time" : "550",
+                "CRS_Arr_Time" : "640",
+                "Canceled" : "1",
+                "D_cancelation" : {
+                    "code" : "A",
+                    "description" : "A" 
+                },
+                "Diverted" : "0",
+                "CRS_Elapsed_Time" : 50,
+                "Distance" : 158 
+            },
+            "airline" : {
+                "D_Unique_Carrier" : {
+                    "code" : "MQ",
+                    "description" : "MQ" 
+                },
+                "D_Airline" : {
+                    "code" : "20398",
+                    "description" : "20398" 
+                },
+                "D_Carrier" : {
+                    "code" : "MQ",
+                    "description" : "MQ" 
+                } 
+            } 
+        } 
+    },
+    "filter" : {
+        "geoList" : [
+            {
+                "geoCity" : "=Dallas" 
+            } 
+        ],
+        "extrinsic_USAirTravel" : {
+            "flight" : {
+                "Distance" : "<200" 
+            } 
+        } 
+    }
+}

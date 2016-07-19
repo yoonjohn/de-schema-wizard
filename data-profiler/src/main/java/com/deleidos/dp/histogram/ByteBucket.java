@@ -10,7 +10,7 @@ public class ByteBucket extends AbstractBucket {
 	}
 	
 	public ByteBucket(byte label, BigInteger count) {
-		super(String.valueOf(label), count);
+		super(count);
 		byteLabel = label;
 	}
 

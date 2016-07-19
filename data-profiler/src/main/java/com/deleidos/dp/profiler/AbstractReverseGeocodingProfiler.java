@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.RowEntry;
 import com.deleidos.dp.enums.GroupingBehavior;
 import com.deleidos.dp.exceptions.DataAccessException;
@@ -17,7 +16,6 @@ import com.deleidos.dp.profiler.api.ProfilerRecord;
 import com.deleidos.dp.profiler.api.ProfilingProgressUpdateListener;
 import com.deleidos.dp.reversegeocoding.ReverseGeocoder;
 import com.deleidos.dp.reversegeocoding.ReverseGeocoder.ReverseGeocoderCallbackListener;
-import com.deleidos.dp.reversegeocoding.ReverseGeocodingDataAccessObject;
 
 public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, ReverseGeocoderCallbackListener {
 	protected GroupingBehavior groupingBehavior = GroupingBehavior.GROUP_ARRAY_VALUES;
@@ -27,15 +25,14 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 	protected List<CoordinateProfile> coordinateProfiles;
 	private ProfilingProgressUpdateListener progressUpdateListener;
 	protected ReverseGeocoder reverseGeocoder;
-	protected boolean geocoderReady = false;
+	//protected boolean geocoderReady = false;
 	protected volatile int numberASynchronousReverseGeocodingCallbacks = 0;
 	protected volatile int reverseGeocodingAnswers = 0;
 	protected int unaffiliatedGeoCount = 0;
 	protected int bufferedQueries = 0;
 	protected int reverseGeocodeQueries = 0;
-	private int minimumBatchSize = 100;
-	private B bean;
-	//private final int MAX_NUMBER_OF_GEOCODING_QUERIES = 500;
+	protected int minimumBatchSize = 100;
+	protected B bean;
 
 	protected static List<String> emptyCoordinatePair() {
 		return new ArrayList<String>(Arrays.asList(null, null));
@@ -43,10 +40,9 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 
 	public AbstractReverseGeocodingProfiler() {
 		coordinateProfiles = new ArrayList<CoordinateProfile>();
-		//frequencyMapping = new HashMap<List<String>, Map<String, Integer>>();
 		try {
 			reverseGeocoder = new ReverseGeocoder();
-			geocoderReady = ReverseGeocodingDataAccessObject.getInstance().isLive();
+			// geocoderReady = ReverseGeocodingDataAccessObject.getInstance().isLive();
 		} catch (Exception e) {
 			logger.error("Geocoder not ready.");
 			logger.error(e);
@@ -54,7 +50,6 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 		if(this instanceof ReverseGeocoderCallbackListener) {
 			reverseGeocoder.setCallbackListener((ReverseGeocoderCallbackListener)this);
 		}
-		//latLngBuffer = new ArrayList<Double[]>();
 	}
 
 	protected boolean isOtherIndexNull(String[] coordinatePair, int index) {
@@ -62,66 +57,9 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 	}
 
 	@Override
-	public int load(ProfilerRecord record) {
-		Map<String, List<Object>> normalizedRecord = record.normalizeRecord(groupingBehavior);
-		Map<Integer, Double[]> matchedPairs = new HashMap<Integer, Double[]>();
+	public abstract void load(ProfilerRecord record); 
 
-		coordinateProfiles.forEach((x) -> matchedPairs.put(x.getIndex(), new Double[]{null, null}));
-
-		for(CoordinateProfile coordinateProfile : coordinateProfiles) {
-			int coordinateProfileIndex = coordinateProfile.getIndex();
-			List<Object> latValues = normalizedRecord.get(coordinateProfile.getLatitude());
-			if(latValues == null) {
-				continue;
-			}
-			List<Object> lngValues = normalizedRecord.get(coordinateProfile.getLongitude());
-			if(lngValues == null) {
-				continue;
-			}
-			if(latValues.size() != lngValues.size()) {
-				logger.warn("Unequal number of latitudes and longitues.");
-				continue;
-			} else {
-				int size = latValues.size();
-				// geocoding limit functionality on standby
-				/*boolean exceededMaxLimit = false;
-				if((size + reverseGeocodeQueries) > MAX_NUMBER_OF_GEOCODING_QUERIES) {
-					exceededMaxLimit = ((size + reverseGeocodeQueries) > MAX_NUMBER_OF_GEOCODING_QUERIES);
-					size =  MAX_NUMBER_OF_GEOCODING_QUERIES - reverseGeocodeQueries;
-				}*/
-				for(int i = 0; i < size; i++) {
-					try {
-						double lat = Double.valueOf(latValues.get(i).toString());
-						double lng = Double.valueOf(lngValues.get(i).toString());
-						coordinateProfile.getUndeterminedCoordinateBuffer().add(new Double[]{lat, lng});
-						reverseGeocodeQueries++;
-						bufferedQueries++;
-					} catch (NumberFormatException e) {
-						logger.error("Lat/lng not in decimal format.  Currently unsupported.");
-					}
-				}
-				/*if(exceededMaxLimit) {
-					logger.info(MAX_NUMBER_OF_GEOCODING_QUERIES + " geocoding queries reached.");
-					break;
-				}*/
-			}
-		}
-
-		if(bufferedQueries > minimumBatchSize) {
-			try {
-				sendCoordinateProfileBatchesToReverseGeocoder();
-			} catch(DataAccessException e) {
-				logger.error(e);
-				logger.error("Lost "+bufferedQueries+" reverse geocoding queries due to connection issue.");
-			}
-			logger.info(reverseGeocodeQueries + " reverse geocoding queries sent.");
-			bufferedQueries = 0;
-		}
-
-		return reverseGeocodeQueries;
-	}
-
-	private void sendCoordinateProfileBatchesToReverseGeocoder() throws DataAccessException {
+	protected void sendCoordinateProfileBatchesToReverseGeocoder() throws DataAccessException {
 		waitForCallbacks();
 		numberASynchronousReverseGeocodingCallbacks = coordinateProfiles.size();
 		for(CoordinateProfile coordinateProfile : coordinateProfiles) {

@@ -1,0 +1,47 @@
+--- 
+iConstraints: 
+  main-type: <main-type-value><number|string|binary>
+  detail-type: <detail-type-value><date-time|boolean|term|phrase>
+  # length              : <number>
+  # min                 : <number>
+  # min-length          : <number>
+  # max                 : <number>
+  # max-length          : <number>
+  # average             : <number>
+  # average-length      : <number>
+  # std-dev             : <number>
+  # std-dev-length      : <number>
+  # num-distinct-values : <number>
+  # mime-type           : <number>
+  # hash                : <string>
+  # entropy             : <entropy>
+  # quantized           : <tri-state>
+  # ordinal             : <tri-state>
+  # categorical         : <tri-state>
+  # relational          : <tri-state>
+
+# A description of the interpretation.
+iDescription: <description-string>
+
+# The names that will be used for Jaro-Winkler matching with a field name.
+iMatchingNames: 
+  - <field-name>
+  
+# The default sample data for the interpretation
+iSampleData:
+  - <example-value>
+
+# Omit the iScript field to leave the default script
+# Each line of this Python script must indented with 2 spaces to comply with YAML format.
+# Instructions for Notepad++
+# Go to: Settings->Preferences->Tab Settings
+# Slide down to "yaml"
+# Uncheck "Use default value"
+# Check "Replace by space"
+# Change "Tab size" to 2 and hit Enter
+# Highlight the script and press Tab
+iScript: |
+  def validateInterpretation(field_profile):
+      return True 
+  field_profile = locals()['field_profile']
+  is_valid_interpretation = validateInterpretation(field_profile)

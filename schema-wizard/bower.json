@@ -1,12 +1,5 @@
 {
   "name": "SchemaWizard",
-  "authors": [
-    "Dave Elstner <elstner@leidos.com>",
-    "Greg Lee <leegc@leidos.com>",
-    "John Yoon <yoonj1@leidos.com>",
-    "Aaron Parsley <parsleya@leidos.com>",
-    "Kevin Schmincke <schminckek@leidos.com>"
-  ],
   "description": "",
   "main": "",
   "moduleType": [],
@@ -22,17 +15,23 @@
     "pom.xml"
   ],
   "dependencies": {
+    "jquery": "~1.11.3",
     "angular": "~1.4.7",
     "angular-animate": "~1.4.7",
+    "animate.css": "~3.5.0",
     "angular-bootstrap": "~0.14.3",
+    "angular-cookies": "~1.4.7",
     "angular-chart.js": "~0.8.8",
     "angular-drag-and-drop-lists": "~1.3.0",
     "angular-resource": "~1.4.7",
     "angular-route": "~1.4.7",
     "angular-sanitize": "~1.4.7",
     "angular-ui-bootstrap": "~0.14.3",
+    "angular-ui-tour": "~0.5.4",
     "bootstrap-css-only": "~3.3.5",
+    "ez-ng": "~0.1.8",
     "ng-csv": "~0.3.6",
+    "ngSmoothScroll": "~2.0.0",
     "angular-websocket": "^1.0.14"
   },
   "devDependencies": {

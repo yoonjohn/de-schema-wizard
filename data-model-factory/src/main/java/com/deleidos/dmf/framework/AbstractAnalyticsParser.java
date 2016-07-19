@@ -16,10 +16,9 @@ import com.deleidos.dmf.exception.AnalyticsInitializationRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsParsingRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
 import com.deleidos.dmf.exception.AnalyzerException;
-import com.deleidos.dmf.progressbar.ProgressState;
 import com.deleidos.dp.profiler.DefaultProfilerRecord;
 import com.deleidos.dp.profiler.SampleProfiler;
-import com.deleidos.dp.profiler.SampleReverseGeocodingProfiler;
+import com.deleidos.dp.profiler.SampleSecondPassProfiler;
 import com.deleidos.dp.profiler.SchemaProfiler;
 import com.deleidos.dp.profiler.api.Profiler;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
@@ -50,13 +49,13 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 	/**
 	 *  Parse method implemented for all Analytics parsers.  Subclasses' getNextProfilerRecord() methods will be called until
 	 *  it returns null, interruptParse() is called, or an Exception is thrown.  When adding to the Analytics framework, 
-	 *  one may override this method for more control of the progress updates or profiling method.
+	 *  one should not need to override this method.
 	 */
 	@Override
 	public void parse(InputStream stream, ContentHandler handler,
 			Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException {
 		if(!(context instanceof TikaProfilerParameters)) {
-			throw new AnalyticsInitializationRuntimeException("Context not instance of Tika Profiling Parameters.");
+			throw new AnalyticsInitializationRuntimeException("Context not an instance of Tika Profiling Parameters.");
 		}
 		TikaProfilerParameters params = (TikaProfilerParameters) context;
 
@@ -103,8 +102,8 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 			progressUpdater.init(params);
 			if(profiler instanceof SampleProfiler) {
 				((SampleProfiler)profiler).setProgressUpdateListener(progressUpdater);
-			} else if(profiler instanceof SampleReverseGeocodingProfiler) {
-				((SampleReverseGeocodingProfiler)profiler).setProgressUpdateListener(progressUpdater);
+			} else if(profiler instanceof SampleSecondPassProfiler) {
+				((SampleSecondPassProfiler)profiler).setProgressUpdateListener(progressUpdater);
 			} else if(profiler instanceof SchemaProfiler) {
 				((SchemaProfiler)profiler).setProgressUpdateListener(progressUpdater);
 			}
@@ -112,99 +111,8 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 
 	}
 
-	private void callProfileAllRecords(TikaProfilerParameters profilableParameters) throws AnalyticsTikaProfilingException, SAXException, IOException {
-		InputStream inputStream = profilableParameters.getStream();
-		ContentHandler handler = profilableParameters.getHandler();
-		Metadata metadata = profilableParameters.getMetadata();
-		ParseContext context = profilableParameters;
-
-		try {
-			long t1 = System.currentTimeMillis();
-
-			initializeGlobalVariables(inputStream, handler, metadata, context);
-			boolean isParsingPass = (getParams().getProgress().getCurrentState()
-					.equals(ProgressState.sampleParsingStage)) ? true : false;
-			if(isParsingPass) {
-				//getParams().getProgress().setCurrentState(ProgressState.LOCK);
-
-				profileAllRecords(profilableParameters.getStream(), profilableParameters.getHandler(),
-						profilableParameters.getMetadata(), profilableParameters);
-
-				//getParams().getProgress().setCurrentState(ProgressState.UNLOCKED);
-			} else {
-				profileAllRecords(inputStream, handler, metadata, profilableParameters);
-			}
-
-			long t2 = System.currentTimeMillis();
-			logger.debug("Parsing for " + getSupportedTypes(context) + " took " + (t2 - t1) + " millis.");	
-		} catch (TikaException e) {
-			throw new AnalyticsTikaProfilingException(e);
-		}
-	}
-
-	/*public static void callProfileAllRecords(TikaProfilableParser profilableParser, TikaProfilerParameters profilableParameters) 
-			throws AnalyticsTikaProfilingException, SAXException, IOException {
-		InputStream inputStream = profilableParameters.getStream();
-		ContentHandler handler = profilableParameters.getHandler();
-		Metadata metadata = profilableParameters.getMetadata();
-		ParseContext context = profilableParameters;
-
-		try {
-			long t1 = System.currentTimeMillis();
-
-			if(profilableParser instanceof AbstractAnalyticsParser) {
-				AbstractAnalyticsParser analyticsParser = (AbstractAnalyticsParser) profilableParser;
-				analyticsParser.initializeGlobalVariables(inputStream, handler, metadata, context);
-				ProgressState progressState = analyticsParser.getParams().getProgress().getCurrentState();
-				boolean isFirstPass = (progressState.equals(ProgressState.STAGE2)) ? true : false;
-				if(isFirstPass) {
-					analyticsParser.getParams().getProgress().setCurrentState(ProgressState.LOCK);
-
-					analyticsParser.profileAllRecords(profilableParameters.getStream(), profilableParameters.getHandler(),
-							profilableParameters.getMetadata(), profilableParameters);
-
-					analyticsParser.getParams().getProgress().setCurrentState(ProgressState.UNLOCKED);
-				} else {
-					analyticsParser.profileAllRecords(inputStream, handler, metadata, context);
-				}
-			} else {
-
-				AnalyticsProgressUpdater progressUpdater = context.get(AnalyticsProgressUpdater.class);
-				Profiler profiler = context.get(Profiler.class);
-
-				if(progressUpdater == null || profiler == null) {
-					throw new AnalyticsInitializationRuntimeException(
-							"Progress updater or profiler not set in context: "+profilableParser.getClass().getName()+".");
-				}
-
-				long startTime = System.currentTimeMillis();
-
-				ProfilerRecord record = null;
-				for(int i = 0; i < RECORD_LIMIT; i++) {
-
-					record = profilableParser.getNextProfilerRecord(inputStream, handler, metadata, context);
-					if(record == null) {
-						break;
-					} else if(System.currentTimeMillis() - startTime > UPDATE_FREQUENCY_IN_MILLIS) {
-						progressUpdater.updateProgress(inputStream, handler, metadata, context);
-					}
-
-					profiler.load(record);
-
-				}
-
-
-			}
-			long t2 = System.currentTimeMillis();
-			logger.debug("Parsing for " + profilableParser.getSupportedTypes(context) + " took " + (t2 - t1) + " millis.");	
-		} catch (TikaException e) {
-			throw new AnalyticsTikaProfilingException(e);
-		}
-
-	}*/
-
 	/**
-	 * Optional method that will run once before any Splitter methods are called or any bytes are read.  Useful for
+	 * Optional method that will run once before the parse method is called.  Useful for
 	 * headers.  This method will not be called if parseAllRecords returns true.  
 	 * This method has an empty body in AnalyticsTikaParser.java.
 	 * 
@@ -213,12 +121,44 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 	 * @param metadata The metadata of the given stream (at minimum contains Metadata.CONTENT_TYPE and SampleProfiler.SOURCE_NAME)
 	 * @param context the parsing context passed to the AnalyticsTikaParser
 	 * @param splitter The splitter that will split the stream.
+	 * @throws AnalyticsTikaProfilingException a checked exception that should stop the parsing and be reported
 	 */
-	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) {
+	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		return;
 	}
+	
+	private void profileAllRecords(TikaProfilerParameters profilableParameters) throws AnalyticsTikaProfilingException, SAXException, IOException {
+		InputStream inputStream = profilableParameters.getStream();
+		ContentHandler handler = profilableParameters.getHandler();
+		Metadata metadata = profilableParameters.getMetadata();
 
-	public void postParse(ContentHandler handler, Metadata metadata, TikaProfilerParameters context) {
+		long t1 = System.currentTimeMillis();
+		try {
+			initializeGlobalVariables(inputStream, handler, metadata, profilableParameters);
+
+			preParse(inputStream, handler, metadata, profilableParameters);			
+
+			parse(inputStream, handler, metadata, profilableParameters);
+
+			postParse(handler, metadata, profilableParameters);
+			
+			long t2 = System.currentTimeMillis();
+			logger.debug("Parsing for " + getSupportedTypes(profilableParameters) + " took " + (t2 - t1) + " millis.");	
+		} catch (TikaException e) {
+			long t2 = System.currentTimeMillis();
+			logger.error("Parsing for " + getSupportedTypes(profilableParameters) + " failed after " + (t2 - t1) + " millis.");
+			throw new AnalyticsTikaProfilingException(e);
+		}
+	}
+
+	/**
+	 * Optional method that will run once after the parse method is called.
+	 * @param handler
+	 * @param metadata
+	 * @param context
+	 * @throws AnalyticsTikaProfilingException a checked exception that should stop the parsing and be reported
+	 */
+	public void postParse(ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		return;
 	}
 
@@ -227,81 +167,17 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 	}
 
 	/**
-	 * Manually push a JSON Object to the sample or schema handler.
-	 * @param recordCharArray A JSON Object (as a character array) that is a fully flattened record from the stream.
-	 * @throws org.xml.sax.SAXException - any SAX exception, possibly wrapping another exception
-
-	protected void loadToProfiler(ProfilerRecord record) throws SAXException {
-		profiler.load(record);
-	} */
-
-	/**
-	 * Optional method to allow a subclass to handle all the parsing.  Push records to the defined profiler 
-	 * using the loadToProfiler() method.  The handler and parse context are passed as arguments for as much control as Tika
-	 * gives.  If this method is implemented, the subclass is expected to update the progress bar, and the preParse() method
-	 * will not be called.
-	 * @param inputStream The given stream, as reset after the detection phase.
-	 * @param metadata Metadata given to the Advanced Analytics Tika Parsers
-	 * @throws IOException should be thrown if the stream cannot be read
-	 * @throws TikaException 
-	 */
-	private void profileAllRecords(InputStream stream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context)
-			throws SAXException, IOException, TikaException {
-
-		try {	
-
-			preParse(stream, handler, metadata, context);			
-
-			parse(stream, handler, metadata, context);
-
-			postParse(handler, metadata, context);
-
-		} catch (Exception e) {
-			logger.error(e);
-			throw new AnalyticsParsingRuntimeException("Exception caught during analysis parsing in " + getSupportedTypes(context) + " parser.", e, this);
-		}
-
-	}
-
-	/**
 	 * The method that should be implemented when adding parsers to the framework.  Read the stream and parse a single
-	 * record out of it.  The JSON result should be a flattened object of the field keys and field values.  This method allows
+	 * record out of it.  The ProfilerRecord result is a map of field keys to a list of its values.  This method allows
 	 * the framework to gather metrics in an efficient, "unlimited" manner.  Keys in the object are used as headers, or names,
-	 * for each field, and the values are used to accumulate metrics.
-	 *  
-	 * @param inputStream the stream to be parsed.  This stream should not be closed in any subclass.
-	 * @param handler the handler passed to the AnalyticsTikaParser
-	 * @param metadata Metadata associated with this stream
-	 * @param context the parsing context passed to the AnalyticsTikaParser
-	 * @return a fully flattened JSON Object that represents one record, or null if parsing is completed.
-	 * @throws IOException If the stream cannot be read.
-	 * @deprecated Use {@link #getNextProfilerRecord()} instead
-	 */
-	public JSONObject parseSingleRecordAsJson(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws IOException{
-		return null;
-	}
-
-	/**
-	 * The method that should be implemented when adding parsers to the framework.  Read the stream and parse a single
-	 * record out of it.  The JSON result should be a flattened object of the field keys and field values.  This method allows
-	 * the framework to gather metrics in an efficient, "unlimited" manner.  Keys in the object are used as headers, or names,
-	 * for each field, and the values are used to accumulate metrics.
+	 * for each field, and the values are used to accumulate metrics.  Subclasses can simply use the 
+	 * DefaultProfilerRecord in the com.deleidos.dp.profiler package 
+	 * to accumulate records, though they may implement a different strategy if desired.  Return null when parsing has
+	 * been completed.
 	 *  
 	 * @return a profiler record, or null if parsing is completed.
 	 */
 	public abstract ProfilerRecord getNextProfilerRecord(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException;
-
-	protected static DefaultProfilerRecord flattenedJsonToDefaultProfilerRecord(JSONObject json, int charsRead) {
-		if(json == null || json.keySet().size() == 0) {
-			return null;
-		} 
-		DefaultProfilerRecord defaultProfilerRecord = new DefaultProfilerRecord();
-		defaultProfilerRecord.setRecordProgress(charsRead);
-		for(String key : json.keySet()) {
-			defaultProfilerRecord.put(key, json.get(key));
-		}
-		return defaultProfilerRecord;
-	}
 
 	public void interruptParse() {
 		interrupt = true;
@@ -344,10 +220,10 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 	 * setInputStream, setMetadata, and setContentHandler to use outside of the TikaAnalyzer framework. 
 	 */
 	@Override
-	public TikaSampleProfilableParameters sampleAnalysis(TikaSampleProfilableParameters sampleProfilableParams)
+	public TikaSampleAnalyzerParameters runSampleAnalysis(TikaSampleAnalyzerParameters sampleProfilableParams)
 			throws AnalyzerException {
 		try {
-			callProfileAllRecords(sampleProfilableParams);
+			profileAllRecords(sampleProfilableParams);
 		} catch (SAXException | IOException e) {
 			throw new AnalyticsTikaProfilingException(e);
 		} 
@@ -359,10 +235,10 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 	 * setInputStream, setMetadata, and setContentHandler to use outside of the TikaAnalyzer framework. 
 	 */
 	@Override
-	public TikaSchemaProfilableParameters schemaAnalysis(TikaSchemaProfilableParameters schemaProfilableParams)
+	public TikaSchemaAnalyzerParameters runSchemaAnalysis(TikaSchemaAnalyzerParameters schemaProfilableParams)
 			throws AnalyzerException {
 		try {
-			callProfileAllRecords(schemaProfilableParams);
+			profileAllRecords(schemaProfilableParams);
 		} catch (SAXException | IOException e) {
 			throw new AnalyticsTikaProfilingException(e);
 		} 

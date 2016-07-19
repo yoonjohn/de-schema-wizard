@@ -1,5 +1,7 @@
 package com.deleidos.dp.accumulator;
 
+import com.deleidos.dp.exceptions.MainTypeException;
+
 /**
  * Interface for accumulators that take in fields with the ultimate goal of calculating metrics 
  * @author leegc
@@ -12,13 +14,13 @@ public interface Accumulator<T> {
 	 * required (e.g. don't calculate the average until it is required)
 	 * @param value The value to accumulate into the metric.
 	 */
-	public boolean accumulate(Object value);
+	public void accumulate(Object value, boolean accumulatePresence) throws MainTypeException;
 	
 	/**
 	 * 
 	 * @param value
 	 */
-	public boolean initFirstValue(Object value);
+	public boolean initFirstValue(Object value) throws MainTypeException;
 	
 	/**
 	 * Get a copy of the current state of the metric.  Do all calculations in this method.

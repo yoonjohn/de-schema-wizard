@@ -18,6 +18,7 @@ public class DataSampleMetaData {
 	private String dsFileName;
 	private String dsFileType;
 	private String dsVersion;
+	private int dsFileSize;
 	private Timestamp dsLastUpdate;
 	private String dsDescription;
 	private String dsExtractedContentDir;
@@ -105,5 +106,13 @@ public class DataSampleMetaData {
 
 	public void setDsExtractedContentDir(String dsExtractedContentDir) {
 		this.dsExtractedContentDir = dsExtractedContentDir;
+	}
+
+	public int getDsFileSize() {
+		return dsFileSize;
+	}
+
+	public void setDsFileSize(int dsFileSize) {
+		this.dsFileSize = dsFileSize;
 	}
 }

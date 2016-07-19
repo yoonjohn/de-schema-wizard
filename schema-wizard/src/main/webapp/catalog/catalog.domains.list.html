@@ -1,0 +1,81 @@
+<div ui-tour class="col-xs-12 panel-group" style="margin: 0px; padding: 0px;">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Domains
+                <img style="border: none; float: right; margin-right: 10px; cursor:pointer;"
+                     src="assets/img/blueQuestionMark_whiteCalloutBg-16x16.png"
+                     uib-tooltip="Help-Create a New Domain"
+                     tooltip-placement="bottom" ng-click="launchDomainHelp()">
+            </h3>
+        </div>
+        <div id="domainPanelBody" class="panel-body"
+             style="padding-left: 0px; height: 240px;">
+            <table id="domainPanelTable" class="table table-striped"
+                   style="height: 240px;" fixed-header>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Version</th>
+                    <th>Last Update</th>
+                </tr>
+                </thead>
+                <tr ng-repeat="domain in catalog.domainsCatalog | orderBy:'dName'">
+                    <td>
+                        <p onmouseover="this.style.cursor='pointer'"
+                           ng-click="browseDomain(domain)"
+                           style="color: blue; font-style: italic; float:left; padding-right: inherit;">
+                            {{domain.dName}}
+                        </p>
+                        <button class="btn-graphic-only btn-remove" type="button"
+                                ng-model="singleModel"
+                                uib-tooltip="Delete Domain"
+                                tooltip-placement="right"
+                                ng-click="removeDomain(domain)">
+                        </button>
+                    </td>
+                    <td>{{domain.dDescription}}</td>
+                    <td>{{domain.dVersion}}</td>
+                    <td>{{domain.dLastUpdate | date : 'MM/dd/yyyy'}}</td>
+                </tr>
+                <tr ng-show="newDomain">
+                    <td>
+                        <input id="newDomainName" type="text"
+                               placeholder="Enter at least 2 characters"
+                               ng-model="newDomain.dName"
+                               ng-focus="newDomain.dName === null"
+                               style="width: 260px; height: 18px; margin-top: 2px; font-size: 12px;"/>
+                    </td>
+                    <td>
+                        <input id="newDomainDescription" type="text"
+                               placeholder="Enter at least 20 characters"
+                               ng-model="newDomain.dDescription"
+                               style="width: 330px; height: 18px; font-size: 12px;"/>
+                        <button style="margin: 0px; margin-left:8px;" class="btn btn-primary btn-xs"
+                                uib-tooltip="Save New Domain"
+                                tooltip-placement="left"
+                                ng-disabled="newDomain.dName.length < 2 || newDomain.dDescription.length < 20"
+                                ng-click="saveNewDomain()">
+                            Save
+                        </button>
+                        <button style="margin: 0px; margin-left:8px;" class="btn btn-primary btn-xs"
+                                uib-tooltip="Cancel New Domain"
+                                tooltip-placement="left"
+                                ng-click="cancelNewDomain()">
+                            Cancel
+                        </button>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <button id="mainMenu" tour-step tour-step-title="Main Menu" tour-step-content="Navigate the site using this menu." tour-step-order="0"
+            tour-step-placement="right" style="float: right; margin: 8px;" class="btn btn-primary"
+            uib-tooltip="Create New Domain"
+            tooltip-placement="left"
+            ng-click="createNewDomain()">
+        Create New Domain
+    </button>
+</div>

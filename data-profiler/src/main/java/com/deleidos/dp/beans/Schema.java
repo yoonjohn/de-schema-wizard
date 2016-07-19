@@ -25,6 +25,7 @@ public class Schema {
 	private String sVersion;
 	private Timestamp sLastUpdate;
 	private String sDescription;
+	private String sDomainName;
 	private int recordsParsedCount;
 	private Map<String, Profile> sProfile;
 	private List<DataSampleMetaData> sDataSamples;
@@ -161,13 +162,23 @@ public class Schema {
 		this.sDataSamples = sDataSamples;
 	}
 
-	@JsonIgnore
+	@JsonProperty("sTotalSampleRecs")
 	public int getRecordsParsedCount() {
 		return recordsParsedCount;
 	}
 
-	@JsonIgnore
+	@JsonProperty("sTotalSampleRecs")
 	public void setRecordsParsedCount(int recordsParsedCount) {
 		this.recordsParsedCount = recordsParsedCount;
 	}
+
+	public String getsDomainName() {
+		return sDomainName;
+	}
+
+	public void setsDomainName(String sDomainName) {
+		this.sDomainName = sDomainName;
+	}
+
+
 }

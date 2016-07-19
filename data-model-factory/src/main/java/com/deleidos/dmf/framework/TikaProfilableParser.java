@@ -10,7 +10,7 @@ import com.deleidos.dmf.analyzer.Analyzer;
 import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
 
-public interface TikaProfilableParser extends Parser, Analyzer<TikaSampleProfilableParameters, TikaSchemaProfilableParameters> {
+public interface TikaProfilableParser extends Parser, Analyzer<TikaSampleAnalyzerParameters, TikaSchemaAnalyzerParameters> {
 
 	public ProfilerRecord getNextProfilerRecord(InputStream stream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException;
 

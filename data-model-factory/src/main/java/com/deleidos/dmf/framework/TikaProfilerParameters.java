@@ -12,24 +12,18 @@ import com.deleidos.dmf.progressbar.ProgressBar;
 import com.deleidos.dp.profiler.api.Profiler;
 
 public abstract class TikaProfilerParameters extends ParseContext implements AnalyzerParameters {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7094322716696643804L;
 	private ProgressBar progress;
 	private InputStream stream;
 	private ContentHandler handler;
 	private Metadata metadata;
 	
-	private String sessionId;	
+	private String sessionId;
 	private String domainName;
 	private String tolerance;
 	private String uploadFileDir;
 	private String extractedContentDir;
 	private String guid;
-	
-	private boolean isFile;
-	private boolean isStream;
 	
 	private long streamLength = 0;
 	private int charsRead = 0;
@@ -119,14 +113,6 @@ public abstract class TikaProfilerParameters extends ParseContext implements Ana
 
 	public void setExtractedContentDir(String extractedContentDir) {
 		this.extractedContentDir = extractedContentDir;
-	}
-
-	public boolean isStream() {
-		return isStream;
-	}
-
-	public void setStream(boolean isStream) {
-		this.isStream = isStream;
 	}
 
 	public int getCharsRead() {

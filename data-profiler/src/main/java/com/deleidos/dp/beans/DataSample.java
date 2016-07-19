@@ -20,6 +20,7 @@ public class DataSample {
 	private String dsFileName;
 	private String dsFileType;
 	private String dsVersion;
+	private int dsFileSize;
 	private String dsExtractedContentDir;
 	private Timestamp dsLastUpdate;
 	private String dsDescription;
@@ -116,12 +117,12 @@ public class DataSample {
 		this.DsProfile = DsProfile;
 	}
 
-	@JsonIgnore
+	@JsonProperty("dsNumbRecords")
 	public int getRecordsParsedCount() {
 		return recordsParsedCount;
 	}
 
-	@JsonIgnore
+	@JsonProperty("dsNumbRecords")
 	public void setRecordsParsedCount(int recordsParsedCount) {
 		this.recordsParsedCount = recordsParsedCount;
 	}
@@ -134,5 +135,13 @@ public class DataSample {
 	@JsonProperty("dsExtractedContentDir")
 	public void setDsExtractedContentDir(String dsExtractedContentDir) {
 		this.dsExtractedContentDir = dsExtractedContentDir;
+	}
+
+	public int getDsFileSize() {
+		return dsFileSize;
+	}
+
+	public void setDsFileSize(int dsFileSize) {
+		this.dsFileSize = dsFileSize;
 	}
 }

@@ -5,7 +5,15 @@
 **/*.log
 **/coverage
 **/target
+**/*.project
+**/*.settings
+**/*.classpath
+**/*.idea
+**/__pycache__/*
+**/*.pydevproject
 !**/.gitkeep
+*.bat
+docs/~$.*
 
 h2-database/target
 h2-database/.classpath
@@ -44,15 +52,24 @@ data-profiler/.settings
 data-profiler/.settings
 data-profiler/example.log
 
-reverse-geocoding-service/target
-reverse-geocoding-service/.classpath
-reverse-geocoding-service/.project
-reverse-geocoding-service/.settings
+reverse-geocoding-service/
 
-mvn-build.bat
-install-all-script.bat
-install-all-script-basic.bat
-install-reactor.bat
-clean-project.bat
-deprecated-install-all-script-basic.bat
-local-deploy.bat
+interpretation-engine/src/main/python/engine/_interpretation_.py
+
+interpretation-engine-mongodb/src/main/python/domain_builder/__pycache__/*
+interpretation-engine-mongodb/.classpath
+
+interpretation-engine-sidekick/.classpath
+interpretation-engine-sidekick/.project
+interpretation-engine-sidekick/.pydevproject
+interpretation-engine-sidekick/.settings/
+
+interpretation-engine-untrusted/.classpath
+interpretation-engine-untrusted/.project
+interpretation-engine-untrusted/.pydevproject
+interpretation-engine-untrusted/.settings/
+
+third-party-repo/jnetpcap/linux/jnetpcap-1.3.0-1.fc.x86_64
+third-party-repo/jnetpcap/ubuntu/jnetpcap-1.3.0-1.ubuntu.x86_64
+third-party-repo/jnetpcap/windows/jnetpcap-1.3.0-1.win64
+third-party-repo/data-services/analytics-data-services

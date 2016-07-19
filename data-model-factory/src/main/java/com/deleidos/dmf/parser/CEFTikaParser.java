@@ -1,6 +1,5 @@
 package com.deleidos.dmf.parser;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,39 +13,41 @@ import org.apache.log4j.Logger;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
-import org.apache.tika.sax.XHTMLContentHandler;
-import org.json.JSONObject;
 import org.xml.sax.ContentHandler;
 
 import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
 import com.deleidos.dmf.framework.AbstractAnalyticsParser;
 import com.deleidos.dmf.framework.TikaProfilerParameters;
+import com.deleidos.dmf.splitter.LineSplitter;
+import com.deleidos.dmf.splitter.Splitter;
+import com.deleidos.dp.profiler.DefaultProfilerRecord;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
-import com.deleidos.rtws.splitter.LineSplitter;
-import com.deleidos.rtws.splitter.Splitter;
 
+/**
+ * 
+ * @author leegc
+ *
+ */
 public class CEFTikaParser extends AbstractAnalyticsParser {
 	private static Logger logger = Logger.getLogger(CEFTikaParser.class);
-	private XHTMLContentHandler fXHTML;
 	private Splitter splitter;
-	private CEFObject cefObject;
 
 	private static final Set<MediaType> SUPPORTED_TYPES = 
 			Collections.singleton(MediaType.application("cef"));
-	
+
 	@Override
 	public Set<MediaType> getSupportedTypes(ParseContext context) {
 		return SUPPORTED_TYPES;
 	}
-	
+
 	public static final String CEF_TYPE = "application/cef";
-	
+
 	public CEFTikaParser() {
 		splitter = new LineSplitter();
 	}
 
 	private CEFObject breakDownLine(String line) {
-		
+
 		CEFObject cefObject = new CEFObject();
 		StringBuilder firstSevenPipes = new StringBuilder();
 		StringBuilder rawKeyValuePairs = new StringBuilder();
@@ -188,36 +189,27 @@ public class CEFTikaParser extends AbstractAnalyticsParser {
 			this.extensionMapping = extensionMapping;
 		}
 	}
-	
+
 	@Override
-	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) {
+	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		splitter.setInputStream(inputStream);
 	}
 
 	@Override
-	public JSONObject parseSingleRecordAsJson(InputStream inputStream,
-			ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws IOException {
+	public ProfilerRecord getNextProfilerRecord(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		String split = splitter.split();
 		if(split == null) return null;
 		context.setCharsRead(context.getCharsRead()+split.length());
-		JSONObject object = new JSONObject();
+		DefaultProfilerRecord profilerRecord = new DefaultProfilerRecord();
+		profilerRecord.setRecordProgress(context.getCharsRead());
 		CEFObject cef = breakDownLine(split);
 		for(String key : cef.getHeaderMapping().keySet()) {
-			object.put(key, cef.getHeaderMapping().get(key));
+			profilerRecord.put(key, cef.getHeaderMapping().get(key));
 		}
 		for(String key : cef.getExtensionMapping().keySet()) {
-			object.put(key, cef.getExtensionMapping().get(key));
+			profilerRecord.put(key, cef.getExtensionMapping().get(key));
 		}
-		return object;
-	}
-
-	@Override
-	public ProfilerRecord getNextProfilerRecord(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
-		try {
-			return super.flattenedJsonToDefaultProfilerRecord(this.parseSingleRecordAsJson(inputStream, handler, metadata, context), context.getCharsRead());
-		} catch (IOException e) {
-			throw new AnalyticsTikaProfilingException(e);
-		}
+		return profilerRecord;
 	}
 
 

@@ -1,0 +1,98 @@
+:focus, :focus .active {
+    outline: 1px solid rgb(97,34,115) !important;
+}
+.banner {
+    background: rgb(135,39,136)  url(../img/banner-background-leidos.png) no-repeat;
+}
+.footer {
+    background-color:  rgb(97,34,115);
+}
+#logoPage {
+    background-image: url(../img/dataswirl.jpg);
+}
+#logoDialog {
+    border: 5px ridge rgb(194,56,194);
+}
+#exportDialog {
+    border: 5px ridge rgb(194,56,194);
+}
+#popupDialog {
+    border: 5px ridge rgb(194,56,194);
+}
+.btn, .btn-primary {
+    color: white;
+    background-color: rgb(135,39,136) !important;
+    border: thin solid rgb(97,34,115);
+}
+.btn:hover, .btn-primary:hover {
+    color: white;
+    font-style: italic;
+    background-color: rgb(100,100,100) !important;
+    border: thin solid rgb(97,34,115);
+}
+.btn-graphic-plus-text {
+    color: black;
+    background-color: white !important;
+}
+.btn-graphic-plus-text:hover {
+    border-color: rgb(97,34,115);
+}
+.well {
+    background-color: floralwhite;
+}
+.tab-headers ul {
+    border: solid 1px rgb(135,39,136);
+    background-color: rgb(255,255,255);
+}
+.tab-headers li {
+    background-color: rgb(135,39,136);
+}
+.tab-headers li:hover, li:hover a {
+    background-color: rgb(194,56,194);
+}
+.tab-headers .active {
+    border-top: thin solid rgb(194,56,194);
+    border-left: thin solid rgb(194,56,194);
+    border-right: thin solid rgb(97,34,115);
+}
+.tab-headers .active:hover {
+    border-bottom: thick solid rgb(194,56,194);
+}
+.panel-primary {
+    border: thin solid rgb(97,34,115);
+}
+.modal-header, .close {
+    background: url(../img/popup-banner-background-leidos.png) repeat-x;
+}
+.modal-footer {
+    background-color: rgb(97,34,115);
+    background: -webkit-linear-gradient(left, #2a1856, #612273, #e8e8e8); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #2a1856, #612273, #e8e8e8); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #2a1856, #612273, #e8e8e8); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #2a1856, #612273, #e8e8e8); /* Standard syntax */
+}
+/**
+ * Show dropzones in different colors
+ */
+#dropzone-1 .dndDragging {
+    background-color: floralwhite;
+}
+/**
+ * Show selected elements in same color as their dropzone
+ */
+#data-sources-table li.selected1 {
+    background-color: floralwhite;
+}
+.progress-bar{
+    background-color:  rgb(135,39,136)
+}
+*.popover {
+    border: 2px outset rgb(97,34,115);
+}
+*.popover-title {
+    background-color: rgb(135,39,136);
+}
+.popover-content.tour-step-content {
+/*    border-color: rgb(97,34,115);*/
+}
+

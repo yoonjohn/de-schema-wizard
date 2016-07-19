@@ -1,0 +1,5 @@
+--- 
+# Properties file for built in domain objects
+# The name of the file will be the domain name
+dDescription: <description-string>
+dVersion: <version-string>

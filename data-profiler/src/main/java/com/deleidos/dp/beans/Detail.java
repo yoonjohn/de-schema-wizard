@@ -1,6 +1,7 @@
 package com.deleidos.dp.beans;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public abstract class Detail {
 	private static final Logger logger = Logger.getLogger(Detail.class);
 	protected String detailType;
-	protected int numDistinctValues;
+	protected String numDistinctValues;
 	protected BigDecimal walkingCount;
 	protected BigDecimal walkingSum;
 	protected BigDecimal walkingSquareSum;
@@ -25,29 +26,59 @@ public abstract class Detail {
 	public Detail() { }
 	
 	@JsonIgnore
-	public AbstractBucketList getBucketListIfApplicable() {
+	public Optional<Histogram> getHistogramOptional() {
+		Optional<Histogram> optionalBucket = Optional.empty();
 		if(this instanceof NumberDetail) {
 			NumberDetail nDetail = (NumberDetail)this;
-			return nDetail.getFreqHistogram();
+			return Optional.of(nDetail.getFreqHistogram());
 		} else if(this instanceof StringDetail) {
 			StringDetail sDetail = (StringDetail)this;
-			return sDetail.getTermFreqHistogram();
+			return Optional.of(sDetail.getTermFreqHistogram());
 		} else if(this instanceof BinaryDetail) {
 			BinaryDetail bDetail = (BinaryDetail)this;
-			return bDetail.getByteHistogram();
+			return Optional.of(bDetail.getByteHistogram());
 		} else {
 			logger.error("Not a number, string, or binary detail type!!");
-			return null;
+			return optionalBucket;
 		}
 	}
 	
 	@JsonIgnore
-	public void setRegionDataIfApplicable(RegionData regionData) {
-		AbstractBucketList abl = getBucketListIfApplicable();
-		if(abl != null) {
-			abl.setRegionData(regionData);
+	public boolean setHistogram(Histogram histogram) {
+		if(this instanceof NumberDetail) {
+			NumberDetail nDetail = (NumberDetail)this;
+			nDetail.setFreqHistogram(histogram);
+		} else if(this instanceof StringDetail) {
+			StringDetail sDetail = (StringDetail)this;
+			sDetail.setTermFreqHistogram(histogram);
+		} else if(this instanceof BinaryDetail) {
+			BinaryDetail bDetail = (BinaryDetail)this;
+			bDetail.setByteHistogram(histogram);
+		} else {
+			logger.error("Not a number, string, or binary detail type!");
+			return false;
+		}
+		return true;
+	}
+	
+	@JsonIgnore
+	public void nullifyBucketList() {
+		if(this instanceof NumberDetail) {
+			NumberDetail nDetail = (NumberDetail)this;
+			nDetail.setFreqHistogram(null);
+		} else if(this instanceof StringDetail) {
+			StringDetail sDetail = (StringDetail)this;
+			sDetail.setTermFreqHistogram(null);
+		} else if(this instanceof BinaryDetail) {
+			BinaryDetail bDetail = (BinaryDetail)this;
+			bDetail.setByteHistogram(null);
 		}
 	}
+	
+	/*@JsonIgnore
+	public void setRegionDataIfApplicable(RegionData regionData) {
+		getBucketListIfApplicable().ifPresent(x->x.setRegionData(regionData));
+	}*/
 	
 	@JsonProperty("detail-type")
 	public String getDetailType() {
@@ -60,12 +91,12 @@ public abstract class Detail {
 	}
 
 	@JsonProperty("num-distinct-values")
-	public int getNumDistinctValues() {
+	public String getNumDistinctValues() {
 		return numDistinctValues;
 	}
 
 	@JsonProperty("num-distinct-values")
-	public void setNumDistinctValues(int numDistinctValues) {
+	public void setNumDistinctValues(String numDistinctValues) {
 		this.numDistinctValues = numDistinctValues;
 	}
 

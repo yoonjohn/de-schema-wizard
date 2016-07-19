@@ -11,24 +11,32 @@ import org.h2.tools.RunScript;
 
 public class H2TestDatabase extends H2Database {
 	private Logger logger = Logger.getLogger(H2TestDatabase.class);
-	private final String[] SERVER_ARGUMENTS = new String[] { "-tcpPort", "9124" };
 
 	/**
 	 * The constructor for the TestH2Database class. Calling this constructor
 	 * will not start the server. Use startTestServer() to start the server.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws InterruptedException 
 	 */
-	public H2TestDatabase() {
-		super();
+	public H2TestDatabase() throws ClassNotFoundException, SQLException {
+		super(H2Config.TEST_CONFIG);
 	}
-	
+
 	/**
 	 * Runs through the methods to start the server.
 	 * purge(), startServer(), initDbConnection(), testConnection(), initalizeDatabase().
+	 * @throws InterruptedException 
+	 * @throws ClassNotFoundException 
 	 */
-	public void startTestServer() {
-		initTestServerVariables();
+	public H2TestDatabase startTestServer() throws SQLException, ClassNotFoundException, InterruptedException {
 		purge();
-		startServer(SERVER_ARGUMENTS);
+		startServer();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				logger.info("Server shutting down.");
@@ -36,20 +44,18 @@ public class H2TestDatabase extends H2Database {
 				purge();
 			}
 		});
-		try {
-			runSchemaWizardStartupScript();
-		} catch (SQLException e) {
-			logger.error("Did not find startup script.");
-			e.printStackTrace();
+		runSchemaWizardStartupScript();
+		if(!testConnection()) {
+			throw new SQLException("Server not successfully started.");
 		}
-		testConnection();
+		return this;
 	}
-	
+
 	public void populateDatabase() {
 		InputStreamReader isr;
 		String filePath = "/scripts/";
 		String fileName = "populate_database.sql";
-		
+
 		try {
 			isr = new InputStreamReader(
 					getClass().getResourceAsStream(filePath + fileName));
@@ -64,7 +70,7 @@ public class H2TestDatabase extends H2Database {
 			fail("Could not read from file " + filePath + fileName);
 		}	
 	}
-	
+
 	// Getters and setters
 	/**
 	 * 
@@ -77,12 +83,13 @@ public class H2TestDatabase extends H2Database {
 	// Private Methods
 	/**
 	 * Tests if the connection is made.
+	 * @throws SQLException 
 	 */
-	private void testConnection() {
+	private boolean testConnection() throws SQLException {
 		try {
 			Thread.sleep(1000);
 			if (dbConnection != null) {
-				logger.info("Successfully established connection to test server.");
+				return dbConnection.isValid(10);
 			} else {
 				logger.warn("Test server not found... Trying again.");
 				Thread.sleep(5000);
@@ -91,14 +98,16 @@ public class H2TestDatabase extends H2Database {
 				} else {
 					logger.error("Test connection not made.  Terminating application.");
 				}
+				return false;
 			}
 		} catch (InterruptedException e) {
 			logger.error(e);
 			e.printStackTrace();
+			return false;
 		}
 	}
-	
-	private void initTestServerVariables() {
+
+	/*private void initTestServerVariables() {
 		DB_HOST = "localhost";
 		DB_PORT = "9124";
 		DB_DIR = "~/test-files/";
@@ -108,7 +117,7 @@ public class H2TestDatabase extends H2Database {
 		DB_PASSWORD = "";
 	}
 
-	/*public Server getServer() {
+	public Server getServer() {
 		return server;
 	}
 

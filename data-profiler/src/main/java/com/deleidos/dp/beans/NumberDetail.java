@@ -16,7 +16,7 @@ public class NumberDetail extends Detail {
 	private BigDecimal max;
 	private BigDecimal average;
 	private double stdDev;
-	private NumberBucketList freqHistogram;
+	private Histogram freqHistogram;
 
 	public BigDecimal getMin() {
 		return min;
@@ -53,12 +53,12 @@ public class NumberDetail extends Detail {
 	}
 
 	@JsonProperty("freq-histogram")
-	public NumberBucketList getFreqHistogram() {
+	public Histogram getFreqHistogram() {
 		return freqHistogram;
 	}
 
 	@JsonProperty("freq-histogram")
-	public void setFreqHistogram(NumberBucketList freqHistogram) {
+	public void setFreqHistogram(Histogram freqHistogram) {
 		this.freqHistogram = freqHistogram;
 	}
 }

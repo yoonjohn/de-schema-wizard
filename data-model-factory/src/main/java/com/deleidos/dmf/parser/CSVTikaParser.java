@@ -25,21 +25,25 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
-import org.json.JSONObject;
 import org.xml.sax.ContentHandler;
 
+import com.deleidos.dmf.exception.AnalyticsParsingRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
 import com.deleidos.dmf.framework.AbstractAnalyticsParser;
 import com.deleidos.dmf.framework.TikaProfilerParameters;
+import com.deleidos.dmf.splitter.Splitter;
+import com.deleidos.dmf.splitter.TextlineWithQuotesSplitter;
+import com.deleidos.dp.enums.GroupingBehavior;
+import com.deleidos.dp.profiler.DefaultProfilerRecord;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
-import com.deleidos.rtws.splitter.Splitter;
-import com.deleidos.rtws.splitter.TextlineWithQuotesSplitter;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -54,7 +58,6 @@ public class CSVTikaParser extends AbstractAnalyticsParser {
 	private char separator;
 	private String[] headerFields = null;
 	private Splitter splitter;
-	private boolean oneParsed = false;
 
 	private static final Set<MediaType> SUPPORTED_TYPES = 
 			Collections.singleton(MediaType.text("csv"));
@@ -70,7 +73,7 @@ public class CSVTikaParser extends AbstractAnalyticsParser {
 	}
 
 	@Override
-	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) {
+	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		splitter.setInputStream(inputStream);
 		try {
 			separator = detectSeparators(inputStream);
@@ -83,24 +86,18 @@ public class CSVTikaParser extends AbstractAnalyticsParser {
 	}
 
 	@Override
-	public JSONObject parseSingleRecordAsJson(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws IOException {
-
-		String nextSplit = splitter.split();
-		if(nextSplit == null) {
-			return null;
-		}
-		context.setCharsRead(context.getCharsRead()+nextSplit.length());
-		CSVReader lReader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(nextSplit.getBytes())), separator);
-		String[] splits = lReader.readNext();
-		JSONObject object = new JSONObject();
-		loadFieldsWithHeaderTemplate(headerFields, splits, object);
-		return object;
-	}
-
-	@Override
 	public ProfilerRecord getNextProfilerRecord(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		try {
-			return super.flattenedJsonToDefaultProfilerRecord(this.parseSingleRecordAsJson(inputStream, handler, metadata, context), context.getCharsRead());
+			String nextSplit = splitter.split();
+			if(nextSplit == null) {
+				return null;
+			}
+			context.setCharsRead(context.getCharsRead()+nextSplit.length());
+			CSVReader lReader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(nextSplit.getBytes())), separator);
+			String[] splits = lReader.readNext();
+			EmptyStringsAreNullsProfilerRecords record = loadFieldsWithHeaderTemplate(headerFields, splits);
+			record.setRecordProgress(context.getCharsRead());
+			return record;
 		} catch (IOException e) {
 			throw new AnalyticsTikaProfilingException(e);
 		}
@@ -156,13 +153,30 @@ public class CSVTikaParser extends AbstractAnalyticsParser {
 		return lCharMax;
 	}
 
-	private void loadFieldsWithHeaderTemplate(String[] headerFields, String[] pRow, JSONObject json) {
+	private EmptyStringsAreNullsProfilerRecords loadFieldsWithHeaderTemplate(String[] headerFields, String[] pRow) {
+		EmptyStringsAreNullsProfilerRecords profilerRecord = new EmptyStringsAreNullsProfilerRecords();
 		if(headerFields.length != pRow.length) {
 			logger.error("Invalid CSV format detected.");
-			return;
+			throw new AnalyticsParsingRuntimeException("Invalid CSV format detected.", this);
 		}
 		for(int i = 0; i < headerFields.length; i++) {
-			json.put(headerFields[i].trim(), pRow[i]);
+			profilerRecord.put(headerFields[i].trim(), pRow[i]);
+		}
+		return profilerRecord;
+	}
+	
+	private static class EmptyStringsAreNullsProfilerRecords extends DefaultProfilerRecord {
+		private static final long serialVersionUID = -2244595877110727189L;
+
+		@Override
+		public Map<String, List<Object>> normalizeRecord(GroupingBehavior groupingBehavior) {
+			Map<String, List<Object>> recordMap = super.normalizeRecord(groupingBehavior);
+			// loop through everything and replace emptry strings with null
+			recordMap.replaceAll((k,v) -> {
+				v.replaceAll(x-> "".equals(x) ? null : x);
+				return v;
+			});
+			return recordMap;
 		}
 	}
 }

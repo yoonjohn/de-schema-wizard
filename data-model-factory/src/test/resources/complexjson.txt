@@ -1,0 +1,107 @@
+[{
+    "Store": "Books Unlimited",
+    "Hours": "24/7",
+    "Catalog": [
+        {
+            "Book": [
+                {
+                    "Author": "Fitzgerald",
+                    "Title": "The Great Gatsby"
+                },
+                {
+                    "Author": "Fitzgerald",
+                    "Title": "The Curious Case of Benjamin Button"
+                }
+            ]
+        },
+        {
+            "Book": [
+                {
+                    "Author": "Card",
+                    "Title": "Ender's Game"
+                },
+                {
+                    "Author": "Card",
+                    "Title": "Speaker for the Dead"
+                }
+            ]
+        }, 
+        {
+            "Book": [
+                {
+                    "Author": "Seuss",
+                    "Title": "The Cat in the Hat"
+                },
+                {
+                    "Author": "Seuss",
+                    "Title": "Green Eggs and Ham"
+                }
+            ]
+        },
+        {
+            "Book": [
+                {
+                    "Author": "Rowling",
+                    "Title": "The Half-Blood Prince"
+                },
+                {
+                    "Author": "Rowling",
+                    "Title": "Sorcerer's Stone"
+                }
+            ]
+        }
+    ]
+},{
+    "Store": "Books Forever",
+    "Hours": "24/7",
+    "CatalogSecond": [
+        {
+            "Book": [
+                {
+                    "Author": "Fitzgerald",
+                    "Title": "The Great Gatsby"
+                },
+                {
+                    "Author": "Fitzgerald",
+                    "Title": "The Curious Case of Benjamin Button"
+                }
+            ]
+        },
+        {
+            "Book": [
+                {
+                    "Author": "Card",
+                    "Title": "Ender's Game"
+                },
+                {
+                    "Author": "Card",
+                    "Title": "Speaker for the Dead"
+                }
+            ]
+        }, 
+        {
+            "Book": [
+                {
+                    "Author": "Seuss",
+                    "Title": "The Cat in the Hat"
+                },
+                {
+                    "Author": "Seuss",
+                    "Title": "Green Eggs and Ham"
+                }
+            ]
+        },
+        {
+            "Book": [
+                {
+                    "Author": "Rowling",
+                    "Title": "The Half-Blood Prince"
+                },
+                {
+                    "Author": "Rowling",
+                    "Title": "Sorcerer's Stone"
+                }
+            ]
+        }
+    ]
+}]

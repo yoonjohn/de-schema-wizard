@@ -1,0 +1,115 @@
+{
+    "201": "Created",
+    "202": "Accepted",
+    "404": "Not_Found",
+    "400": "Bad Request",
+    "403": "Forbidden",
+    "417": "Expectation Failed",
+    "503": "Service Unavailable",
+    "sessionIdFailed": {
+        "title": "Getting Session Id Failed ",
+        "message": "Try again later, or click the help icon for more information.",
+        "errorNumber": "417"
+    },
+    "saveNewDomainFailed": {
+        "title": "Create New Domain Failed ",
+        "message": "Try again later, or click the help icon for more information.",
+        "errorNumber": "417"
+    },
+    "interpretationFailedToLoad": {
+        "title": "Domain Interpretations Failed to Load ",
+        "message": "The interpretations for this domain failed to load, click the help icon for more information.",
+        "errorNumber": "404"
+    },
+    "deleteDomainFailed": {
+        "title": "Deleting Domain Failed ",
+        "message": "This domain failed to be deleted, click the help icon for more information.",
+        "errorNumber": "404"
+    },
+    "deleteSchemaFailed": {
+        "title": "Deleting Schema Failed ",
+        "message": "This schema failed to be deleted, click the help icon for more information.",
+        "errorNumber": "404"
+    },
+    "creatingInterpretationsFailed": {
+        "title": "Creating Interpretation Failed ",
+        "message": "This interpretation failed to be created, click the help icon for more information.",
+        "errorNumber": "404"
+    },
+    "updatingInterpretationsFailed": {
+        "title": "Updating Interpretation Failed ",
+        "message": "Updating of this interpretation failed, click the help icon for more information.",
+        "errorNumber": "404"
+    },
+    "validatingPythonFailed": {
+        "title": "Python Script Validation Failed ",
+        "message": "The python script validation service is offline. Click the help icon for more information.",
+        "errorNumber": "400"
+    },
+    "testingPythonFailed": {
+        "title": "Python Script Test Failed ",
+        "message": "The python script test failed during execution. Examine the script for potential problems. Click the help icon for more information.",
+        "errorNumber": "400"
+    },
+    "gettingSchemaDataFailed": {
+        "title": "Getting the Schema Data Failed",
+        "message": "Retrieving the Schema Data has failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "gettingDataSamplesFailed": {
+        "title": "Getting the Data Samples Failed",
+        "message": "Retrieving the Data Samples has failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "updateDataSamplesFailed": {
+        "title": "Updating the Data Samples Failed",
+        "message": "Updating the Data Samples has failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "failedToAddNewDataSample": {
+        "title": "Failed to Add New Data Sample",
+        "message": "Adding a new data sample has failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "editFieldNameFailed": {
+        "title": "Failed to Edit Field Name",
+        "message": "Editing Field Name has Failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "addNewFieldFailed": {
+        "title": "Failed to Add New Field",
+        "message": "Adding a New Field Name has Failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "failedToDiscardDataSource": {
+        "title": "Failed to Discard Data Source",
+        "message": "Deleting the Data Source has Failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "failedToRemoveDataSample": {
+        "title": "Failed to Remove Data Sample",
+        "message": "Removing the Data Sample has Failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "failedToRemoveProperty": {
+        "title": "Failed to Remove Property",
+        "message": "Removing the Property has Failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "failedToEditFieldName": {
+        "title": "Failed to Edit Field Name",
+        "message": "Editing the Field Name has Failed, click the help icon for more information.",
+        "errorNumber": "503"
+    },
+    "failedToFinalizeWizard": {
+        "title": "Failed to Finalize Schema Creation",
+        "message": "The Wizard Failed to Create the Schema, click the help icon for more information.",
+        "errorNumber": "503"
+    }
+,
+    "removeDataSampleFailed": {
+        "title": "Failed to Remove the Data Sample",
+        "message": "Removing the Data Sample has failed, click the help icon for more information.",
+        "errorNumber": "503"
+    }
+}

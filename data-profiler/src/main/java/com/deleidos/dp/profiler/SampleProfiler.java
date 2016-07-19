@@ -15,6 +15,7 @@ import com.deleidos.dp.beans.Interpretation;
 import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.enums.GroupingBehavior;
 import com.deleidos.dp.enums.Tolerance;
+import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.interpretation.InterpretationEngineFacade;
 import com.deleidos.dp.profiler.api.Profiler;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
@@ -30,6 +31,8 @@ import com.deleidos.dp.profiler.api.ProfilingProgressUpdateListener;
  *
  */
 public class SampleProfiler implements Profiler {
+	public static final String EMPTY_FIELD_NAME = "(Blank Field Name)";
+	private boolean hasCalledInterpretationEngine;
 	private GroupingBehavior groupingBehavior = GroupingBehavior.GROUP_ARRAY_VALUES;
 	private ProfilingProgressUpdateListener progressUpdateListener;
 	private static Logger logger = Logger.getLogger(SampleProfiler.class);
@@ -39,15 +42,16 @@ public class SampleProfiler implements Profiler {
 	private int recordsParsed;
 	protected Map<String, BundleProfileAccumulator> fieldMapping;
 
-	public SampleProfiler(String domainName, Tolerance tolerance) {
-		setDomain(domainName);
+	public SampleProfiler(String domainGuid, Tolerance tolerance) {
+		hasCalledInterpretationEngine = false;
+		setDomainName(domainGuid);
 		setTolerance(tolerance);
 		fieldMapping = new LinkedHashMap<String, BundleProfileAccumulator>();
 		recordsParsed = 0;
 	}
 
 	@Override
-	public int load(ProfilerRecord record) {
+	public void load(ProfilerRecord record) {
 		boolean isBinary = record instanceof BinaryProfilerRecord;
 		Map<String, List<Object>> normalizedMapping = record.normalizeRecord(groupingBehavior);
 		for(String key : normalizedMapping.keySet()) {
@@ -64,12 +68,10 @@ public class SampleProfiler implements Profiler {
 				bundleAccumulator = new BundleProfileAccumulator(accumulatorKey, domainName, tolerance);
 				fieldMapping.put(accumulatorKey, bundleAccumulator);
 			}
-			bundleAccumulator.setAccumulatePresence(!isBinary);
 			if(!values.isEmpty()) {
-				bundleAccumulator.accumulate(values.get(0));
-				bundleAccumulator.setAccumulatePresence(false);
+				bundleAccumulator.accumulate(values.get(0), !isBinary);
 				for(int i = 1; i < values.size(); i++) {
-					bundleAccumulator.accumulate(values.get(i));
+					bundleAccumulator.accumulate(values.get(i), false);
 				}
 			}
 
@@ -81,7 +83,7 @@ public class SampleProfiler implements Profiler {
 		if(progressUpdateListener != null) {
 			progressUpdateListener.handleProgressUpdate(record.recordProgressWeight());
 		}
-		return recordsParsed;
+		return;
 	}
 
 	/**
@@ -110,10 +112,6 @@ public class SampleProfiler implements Profiler {
 	public DataSample asBean() {
 		DataSample dataSample = new DataSample();
 		dataSample.setRecordsParsedCount(recordsParsed);
-		/*dataSample.setDsGuid(getSourceGuid());
-		dataSample.setDsFileName(getSource());
-		dataSample.setDsFileType(getMediaType());*/
-
 		Map<String, Profile> dsProfile = new LinkedHashMap<String, Profile>();
 
 		Set<String> accKeys = fieldMapping.keySet();
@@ -130,13 +128,19 @@ public class SampleProfiler implements Profiler {
 				continue;
 			}
 
-			// multiple geo pairs will mess this up 
+			accKey = accKey.isEmpty() ? EMPTY_FIELD_NAME : accKey;
 			dsProfile.put(accKey, profile);
 		}
 
-		Domain domain = new Domain();
-		domain.setName(this.getDomain());
-		dsProfile = InterpretationEngineFacade.getInstance().interpret(domain, dsProfile);
+		if(!hasCalledInterpretationEngine) {
+			try {
+				dsProfile = InterpretationEngineFacade.getInstance().interpret(domainName, dsProfile);
+			} catch (DataAccessException e) {
+				logger.error("Could not interpret data sample.");
+				logger.error(e);
+			}
+			hasCalledInterpretationEngine = true;
+		}
 
 		int numLats = 0;
 		int numLngs = 0;
@@ -152,40 +156,17 @@ public class SampleProfiler implements Profiler {
 
 		numGeoSpatialQueries = Math.min(numLats, numLngs);
 
+		dsProfile = DisplayNameHelper.determineDisplayNames(dsProfile);
 		dataSample.setDsProfile(dsProfile);
 
 		return dataSample;
 	}
 
-	/*public String getSourceGuid() {
-		return sampleGuid;
-	}
-
-	public void setSourceGuid(String sourceGuid) {
-		this.sampleGuid = sourceGuid;
-	}
-
-	public String getSource() {
-		return sampleName;
-	}
-
-	public void setSource(String source) {
-		this.sampleName = source;
-	}
-
-	public String getMediaType() {
-		return mediaType;
-	}
-
-	public void setMediaType(String mediaType) {
-		this.mediaType = mediaType;
-	}*/
-
-	public String getDomain() {
+	public String getDomainGuid() {
 		return domainName;
 	}
 
-	public void setDomain(String domainName) {
+	public void setDomainName(String domainName) {
 		this.domainName = domainName;
 	}
 

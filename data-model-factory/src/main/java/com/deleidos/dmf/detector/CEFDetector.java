@@ -62,52 +62,6 @@ public class CEFDetector extends AbstractMarkSupportedAnalyticsDetector {
 		}
 	}
 
-	/*@Override
-	public MediaType detect(InputStream input, Metadata metadata)
-			throws IOException {
-		MediaType type = null;
-		TemporaryResources tmp = new TemporaryResources();
-
-		TikaInputStream tis = TikaInputStream.get(DetectorUtils.convertStreamToTmpFile(input), tmp);
-
-		//input.mark(Integer.MAX_VALUE);
-		StringBuilder firstSevenPipes = new StringBuilder();
-		StringBuilder rawKeyValuePairs = new StringBuilder();
-		String[] headerSplit = new String[2];
-		int pipeCount = 0;
-		char lastChar = ' ';
-		int n = 0;
-		try {
-			while((n = tis.read()) > -1) {
-				char c = (char)n;
-				if(lastChar != '\\' && c=='|') pipeCount++;
-				else if(n == 10 || c == '\n' || c == '\r') break;
-				firstSevenPipes.append(c);
-				if(pipeCount == 7) {
-					rawKeyValuePairs.append(c);
-					break;
-				}
-				lastChar = c;
-			}
-			headerSplit[0] = firstSevenPipes.toString();
-			while((n = tis.read()) > -1) {
-				char c = (char)n;
-				if(n == 10 || c == '\n' || c == '\r') break;
-				rawKeyValuePairs.append(c);
-				lastChar = c;
-			}
-			headerSplit[1] = rawKeyValuePairs.toString();
-		} finally {
-			tmp.close();
-		}
-		//input.reset();
-		if(pipeCount == 7) {
-			return CONTENT_TYPE;
-		} else {
-			return null;
-		}
-	}*/
-
 	@Override
 	public boolean closeOnBinaryDetection(InputStream inputStream) throws IOException {
 		boolean binary = testIsBinary(inputStream, 2000, .30f);

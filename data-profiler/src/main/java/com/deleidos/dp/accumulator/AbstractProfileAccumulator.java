@@ -1,26 +1,27 @@
 package com.deleidos.dp.accumulator;
 
 import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import com.deleidos.dp.beans.Detail;
 import com.deleidos.dp.beans.Interpretation;
 import com.deleidos.dp.beans.Profile;
+import com.deleidos.dp.beans.StringDetail;
 import com.deleidos.dp.calculations.MetricsCalculationsFacade;
-import com.deleidos.dp.domain.JavaDomain;
 import com.deleidos.dp.enums.DetailType;
-import com.deleidos.dp.interpretation.AbstractJavaInterpretation;
-import com.deleidos.dp.interpretation.JavaLatitudeInterpretation;
-import com.deleidos.dp.interpretation.JavaLongitudeInterpretation;
-import com.deleidos.dp.interpretation.JavaUnknownInterpretation;
+import com.deleidos.dp.exceptions.MainTypeException;
+import com.deleidos.dp.histogram.AbstractBucketList;
+import com.deleidos.dp.profiler.DefaultProfilerRecord;
 
 public abstract class AbstractProfileAccumulator implements Accumulator<Profile> {
+	public static final String EMPTY_FIELD_NAME_INDICATOR = "(Blank Field Name)";
 	public static final MathContext DEFAULT_CONTEXT = MathContext.DECIMAL128;
 	private static Logger logger = Logger.getLogger(AbstractProfileAccumulator.class);
-	private String fieldName;
+	protected String fieldName;
 	protected int[] detailTypeTracker;
+	protected List<Object> distinctValues;
 	//protected JavaDomain domain;
 	private boolean hasGeoSpatialData = false;
 	private boolean isFinished;
@@ -33,35 +34,54 @@ public abstract class AbstractProfileAccumulator implements Accumulator<Profile>
 	}
 
 	public AbstractProfileAccumulator(String key) {
+		fieldName = key;
 		isFinished = false;
 		profile = new Profile();
 		profile.setInterpretation(Interpretation.UNKNOWN);
-		this.fieldName = key;
 		detailTypeTracker = new int[DetailType.values().length]; 
 		presenceCount = 0;
+		distinctValues = new ArrayList<Object>();
 	}
 
 	public AbstractProfileAccumulator(String key, Object firstValue) {
 		this(key);
-		initFirstValue(firstValue);
+		try {
+			initFirstValue(firstValue);
+		} catch (MainTypeException e) {
+			logger.error("Error accumulating first value.", e);
+		}
 	}
 
 	public abstract Detail getDetail();
 
-	public abstract void setDetail(Detail metrics);
+	public void initializeFromExistingProfile(Profile profile) {
+		this.profile = profile;
+		this.setPresenceCount((int)(profile.getDetail().getWalkingCount().intValue() * profile.getPresence()));
+	}
 
 	public boolean isEmpty() {
 		return (getState().getPresence() < 0) ? true : false;
 	}
 
-	@Override
-	public abstract boolean accumulate(Object jsonObject);
+	public void accumulate(Object object) {
+		try {
+			accumulate(this.getState().getMainTypeClass().createAppropriateObject(object), true);
+		} catch (MainTypeException e) {
+			logger.error(e);
+		}
+	}
 
-	public void accumulate(Object jsonObject, boolean accumulatePresence) {
+	@Override
+	public void accumulate(Object object, boolean accumulatePresence) throws MainTypeException {
 		if(accumulatePresence) {
 			presenceCount++;
 		}
-		accumulate(jsonObject);
+	}
+
+	public void accumulateNumDistinctValues(Object object) {
+		if(!distinctValues.contains(object)) {
+			distinctValues.add(object);
+		}
 	}
 
 	public boolean hasGeoSpatialData() {
@@ -77,19 +97,40 @@ public abstract class AbstractProfileAccumulator implements Accumulator<Profile>
 	}
 
 	public void setHasGeoSpatialData(boolean hasGeoSpatialData) {
-		if(hasGeoSpatialData) {
-			getState().getDetail().getBucketListIfApplicable().setType("map");
-		}
+		/*if(hasGeoSpatialData) {
+			getState().getDetail().getBucketListIfApplicable().ifPresent(x->x.setType("map"));
+		}*/
 		this.hasGeoSpatialData = hasGeoSpatialData;
 	}
 
 	@Override
 	public void finish() {
 		isFinished = true;
-		String detailType = MetricsCalculationsFacade.getDetailTypeFromDistribution(getState().getMainType(), getDetailTypeTracker()).toString();
 		Detail detail = getDetail();
-		detail.setDetailType(detailType);
+		if(detail.getDetailType() == null) {
+			String detailTypeString = MetricsCalculationsFacade.getDetailTypeFromDistribution(getState().getMainType(), getDetailTypeTracker()).toString();
+			detail.setDetailType(detailTypeString);
+		}
 		getState().setDetail(detail);
+		getState().setExampleValues(getDistinctValuesAsExampleValuesList());
+	}
+
+	public List<Object> getDistinctValuesAsExampleValuesList() {
+		final int maxExampleListSize = 50;
+		List<Object> exampleValues = null;
+		if(distinctValues != null) {
+			exampleValues = new ArrayList<Object>();
+			//purposely lose precision
+			int exampleListSize = (distinctValues.size() > maxExampleListSize) ? maxExampleListSize : distinctValues.size();
+			float valueChooserRange = (float)distinctValues.size()/(float)exampleListSize;
+			for(int i = 0; i < exampleListSize; i++) {
+				exampleValues.add(distinctValues.get((int)valueChooserRange*i));
+			}
+			return exampleValues;
+		} else {
+			logger.error("Null distinct values object while trying to generate example values.");
+			return exampleValues;
+		}
 	}
 
 	public int[] getDetailTypeTracker() {
@@ -114,5 +155,13 @@ public abstract class AbstractProfileAccumulator implements Accumulator<Profile>
 
 	public void setFinished(boolean isFinished) {
 		this.isFinished = isFinished;
+	}
+
+	public List<Object> getDistinctValues() {
+		return distinctValues;
+	}
+
+	public void setDistinctValues(List<Object> distinctHashes) {
+		this.distinctValues = distinctHashes;
 	}
 }

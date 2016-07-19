@@ -39,10 +39,9 @@ public class CSVDetector extends AbstractMarkSupportedAnalyticsDetector {
 	private static final Logger logger = Logger.getLogger(CSVDetector.class);
 	public static final MediaType CONTENT_TYPE = MediaType.text("csv");
 	private char separator = ',';
-	public StringBuilder err = new StringBuilder();
 	private int startAvailable;
 	protected BufferedReader br;
-	
+
 	@Override
 	public Set<MediaType> getDetectableTypes() {
 		return Collections.singleton(CONTENT_TYPE);
@@ -67,7 +66,7 @@ public class CSVDetector extends AbstractMarkSupportedAnalyticsDetector {
 		}
 		return CONTENT_TYPE;
 	}
-	
+
 	private class LineValidator {
 		private int matcherCount = -1;
 		private int commaCount;
@@ -83,14 +82,14 @@ public class CSVDetector extends AbstractMarkSupportedAnalyticsDetector {
 				if(isValid == true) {
 					return true;
 				} else {
-					err.append("Stream completed but invalid format detected.");
+					//logger.debug("Stream completed but invalid format detected.");
 					return false;
 				}
 			} else {
 				if(commaCount == matcherCount) { 
 					return true;
 				} else {
-					err.append("Line separator count does not match header.");
+					//logger.debug("Line separator count does not match header.");
 					return false;
 				}
 			}
@@ -112,7 +111,7 @@ public class CSVDetector extends AbstractMarkSupportedAnalyticsDetector {
 			return isValid;
 		}
 
-		public boolean load(String line) {
+		public boolean load(String line) throws IOException {
 			StringReader stringReader = new StringReader(line);
 			if(line == null) {
 				complete = true;
@@ -125,75 +124,71 @@ public class CSVDetector extends AbstractMarkSupportedAnalyticsDetector {
 			boolean valid = true;
 			int n = 0;
 			char lastChar = (char)n;
-			try {
-				while((n = stringReader.read()) > -1) {
-					char c = (char)n;
-					if(newFieldState) {
-						if(c==' '){
-							//ignore whitespace
-						} else if(c=='\"') {
-							newFieldState = false;
-							doubleQuoteEnclosedState = true;
-							quotedState = true;
-						} else if(c == separator) {
+			while((n = stringReader.read()) > -1) {
+				char c = (char)n;
+				if(newFieldState) {
+					if(c==' '){
+						//ignore whitespace
+					} else if(c=='\"') {
+						newFieldState = false;
+						doubleQuoteEnclosedState = true;
+						quotedState = true;
+					} else if(c == separator) {
+						commaCount++;
+						newFieldState = true;
+					} else if(n == 10 || n == 13) {
+						if(firstFieldState) {
+							//skip empty line
+						} else {
+							//logger.debug("Invalid format: separator detected at the end of a line.");
+							//setInvalid();
+							break;
+						}
+					} else {
+						newFieldState = false;
+						doubleQuoteEnclosedState = false;
+					}
+				} else {
+					if(doubleQuoteEnclosedState) {
+						if(quotedState) {
+							if(c == '\"') {
+								quotedState = false;
+							} 
+						} else {
+							if(c == '\"') {
+								quotedState = true;
+							} else if(c == separator) {
+								commaCount++;
+								newFieldState = true;
+							} else if(n == 13 || n == 10) {
+
+							}
+						}
+					} else { 
+						if(c=='\"') {
+							setInvalid();
+							//logger.debug("Invalid format: Quotation detected in the middle of a field name.");
+							break;
+						} else if(c==separator) {
 							commaCount++;
 							newFieldState = true;
 						} else if(n == 10 || n == 13) {
-							if(firstFieldState) {
-								//skip empty line
-							} else {
-								err.append("Invalid format: separator detected at the end of a line.");
-								setInvalid();
-								break;
-							}
-						} else {
-							newFieldState = false;
-							doubleQuoteEnclosedState = false;
-						}
-					} else {
-						if(doubleQuoteEnclosedState) {
-							if(quotedState) {
-								if(c == '\"') {
-									quotedState = false;
-								} 
-							} else {
-								if(c == '\"') {
-									quotedState = true;
-								} else if(c == separator) {
-									commaCount++;
-									newFieldState = true;
-								} else if(n == 13 || n == 10) {
-
-								}
-							}
-						} else { 
-							if(c=='\"') {
-								setInvalid();
-								err.append("Ivalid format: Quotation detected in the middle of a field name.");
-								break;
-							} else if(c==separator) {
-								commaCount++;
-								newFieldState = true;
-							} else if(n == 10 || n == 13) {
-								if(matcherCount > -1) {
-									if(commaCount == 0) {
-										err.append("Invalid format: First line detected with 0 separators.");
+							if(matcherCount > -1) {
+								if(commaCount == 0) {
+									//logger.debug("Invalid format: First line detected with 0 separators.");
+									setInvalid();
+								} else {
+									if(commaCount != matcherCount) {
+										//logger.debug("Separator count on line does not match set count.  Set count: " + matcherCount + " and separators on line: " + commaCount);
 										setInvalid();
-									} else {
-										if(commaCount != matcherCount) {
-											err.append("Separator count on line does not match set count.  Set count: " + matcherCount + " and separators on line: " + commaCount);
-											setInvalid();
-										}
 									}
-								} 
-								break;
-							}
+								}
+							} 
+							break;
 						}
 					}
-					lastChar = c;
 				}
-			} catch (IOException e) {
-				logger.error(e);
+				lastChar = c;
 			}
 			if(!quotedState) {
 				if(matcherCount < 1) {
@@ -201,7 +196,8 @@ public class CSVDetector extends AbstractMarkSupportedAnalyticsDetector {
 						setInvalid();
 					}
 					if(lastChar==separator) {
-						setInvalid();
+						// allow lastChar to be separator
+						//setInvalid();
 					}
 					setMatchCount(commaCount);
 				}
@@ -229,7 +225,7 @@ public class CSVDetector extends AbstractMarkSupportedAnalyticsDetector {
 			commaCount = 0;
 			return c;
 		}
-		
+
 		private void loadNextCompleteCSVLine(BufferedReader br) throws IOException {
 			StringBuilder fullCSVLine = new StringBuilder();
 			String line;
@@ -259,7 +255,7 @@ public class CSVDetector extends AbstractMarkSupportedAnalyticsDetector {
 		pBuffered.mark(lookAheadBufferSize);
 		char[] cbuf = new char[lookAheadBufferSize];
 		pBuffered.read(cbuf);
-		
+
 		boolean hasLineBreak = false;
 		for(char c : cbuf) {
 			if(c == '\r' || c == '\n' || String.valueOf(c) == "\r\n") {

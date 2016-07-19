@@ -1,0 +1,207 @@
+<div style="margin: 6px; width: 100%;">
+    <h4 style="margin: 2px 0px;">Schema Wizard: Match Fields Step</h4>
+    <div class="panel-primary"
+         style="width: 604px; margin: 0 auto; margin-top: -25px; margin-bottom: 2px; padding: 1px;">
+        <img style="border: none;" src="assets/img/wizard-match.png"/>
+    </div>
+    <div id="wizardMatchFieldsContainer"
+         class="panel-primary container" style="width:99%; padding:6px;">
+        <div class="row">
+            <div id="resizePanelDiv" class="col-xs-4 panel-group" style="margin-bottom: 0px;">
+                <div class="panel panel-info" style="padding: 0px 3px;">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"
+                            tour-step
+                            tour-step-title={{inspectDataSourceTour.step2.title}}
+                            tour-step-content={{inspectDataSourceTour.step2.message}}
+                            tour-step-order="410"
+                            tour-step-placement="bottom"
+                            tour-step-orphan="false"
+                            tour-step-backdrop="false">
+                            Data Source Profiles
+                            <img id="collapseImage" ng-click="collapseDetailsPanels()"
+                                 style="border: none; float: right;"
+                                 src="assets/img/expand-panel-16x16.png"
+                                 tour-step
+                                 tour-step-title={{inspectDataSourceTour.step3.title}}
+                                 tour-step-content={{inspectDataSourceTour.step3.message}}
+                                 tour-step-order="415"
+                                 tour-step-placement="right"
+                                 tour-step-orphan="false"
+                                 tour-step-backdrop="false">
+                            <img style="border: none; float: right; margin-right: 10px;"
+                                 src="assets/img/blueQuestionMark_whiteCalloutBg-16x16.png"
+                                 uib-tooltip="Single click on a data sample property
+                                          to display its details in details panel 1. Double-click on
+                                          a data sample property to display its details in details
+                                          panel 2."
+                                 tooltip-placement="bottom">
+                            <img
+                                style="border: none; float: right; margin-right: 10px;"
+                                src="assets/img/blue-tour-bus-16x16.png"
+                                uib-tooltip="Take a tour of the Match Fields Page"
+                                tooltip-placement="bottom"
+                                ng-click="tour.startAt('400')"
+                                tour-step-template-url="'schema-wizard/schema-wizard.tour-first-step.template.html'"
+                                tour-step="400"
+                                tour-step-title={{inspectDataSourceTour.step1.title}}
+                                tour-step-order="400"
+                                tour-step-content={{inspectDataSourceTour.step1.message}}
+                                tour-step-orphan="true"
+                                tour-step-backdrop="false">
+                        </h3>
+                    </div>
+                    <div id="wizardMatchFieldsProfilesPanelBody"
+                         class="panel-body" style="height: 222px; overflow-y: scroll;">
+                        <table id="data-sources-table" class="table table-striped drag-drop" fixed-header>
+                            <thead id="customTableHeader" style="margin-top:-2px;"
+                                   tour-step
+                                   tour-step-title={{inspectDataSourceTour.step4.title}}
+                                   tour-step-content={{inspectDataSourceTour.step4.message}}
+                                   tour-step-order="420"
+                                   tour-step-placement="bottom"
+                                   tour-step-orphan="false"
+                                   tour-step-backdrop="false">
+                            <tr>
+                                <th class="sticky" tour-step
+                                    tour-step-title={{inspectDataSourceTour.step5.title}}
+                                    tour-step-content={{inspectDataSourceTour.step5.message}}
+                                    tour-step-order="430"
+                                    tour-step-placement="right"
+                                    tour-step-orphan="false"
+                                    tour-step-backdrop="false">Schema Property</th>
+                                <th class="sticky" ng-repeat="ds in model.dataSamples"
+                                    style="line-height: 16px; vertical-align: top;">
+                                    <span uib-tooltip="{{ds.dsName}}"
+                                          tooltip-placement="top">
+                                        {{ds.dsName.slice(0, 20)}}&nbsp;
+                                    </span>
+                                    <button class="btn-graphic-only btn-remove" type="button"
+                                            ng-show="ds"
+                                            ng-model="singleModel"
+                                            uib-tooltip="Discard data sample"
+                                            tooltip-placement="left"
+                                            ng-click="removeDs($index)">
+                                    </button>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tr ng-repeat="(property, linkedDs) in model.properties">
+                                <td ng-class="{'narrow-column': $first}"
+                                    ng-style="highlightIfInDetails(model.properties[property])">
+                                    <span>
+                                        <ul style="margin-bottom: 0px; list-style-type: none; padding: 0px;">
+                                            <li dnd-draggable="ds.dsProfile[property]"
+                                                dnd-effect-allowed="copy"
+                                                dnd-copied="dragEnd(property, ds.dsProfile[property])"
+                                                dnd-selected="dropzoneModels.selected = ds.dsProfile[property]">
+                                                <label class="btn-property" style="font-size: 100%;"
+                                                       uib-tooltip="{{property}}"
+                                                       tooltip-placement="right">
+                                                    {{model.properties[property]['display-name']}}
+                                                    &nbsp;
+                                                </label>
+                                                <button class="btn-graphic-only btn-remove" type="button"
+                                                        ng-model="singleModel"
+                                                        uib-tooltip="Remove property from schema"
+                                                        tooltip-placement="right"
+                                                        ng-click="removeProperty(property)">
+                                                </button>
+                                                <div ng-show="modifySchemaMode === true">
+                                                    <!--keep the following on the same line to prevent spaces between values-->
+                                                    {{model.properties[property]["main-type"]}}<span
+                                                    ng-show="model.properties[property]['main-type']">:{{model.properties[property]["detail"]["detail-type"]}}</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </span>
+                                </td>
+                                <td ng-repeat="ds in model.dataSamples"
+                                    ng-style="highlightIfInDetails(ds.dsProfile[property])">
+                                    <span class="btn-property">
+                                        <label class="btn-property"
+                                               style="font-size: 100%; font-weight: normal;
+                                                      -webkit-user-select: none; -moz-user-select: none;
+                                                      -ms-user-select: none;"
+                                               ng-style="highlightIfInDetails(ds.dsProfile[property])"
+                                               unselectable="on"
+                                               single-click="showInDetails1(ds, property, false)"
+                                               ng-dblclick="showInDetails2(ds, property);">
+                                            <div ng-show="ds.dsProfile[property]['original-name']"
+                                                 style="cursor: pointer;">
+                                                <label style="font-size: 100%; cursor: pointer;"
+                                                       ng-style="highlightIfInDetails(ds.dsProfile[property])">
+                                                    {{ds.dsProfile[property]['original-name']}}
+                                                </label>
+                                            </div>
+                                            <!--keep the following on the same line to prevent spaces between values-->
+                                            {{ds.dsProfile[property]["main-type"]}}<span
+                                            ng-show="ds.dsProfile[property]['main-type']">:{{ds.dsProfile[property]["detail"]["detail-type"]}}</span>
+                                            <span class="btn-merge-indicator"
+                                                  ng-show="ds.dsProfile[property]['merged-into-schema']">
+                                                &nbsp;&nbsp;&nbsp;
+                                            </span>
+                                        </label>
+                                        <span class="btn-use-check"
+                                              ng-show="ds.dsProfile[property]['used-in-schema']">
+                                            &nbsp;&nbsp;&nbsp;
+                                        </span>
+                                        <br>
+                                        <select name="altNameSelected" id="altNameSelected"
+                                                ng-options="option.name for option in ds.dsProfile[property]['match-names'].availableOptions track by option.id"
+                                                ng-model="ds.dsProfile[property]['match-names'].selectedOption"
+                                                ng-show="ds.dsProfile[property]['match-names'].availableOptions.length > 0"
+                                                ng-change="changeMatchedProperty(ds, property)">
+                                        </select>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div ng-hide="hidePanel" class="col-xs-4 panel-group" style="padding: 0px 5px; margin-bottom: 0px; margin-left: -14px;"
+                 tour-step
+                 tour-step-title={{inspectDataSourceTour.step7.title}}
+                 tour-step-content={{inspectDataSourceTour.step7.message}}
+                 tour-step-order="440"
+                 tour-step-placement="left"
+                 tour-step-orphan="false"
+                 tour-step-backdrop="false">
+                <div details-panel panel-index="1" detail-models-panel="detailModels.detailPanels.panel1"></div>
+            </div>
+            <div ng-hide="hidePanel" class="col-xs-4 panel-group" style="padding: 0px; margin-bottom: 0px;"
+                 tour-step
+                 tour-step-title={{inspectDataSourceTour.step8.title}}
+                 tour-step-content={{inspectDataSourceTour.step8.message}}
+                 tour-step-order="450"
+                 tour-step-placement="left"
+                 tour-step-orphan="false"
+                 tour-step-backdrop="false">
+                <div details-panel panel-index="2" detail-models-panel="detailModels.detailPanels.panel2"></div>
+            </div>
+        </div>
+        <ng-include src="'wizard/wizard.match.legend.html'"
+                    style="position: absolute; left: 24px; bottom: 44px;"></ng-include>
+    </div>
+
+    <button class="btn btn-primary"
+            style="position: absolute; bottom: 36px; right: 18px;"
+            ng-click="navigateTo('/startup')">
+        Cancel
+    </button>
+    <button class="btn btn-primary"
+            style="position: absolute; bottom: 36px; right: 92px;"
+            uib-tooltip="Create the schema"
+            tooltip-placement="left"
+            ng-click="wizardStateControl('wizard-finalize-schema')"
+            tour-step
+            tour-step-title={{inspectDataSourceTour.step10.title}}
+            tour-step-content={{inspectDataSourceTour.step10.message}}
+            tour-step-order="490"
+            tour-step-placement="top"
+            tour-step-orphan="false"
+            tour-step-backdrop="false">
+        Next
+    </button>
+</div>

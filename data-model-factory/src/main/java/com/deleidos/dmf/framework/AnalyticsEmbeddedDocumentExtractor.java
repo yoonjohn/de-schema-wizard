@@ -28,26 +28,26 @@ import org.xml.sax.SAXException;
 import com.deleidos.dmf.analyzer.AnalyzerProgressUpdater;
 import com.deleidos.dmf.exception.AnalyticsInitializationRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsRuntimeException;
+import com.deleidos.dmf.exception.AnalyticsUndetectableTypeException;
 import com.deleidos.dmf.progressbar.ProgressBar;
 import com.deleidos.dp.h2.H2SampleDataAccessObject;
 import com.deleidos.dp.profiler.api.Profiler;
 
 public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtractor {
+	public static final String RESOURCE_PATH_KEY = "resource-abs-path";
 	private static final Logger logger = Logger.getLogger(AnalyticsEmbeddedDocumentExtractor.class);
-	//private boolean shouldParseEmbedded;
 	private TikaProfilerParameters parentParameters;
 	private boolean isAllContentExtracted;
 	private List<ExtractedContent> extractedContents;
 
 	public AnalyticsEmbeddedDocumentExtractor(TikaProfilerParameters params) {
 		this.parentParameters = params;
-		if(params instanceof TikaSchemaProfilableParameters) {
+		if(params instanceof TikaSchemaAnalyzerParameters) {
 			this.isAllContentExtracted = true;
 		} else {
 			this.isAllContentExtracted = false;
 		}
 		this.extractedContents = new ArrayList<ExtractedContent>();
-		//this.shouldParseEmbedded = true;
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 			TikaInputStream tis = TikaInputStream.get(stream, tmp);
 			try {
 				MediaType type = detector.detect(tis, metadata);
-				metadata.set(Metadata.CONTENT_TYPE, type.toString());
+				metadata.set(Metadata.CONTENT_TYPE, type == null ? MediaType.OCTET_STREAM.toString() : type.toString());
 
 				File embeddedDocumentFile = new File(parentParameters.getExtractedContentDir(), name);
 				embeddedDocumentFile = writeToFile(embeddedDocumentFile, tis, handler, metadata);
@@ -92,7 +92,6 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 
 					Parser nestedContentExtractionParser = ((AnalyticsDefaultParser)nestedParser).getParser(metadata, parentParameters);
 					if(nestedContentExtractionParser instanceof TikaProfilableParser) {
-						//logger.info("Nested parser is an instance of TikaProfilable.  All extractable content fully removed from " + name + ".");
 						return;
 					} else {
 						logger.info("Further extraction with " + nestedContentExtractionParser.getClass().getSimpleName() +".");
@@ -107,7 +106,7 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 						nestedContentExtractionParser.parse(nestedTis, handler, metadata, params);
 						this.extractedContents.addAll(nestedAnalyticsExtractor.getExtractedContents());
 					}
-				}			
+				}		
 			} catch (Exception e) {
 				logger.error(e);
 				throw new AnalyticsRuntimeException("Error extracting embedded document.", e);
@@ -176,7 +175,7 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 		File extractedContentDirectory;
 		if(parentParameters.getExtractedContentDir() == null) {
 			extractedContentDirectory = new File(fileLocation.getParent(), fileLocation.getName().substring(0, fileLocation.getName().lastIndexOf('.')));
-			if(extractedContentDirectory.isDirectory() && extractedContentDirectory.exists()) {
+			if(extractedContentDirectory.exists()) {
 				Set<String> existingSampleNames = new HashSet<String>();
 				for(String file : extractedContentDirectory.getParentFile().list()) {
 					existingSampleNames.add(file);
@@ -214,15 +213,15 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 
 	public TikaProfilerParameters initializeTikaProfilingParameters(InputStream inputStream, ContentHandler handler, Metadata metadata) throws IOException {
 		TikaProfilerParameters parameters;
-		if(parentParameters instanceof TikaSampleProfilableParameters) {
-			TikaSampleProfilableParameters sampleParams = (TikaSampleProfilableParameters) parentParameters; 
-			parameters = new TikaSampleProfilableParameters(sampleParams.get(Profiler.class), sampleParams.get(AnalyzerProgressUpdater.class), 
+		if(parentParameters instanceof TikaSampleAnalyzerParameters) {
+			TikaSampleAnalyzerParameters sampleParams = (TikaSampleAnalyzerParameters) parentParameters; 
+			parameters = new TikaSampleAnalyzerParameters(sampleParams.get(Profiler.class), sampleParams.get(AnalyzerProgressUpdater.class), 
 					sampleParams.getUploadFileDir(), sampleParams.getGuid(), inputStream, handler, metadata); 
-			((TikaSampleProfilableParameters)parameters).setReverseGeocodingCallsEstimate(sampleParams.getReverseGeocodingCallsEstimate());
-		} else if(parentParameters instanceof TikaSchemaProfilableParameters) {
-			TikaSchemaProfilableParameters schemaParams = (TikaSchemaProfilableParameters) parentParameters;
-			parameters = new TikaSchemaProfilableParameters(schemaParams.get(Profiler.class), schemaParams.get(AnalyzerProgressUpdater.class), 
-					schemaParams.getUploadFileDir(), schemaParams.getGuid(), schemaParams.getUserModifiedSampleList());
+			((TikaSampleAnalyzerParameters)parameters).setReverseGeocodingCallsEstimate(sampleParams.getReverseGeocodingCallsEstimate());
+		} else if(parentParameters instanceof TikaSchemaAnalyzerParameters) {
+			TikaSchemaAnalyzerParameters schemaParams = (TikaSchemaAnalyzerParameters) parentParameters;
+			parameters = new TikaSchemaAnalyzerParameters(schemaParams.get(Profiler.class), schemaParams.get(AnalyzerProgressUpdater.class), 
+					schemaParams.getUploadFileDir(), schemaParams.getGuid(), schemaParams.getDomainName(), schemaParams.getUserModifiedSampleList());
 			parameters.setStream(inputStream);
 			parameters.setHandler(handler);
 			parameters.setMetadata(metadata);
@@ -263,7 +262,8 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 		}
 		public void setMetadata(Metadata metadata) {
 			this.metadata = metadata;
-			this.metadata.set(Metadata.CONTENT_LENGTH, String.valueOf(extractedFile.length())) ;
+			this.metadata.set(Metadata.CONTENT_LENGTH, String.valueOf(extractedFile.length()));
+			this.metadata.set(RESOURCE_PATH_KEY, extractedFile.getAbsolutePath());
 		}
 	}
 

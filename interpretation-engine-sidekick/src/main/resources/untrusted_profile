@@ -1,0 +1,52 @@
+#include <tunables/global>
+
+profile docker-untrusted flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+  
+  file,
+  umount,
+  capability,
+  
+  deny @{PROC}/{*,**^[0-9*],sys/kernel/shm*} wkx,
+  deny @{PROC}/sysrq-trigger rwklx,
+  deny @{PROC}/mem rwklx,
+  deny @{PROC}/kmem rwklx,
+  deny @{PROC}/kcore rwklx,
+
+  deny mount,
+  deny network,
+
+  deny /sys/[^f]*/** wklx,
+  deny /sys/f[^s]*/** wklx,
+  deny /sys/fs/[^c]*/** wklx,
+  deny /sys/fs/c[^g]*/** wklx,
+  deny /sys/fs/cg[^r]*/** wklx,
+  deny /sys/firmware/efi/efivars/** rwklx,
+  deny /sys/kernel/security/** rwklx,
+
+  deny /bin/** wl,
+  deny /boot/** wl,
+  deny /dev/** wl,
+  deny /etc/** wl,
+  deny /home/** wl,
+  deny /lib/** wl,
+  deny /lib64/** wl,
+  deny /media/** wl,
+  deny /mnt/** wl,
+  deny /opt/** wl,
+  deny /proc/** wl,
+  deny /root/** wl,
+  deny /sbin/** wl,
+  deny /srv/** wl,
+  deny /sys/** wl,
+  deny /usr/bin/** mrwklx,
+  deny /usr/local/bin/[^python] mrwklx,
+  deny /usr/local/sbin/* mrwklx,
+  deny /usr/sbin/* mrwklx,
+  
+  audit /tmp/** wl,
+
+  #/usr/local/bin/python rlix,
+  #python rlix
+
+}

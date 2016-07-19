@@ -20,4 +20,7 @@ public class AnalyticsRuntimeException extends RuntimeException {
 		super(string, e);
 	}
 
+	public AnalyticsRuntimeException(Throwable e) {
+		super(e);
+	}
 }

@@ -10,31 +10,30 @@ import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.deleidos.dp.enums.MainType;
 import com.deleidos.dp.enums.Tolerance;
+import com.deleidos.dp.exceptions.MainTypeException;
 
-public class BundleProfileAccumulator implements Accumulator<ArrayList<AbstractProfileAccumulator>> {
-	// TODO remove domain field since it is important only at the profiler level
+public class BundleProfileAccumulator implements Accumulator<List<AbstractProfileAccumulator>> {
 	private static final Logger logger = Logger.getLogger(BundleProfileAccumulator.class);
 	public static final int NUMBER_METRICS_INDEX = MainType.NUMBER.getIndex();
 	public static final int STRING_METRICS_INDEX = MainType.STRING.getIndex();
 	public static final int BINARY_METRICS_INDEX = MainType.BINARY.getIndex();
-	private static final int metricsCount = 3;
-	private boolean accumulatePresence;
+	private static final int METRICS_TYPES_COUNT = 3;
 	private Tolerance toleranceLevel = Tolerance.STRICT;
 	private String domainName;
 	private float binaryPercentageCutoff = .3f;
 	/**
 	 * The array the keeps track of data type determinations.  This is used to make a final decision after the first pass.
 	 */
-	public int[] dataTypeTracker;
-	private ArrayList<AbstractProfileAccumulator> metricsAccumulators;
+	private int[] dataTypeTracker;
+	private List<AbstractProfileAccumulator> metricsAccumulators;
 	private Profile bestGuessProfile;
 	private String fieldName;
 	private boolean hasGeospatialData;
-	
+
 	public BundleProfileAccumulator(String fieldName, String domainName, Tolerance tolerance) {
 		this.fieldName = fieldName;
 		dataTypeTracker = new int[MainType.values().length];
-		metricsAccumulators = new ArrayList<AbstractProfileAccumulator>(metricsCount);
+		metricsAccumulators = new ArrayList<AbstractProfileAccumulator>(METRICS_TYPES_COUNT);
 		setDomain(domainName);
 		setToleranceLevel(tolerance);
 		hasGeospatialData = false;
@@ -44,35 +43,35 @@ public class BundleProfileAccumulator implements Accumulator<ArrayList<AbstractP
 	}
 
 	public static int getMetricsCount() {
-		return metricsCount;
+		return METRICS_TYPES_COUNT;
 	}
 
 	public void nullifyMetricsAccumulator(int index) {
 		metricsAccumulators.set(index, null);
 	}
 
-	public ArrayList<AbstractProfileAccumulator> getProfiles() {
+	public List<AbstractProfileAccumulator> getProfiles() {
 		return metricsAccumulators;
 	}
 
 	public void setMetrics(ArrayList<AbstractProfileAccumulator> metrics) {
 		this.metricsAccumulators = metrics;
 	}
-	
+
 	private StringProfileAccumulator getStringProfileAccumulator() {
 		return (StringProfileAccumulator) metricsAccumulators.get(STRING_METRICS_INDEX);
 	}
-	
+
 	private NumberProfileAccumulator getNumberProfileAccumulator() {
 		return (NumberProfileAccumulator) metricsAccumulators.get(NUMBER_METRICS_INDEX);
 	}
-	
+
 	private BinaryProfileAccumulator getBinaryProfileAccumulator() {
 		return (BinaryProfileAccumulator) metricsAccumulators.get(BINARY_METRICS_INDEX);
 	}
 
 	public static int getMetricscount() {
-		return metricsCount;
+		return METRICS_TYPES_COUNT;
 	}
 
 	public boolean hasGeospatialData() {
@@ -89,64 +88,59 @@ public class BundleProfileAccumulator implements Accumulator<ArrayList<AbstractP
 	 * data types will be dropped during ingest.
 	 * @return The appropriate metrics for the given field.
 	 */
-	public Profile determineBestGuessProfile() {
+	private Profile determineBestGuessProfile() {
 		MainType type = MetricsCalculationsFacade.getDataTypeFromDistribution(dataTypeTracker, toleranceLevel);
 		if(type == null) {
 			return null;
 		}
 		Profile profile;
+		AbstractProfileAccumulator accumulator;
 		switch (type) {
-		case STRING: {
-			getStringProfileAccumulator().finish();
-			profile = getStringProfileAccumulator().getState();
-			hasGeospatialData = getStringProfileAccumulator().hasGeoSpatialData();
+		case STRING: 
+			accumulator = getStringProfileAccumulator();
 			nullifyMetricsAccumulator(NUMBER_METRICS_INDEX);
 			nullifyMetricsAccumulator(BINARY_METRICS_INDEX);
 			break;
-		}
-		case NUMBER: {
-			getNumberProfileAccumulator().finish();
-			profile = getNumberProfileAccumulator().getState();
-			hasGeospatialData = getNumberProfileAccumulator().hasGeoSpatialData();
-			profile.setMainType(MainType.NUMBER.toString());
-			NumberDetail nd = Profile.getNumberDetail(profile);
-			if(Double.isNaN(nd.getStdDev())) {
-				logger.info(getNumberProfileAccumulator().getFieldName());
-				logger.info(nd.getWalkingSquareSum());
-				logger.info(nd.getWalkingSum());
-				logger.info(nd.getAverage());
-				logger.info(nd.getWalkingCount());
-				logger.error("Standard Deviation not successfully calculated due to precision errors.  Treating as string value.");
-				getStringProfileAccumulator().finish();			
-				hasGeospatialData = getStringProfileAccumulator().hasGeoSpatialData();
-				profile = getStringProfileAccumulator().getState();
-				nullifyMetricsAccumulator(NUMBER_METRICS_INDEX);
-				nullifyMetricsAccumulator(BINARY_METRICS_INDEX);
-				break;
-			}
-			nullifyMetricsAccumulator(STRING_METRICS_INDEX);
+		case NUMBER: 
+			boolean precisionErrors = hasPrecisionErrors(getNumberProfileAccumulator());
+			accumulator = (precisionErrors) ? getStringProfileAccumulator() : getNumberProfileAccumulator();
+			nullifyMetricsAccumulator((precisionErrors) ? NUMBER_METRICS_INDEX : STRING_METRICS_INDEX);
 			nullifyMetricsAccumulator(BINARY_METRICS_INDEX);
 			break;
-		}
-		case BINARY: {
-			getBinaryProfileAccumulator().finish();
-			hasGeospatialData = getBinaryProfileAccumulator().hasGeoSpatialData();
-			profile = getBinaryProfileAccumulator().getState();
+		case BINARY: 
+			accumulator = getBinaryProfileAccumulator();
 			nullifyMetricsAccumulator(NUMBER_METRICS_INDEX);
 			nullifyMetricsAccumulator(STRING_METRICS_INDEX);
 			break;
-		}
-		default: {
+		default: 
 			logger.error("Not determined to be number, string, or binary.");
 			return null;
 		}
-		}
+		profile = accumulator.getState();
+		hasGeospatialData = accumulator.hasGeoSpatialData();
 		return profile;
 	}
 
+	private boolean hasPrecisionErrors(NumberProfileAccumulator npa) {
+		NumberDetail nd = Profile.getNumberDetail(npa.getState());
+		if(Double.isNaN(nd.getStdDev())) {
+			logger.error("Standard Deviation not successfully calculated due to precision errors.  Treating as string value.");
+			return true;
+		}
+		return false;
+	}
+
 	public Profile getBestGuessProfile() {
-		finish();
-		return bestGuessProfile;
+		if(bestGuessProfile != null) {
+			return bestGuessProfile;
+		} else {
+			finish();
+			return bestGuessProfile;
+		}
+	}
+
+	public void accumulate(Object value) {
+		accumulate(value, true);
 	}
 
 	/**
@@ -158,58 +152,56 @@ public class BundleProfileAccumulator implements Accumulator<ArrayList<AbstractP
 	 * incrementing is important in the final determination of type in MetricsBrain.determineProbableDataTypes(). 
 	 */
 	@Override
-	public boolean accumulate(Object value) {
+	public void accumulate(Object value, boolean accumulatePresence) {
 		if(value == null) {
-			return false;
+			return;
 		}
 		List<MainType> possibleTypes = MetricsCalculationsFacade.determineProbableDataTypes(value, binaryPercentageCutoff);
-		try {
-			//order is significant here
-			if(possibleTypes.contains(MainType.NUMBER)) {
-				dataTypeTracker[MainType.NUMBER.getIndex()]++;
-			} else if(possibleTypes.contains(MainType.BINARY)) {
-				dataTypeTracker[MainType.BINARY.getIndex()]++;
-			} else {
-				dataTypeTracker[MainType.STRING.getIndex()]++;
-			}
-			for(MainType possibleType : possibleTypes) {
+
+		//order is significant here
+		if(possibleTypes.contains(MainType.NUMBER)) {
+			dataTypeTracker[MainType.NUMBER.getIndex()]++;
+		} else if(possibleTypes.contains(MainType.BINARY)) {
+			dataTypeTracker[MainType.BINARY.getIndex()]++;
+		} else {
+			dataTypeTracker[MainType.STRING.getIndex()]++;
+		}
+		for(MainType possibleType : possibleTypes) {
+			try {
+				Object typeSensitiveValue = possibleType.createAppropriateObject(value);
 				int index = possibleType.getIndex();
 				AbstractProfileAccumulator a = metricsAccumulators.get(index);
 				if(a != null) {
-					a.accumulate(value, accumulatePresence);
-				} else {
-					if(index == NUMBER_METRICS_INDEX) {
-						AbstractProfileAccumulator apa = new NumberProfileAccumulator(fieldName, value);
-						metricsAccumulators.set(NUMBER_METRICS_INDEX, apa);
-						break;
-					}
-					else if(index == STRING_METRICS_INDEX) {
-						AbstractProfileAccumulator apa = new StringProfileAccumulator(fieldName, value);
-						metricsAccumulators.set(STRING_METRICS_INDEX, apa);
-						break;
-					}
-					else if(index == BINARY_METRICS_INDEX) {
-						AbstractProfileAccumulator apa = new BinaryProfileAccumulator(fieldName, value);
-						metricsAccumulators.set(BINARY_METRICS_INDEX, apa);
-						break;
-					}
+					a.accumulate(typeSensitiveValue, accumulatePresence);
+				} else if(index == NUMBER_METRICS_INDEX) {
+					a = new NumberProfileAccumulator(fieldName, typeSensitiveValue);
+					metricsAccumulators.set(NUMBER_METRICS_INDEX, a);
+				} else if(index == STRING_METRICS_INDEX) {
+					a = new StringProfileAccumulator(fieldName, typeSensitiveValue);
+					metricsAccumulators.set(STRING_METRICS_INDEX, a);
+				} else if(index == BINARY_METRICS_INDEX) {
+					a = new BinaryProfileAccumulator(fieldName, typeSensitiveValue);
+					metricsAccumulators.set(BINARY_METRICS_INDEX, a);
 				}
+				continue;
+			} catch (MainTypeException e) {
+				logger.warn(e);
 			}
-		} catch(Exception e) {
-			logger.error("Error accumulating " + value);
-			logger.error(e);
-			return false;
 		}
-		return true;
 	}
 
 	@Override
-	public ArrayList<AbstractProfileAccumulator> getState() {
+	public List<AbstractProfileAccumulator> getState() {
 		return metricsAccumulators;
 	}
 
 	@Override
 	public void finish() {
+		for(AbstractProfileAccumulator apa : getState()) {
+			if(apa != null) {
+				apa.finish();
+			}
+		}
 		bestGuessProfile = determineBestGuessProfile();
 	}
 
@@ -245,19 +237,23 @@ public class BundleProfileAccumulator implements Accumulator<ArrayList<AbstractP
 		this.domainName = domainName;
 	}
 
-	public boolean isAccumulatePresence() {
-		return accumulatePresence;
-	}
-
-	public void setAccumulatePresence(boolean accumulatePresence) {
-		this.accumulatePresence = accumulatePresence;
-	}
-
 	@Override
 	public boolean initFirstValue(Object value) {
 		return false;
 	}
 
-
+	public static Profile generateProfile(String fieldName, List<Object> exampleValues) throws MainTypeException {
+		//copy them over so the array supports removal
+		List<Object> copy = new ArrayList<Object>(exampleValues);
+		copy.removeIf(p -> p == null || p.toString().isEmpty());
+		if(copy.isEmpty()) {
+			throw new MainTypeException("No values provided.  Main type cannot be determined.");
+		}
+		BundleProfileAccumulator bundleAccumulator = new BundleProfileAccumulator(fieldName, null, Tolerance.STRICT);
+		for(Object value : copy) {
+			bundleAccumulator.accumulate(value);
+		}
+		return bundleAccumulator.getBestGuessProfile();
+	}
 
 }

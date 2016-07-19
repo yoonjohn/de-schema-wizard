@@ -56,23 +56,23 @@ public class SchemaWizardWebSocketUtility implements WebSocketApiPlugin, WebSock
 	 */
 	public void updateProgress(ProgressBar updateBean, String sessionId) {
 		try {
-		if(sessionId != null) {
-			if(sessionSocketBidirectionalMapping.containsKey(sessionId)) {
-				WebSocketServer.getInstance().send(updateBean, sessionSocketBidirectionalMapping.get(sessionId));
-			}
-		} 
+			if(sessionId != null) {
+				if(sessionSocketBidirectionalMapping.containsKey(sessionId)) {
+					WebSocketServer.getInstance().send(updateBean, sessionSocketBidirectionalMapping.get(sessionId));
+				}
+			} 
 		} catch (Exception e) {
 			logger.error(e);
 			logger.error("Progress update failed to send to session " + sessionId + ".");
 		}
 	}
-	
+
 	public void incrementProgressState(String sessionId) {
-		
+
 	}
-	
+
 	public void updateProgress(float currentUpdatePercentageCompleted, String sessionId) {
-		
+
 	}
 
 	public void associateSessionAndSocket(String sessionId, String socketId) {
@@ -117,15 +117,6 @@ public class SchemaWizardWebSocketUtility implements WebSocketApiPlugin, WebSock
 					SchemaWizardWebSocketUtility.getInstance().associateSessionAndSocket(sessionIdString, webSocketId);
 				}
 
-			} else if(request != null) {
-				SchemaWizardLongRunningTaskFacade longRunningTask = new SchemaWizardLongRunningTaskFacade(request);
-				try {
-					longRunningTask.processMessage();
-				} catch (Exception e) {
-					// process exception, throw back to front end
-					SchemaWizardWebSocketUtility.getInstance().buildMessage(new String(e.getMessage()), webSocketId);
-					logger.error(e);
-				}
 			} else {
 				logger.warn("Received unexpected message: " + message);
 			}

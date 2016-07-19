@@ -1,0 +1,78 @@
+<div class="well"
+     style="width: 99%; max-width: 700px; height: 24px; margin:0; padding: 2px; padding-top: 0px;">
+    <div class="viz-select"
+         style="margin-left: 6px; line-height: 10px;">
+        <form name="panel1VizSelect">
+            <label for="hbcBtn" style="margin-right: 1px;">Horizontal Bar Chart</label>
+            <input id="hbcBtn" type="radio" style="margin-right: 10px;" value="hbc"
+                   ng-model="currentSample.viz"
+                   onclick="this.blur();">
+            <label for="vbcBtn" style="margin-right: 1px;">Vertical Bar Chart</label>
+            <input id="vbcBtn" type="radio" style="margin-right: 10px;" value="vbc"
+                   ng-model="currentSample.viz"
+                   onclick="this.blur();">
+            <label for="gphBtn" style="margin-right: 1px;">Graph</label>
+            <input id="gphBtn" type="radio" style="margin-right: 10px;" value="gph"
+                   ng-model="currentSample.viz"
+                   onclick="this.blur();">
+            <label ng-show="profile['detail']['freq-histogram']['region-data']"
+                   for="mapBtn" style="margin-right: 1px;">Map</label>
+            <input id="mapBtn" type="radio" style="margin-right: 20px;" value="map"
+                   ng-show="profile['detail']['freq-histogram']['region-data']"
+                   ng-model="currentSample.viz"
+                   onclick="this.blur();">
+            <label ng-show="currentSample.viz == 'hbc'">
+                Values vs. Frequency
+            </label>
+            <label ng-show="currentSample.viz == 'vbc' ||
+                            currentSample.viz == 'gph'">
+                Frequency vs. Values
+            </label>
+        </form>
+    </div>
+    <div class="col-xs-12 well"
+         style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                max-height: 480px; overflow-y: auto;"
+         ng-show="currentSample.viz == 'hbc'">
+        <canvas id="panel1base" class="chart-base" height="400px"
+                chart-type="'horizontalbar'"
+                chart-labels="profile['detail']['freq-histogram'].labels"
+                chart-data="[profile['detail']['freq-histogram'].data]"
+                chart-legend="false"
+                chart-colours="['#008080']"
+                chart-legend="false"/>
+    </div>
+    <div class="col-xs-12 well"
+         style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                max-height: 480px; overflow-y: auto;"
+         ng-show="currentSample.viz == 'vbc'">
+        <canvas id="panel1bar" class="chart-bar" height="229px"
+                chart-series="[profile['detail']['freq-histogram'].series]"
+                chart-labels="profile['detail']['freq-histogram'].labels"
+                chart-data="[profile['detail']['freq-histogram'].data]"
+                chart-colours="['#008080']"
+                chart-legend="false"/>
+    </div>
+    <div class="col-xs-12 well"
+         style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                max-height: 480px; overflow-y: auto;"
+         ng-show="currentSample.viz == 'gph'">
+        <canvas id="panel1line" class="chart-line"  height="229px"
+                chart-series="[profile['detail']['freq-histogram'].series]"
+                chart-labels="profile['detail']['freq-histogram'].labels"
+                chart-data="[profile['detail']['freq-histogram'].data]"
+                chart-colours="['#008080']"
+                chart-legend="false"/>
+    </div>
+    <div class="col-xs-12 well"
+         style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                max-height: 480px; overflow-y: auto;"
+         ng-show="currentSample.viz == 'map'">
+        <div id="panel1map"
+             ng-controller="mapCtrl"
+             ng-show="currentSample.viz == 'map'"
+             google-chart
+             chart="createMap(700, 450, ['#00FF00'], profile['detail']['freq-histogram']['region-data'])"/>
+        </div>
+    </div>
+</div>

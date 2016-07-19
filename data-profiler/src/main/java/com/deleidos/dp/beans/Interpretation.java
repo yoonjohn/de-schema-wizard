@@ -1,77 +1,110 @@
 package com.deleidos.dp.beans;
 
-import com.deleidos.dp.interpretation.JavaLatitudeInterpretation;
-import com.deleidos.dp.interpretation.JavaLongitudeInterpretation;
-import com.deleidos.dp.interpretation.JavaUnknownInterpretation;
+import java.util.List;
+import java.util.Map;
+
+import com.deleidos.dp.interpretation.builtin.BuiltinLatitudeInterpretation;
+import com.deleidos.dp.interpretation.builtin.BuiltinLongitudeInterpretation;
+import com.deleidos.dp.interpretation.builtin.BuiltinUnknownInterpretation;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Interpretation {
 	public static Interpretation UNKNOWN = new Interpretation("Unknown");
-	private String interpretation;
-	private boolean quantized;
-	private boolean ordered;
-	private boolean categorical;
-	private boolean ordinal;
-	private boolean relational;
+	private String iDomainId;
+	private String iId;
+	private String iName;
+	private String iDescription;
+	private Map<String, Object> iConstraints;
+	private String iScript;
+	private List<String> iMatchingNames;
 	
 	public Interpretation() { }
 	
 	private Interpretation(String name) {
-		this.interpretation = name;
+		this.iName = name;
 	}
 	
 	public String getInterpretation() {
-		return interpretation;
+		return iName;
 	}
 	public void setInterpretation(String interpretation) {
-		this.interpretation = interpretation;
+		this.iName = interpretation;
 	}
-	public boolean isQuantized() {
-		return quantized;
-	}
-	public void setQuantized(boolean quantized) {
-		this.quantized = quantized;
-	}
-	public boolean isOrdered() {
-		return ordered;
-	}
-	public void setOrdered(boolean ordered) {
-		this.ordered = ordered;
-	}
-	public boolean isCategorical() {
-		return categorical;
-	}
-	public void setCategorical(boolean categorical) {
-		this.categorical = categorical;
-	}
-	public boolean isOrdinal() {
-		return ordinal;
-	}
-	public void setOrdinal(boolean ordinal) {
-		this.ordinal = ordinal;
-	}
-	public boolean isRelational() {
-		return relational;
-	}
-	public void setRelational(boolean relational) {
-		this.relational = relational;
-	}
-	
 
-	private static final transient String latInterpretationName = new JavaLatitudeInterpretation().getInterpretationName();
-	private static final transient String lonInterpretationName = new JavaLongitudeInterpretation().getInterpretationName();
-	private static final transient String unknownInterpretationName = new JavaUnknownInterpretation().getInterpretationName();
+	private static final transient String latInterpretationName = new BuiltinLatitudeInterpretation().getInterpretationName();
+	private static final transient String lonInterpretationName = new BuiltinLongitudeInterpretation().getInterpretationName();
+	private static final transient String unknownInterpretationName = new BuiltinUnknownInterpretation().getInterpretationName();
 	
 	public static boolean isLatitude(Interpretation interpretation) {
-		return interpretation.getInterpretation().equals(latInterpretationName);
+		return (interpretation == null) ? false : interpretation.getiName().contains("Latitude");
 	}
 	public static boolean isLongitude(Interpretation interpretation) {
-		return interpretation.getInterpretation().equals(lonInterpretationName);
+		return (interpretation == null) ? false : interpretation.getiName().contains("Longitude");
 	}
 	public static boolean isCoordinate(Interpretation interpretation) {
 		return isLatitude(interpretation) || isLongitude(interpretation);
 	}
 	public static boolean isUnknown(Interpretation interpretation) {
-		return interpretation.getInterpretation().equals(unknownInterpretationName);
+		return (interpretation == null) ? false : interpretation.getiName().equals(unknownInterpretationName);
+	}
+
+	public String getiId() {
+		return iId;
+	}
+
+	public void setiId(String iId) {
+		this.iId = iId;
+	}
+
+	public String getiName() {
+		return iName;
+	}
+
+	public void setiName(String iName) {
+		this.iName = iName;
+	}
+
+	public Map<String, Object> getiConstraints() {
+		return iConstraints;
+	}
+
+	public void setiConstraints(Map<String, Object> iConstraints) {
+		this.iConstraints = iConstraints;
+	}
+
+	public String getiScript() {
+		return iScript;
+	}
+
+	public void setiScript(String iScript) {
+		this.iScript = iScript;
 	}
 	
+	@JsonProperty("iDomainId")
+	public String getiDomainId() {
+		return iDomainId;
+	}
+
+	@JsonProperty("iDomainId")
+	public void setiDomainId(String iDomainId) {
+		this.iDomainId = iDomainId;
+	}
+
+	@JsonProperty("iDescription")
+	public String getiDescription() {
+		return iDescription;
+	}
+
+	@JsonProperty("iDescription")
+	public void setiDescription(String iDescription) {
+		this.iDescription = iDescription;
+	}
+
+	public List<String> getiMatchingNames() {
+		return iMatchingNames;
+	}
+
+	public void setiMatchingNames(List<String> iMatchingNames) {
+		this.iMatchingNames = iMatchingNames;
+	}	
 }

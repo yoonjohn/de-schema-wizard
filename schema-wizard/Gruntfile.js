@@ -205,7 +205,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [
 //        'newer:jshint',
-        'newer:jscs',
+//        'newer:jscs',
 //        'test:phantomjs',
         'build'
     ]);

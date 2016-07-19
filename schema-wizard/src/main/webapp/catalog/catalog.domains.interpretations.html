@@ -1,0 +1,779 @@
+<div style="width: 99%; margin: 2px 6px;">
+    <div class="panel-group" style="margin: 0px; padding: 0px;">
+        <div id="interpretationsContainer"
+             class="panel-primary container" style="width: 100%; padding: 0px;">
+            <form name="interpretationForm" novalidate>
+                <div class="pretty-split-pane-frame" style="background-color: white;">
+                    <div id="interpretationsMain" data-split-pane>
+                        <div id="left-split-pane" data-split-pane-component data-width="204px">
+                            <div class="pretty-split-pane-component-inner"
+                                 style="margin: 0; padding: 0; border: 1px solid transparent; border-radius: 4px;">
+                                <!-- left column (interpretations list) ------------------------------------------------------------------------------->
+                                <div class="panel panel-info" style="height: 100%;">
+                                    <div class="panel-heading" style="height: 40px;">
+                                        <h3 class="panel-title">
+                                            {{domainName}}<br>Interpretations
+                                            <img style="border: none; float: right; margin-top: -13px; margin-right: 0px;"
+                                                 src="assets/img/blue-tour-bus-22x22.png"
+                                                 uib-tooltip="Take a tour of the Interpretation page"
+                                                 tooltip-placement="bottom"
+                                                 ng-click="tour.startAt('200')"
+                                                 tour-step-template-url="'schema-wizard/schema-wizard.tour-first-step.template.html'"
+                                                 tour-step="200"
+                                                 tour-step-title={{interpretationTour.step1.title}}
+                                                 tour-step-order="200"
+                                                 tour-step-content={{interpretationTour.step1.message}}
+                                                 tour-step-prevStep="200"
+                                                 tour-step-orphan="true"
+                                                 tour-step-backdrop="false">
+                                        </h3>
+                                    </div>
+                                    <div id="interpretationPanelBody" class="panel-body"
+                                         style="width: 200px; padding: 0px;">
+                                        <table id="interpretationPanelTable" class="table table-striped"
+                                               style="width: 198px; height: inherit;" fixed-header>
+                                            <thead>
+                                            <tr>
+                                                <th tour-step
+                                                    tour-step-title={{interpretationTour.step2.title}}
+                                                    tour-step-content={{interpretationTour.step2.message}}
+                                                    tour-step-order="210"
+                                                    tour-step-placement="right"
+                                                    tour-step-orphan="false"
+                                                    tour-step-backdrop="false">Name</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="interpretation in interpretations | orderBy:'value'">
+                                                <td nowrap>
+                                                    <span onmouseover="this.style.cursor='pointer'"
+                                                          ng-click="loadInterpretation(interpretation.iName)"
+                                                          style="color: blue; font-style: italic; margin-right: 4px;"
+                                                          uib-tooltip="{{interpretation.iDescription}}"
+                                                          tooltip-placement="bottom">
+                                                        {{interpretation.iName}}
+                                                    </span>
+                                                    <button class="btn-graphic-only btn-remove" type="button"
+                                                            ng-model="singleModel"
+                                                            uib-tooltip="Remove interpretation from this domain"
+                                                            tooltip-placement="right"
+                                                            ng-click="removeInterpretation(interpretation.iName)">
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr ng-show="newInterpretation">
+                                                <td>
+                                                    <input id="newInterpretationName" type="text"
+                                                           style="width: 100%; height: 18px; margin-top: 2px; font-size: 12px;"
+                                                           name="iName"
+                                                           ng-model="newInterpretation.iName"
+                                                           ng-model-options="{ updateOn: 'blur' }"
+                                                           ng-blur="checkForDupNames() && addIdentityToMatchingNames()"
+                                                           ng-keypress="interpretationForm.iName.$touched = true"
+                                                           ng-minlength="2"
+                                                           required>
+                                                    <div id="nameRequired"
+                                                         ng-show="newInterpretation && interpretationForm.iName.$invalid"
+                                                         ng-hide="interpretationForm.iName.$touched"
+                                                         style="position: relative; top: -17px; float: right; margin-right: 1px; color: red;">
+                                                        Required (2 chars min)
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-split-pane-divider data-width="3px"
+                             style="border: 2px ridge white; background-color: lightgrey;">
+                        </div>
+                        <!-- right of interpretations list panel (everything else) ------------------------------------------------------------>
+                        <div id="interpretationItem" data-split-pane-component data-width="1000px">
+                            <div data-split-pane>
+                                <div id="centerPanels" data-split-pane-component>
+                                    <div data-split-pane>
+                                        <div data-split-pane-component data-height="500px">
+                                            <div data-split-pane>
+                                                <div id="top-split-pane" data-split-pane-component data-height="52px">
+                                                    <div class="pretty-split-pane-component-inner"
+                                                         style="margin: 0; padding: 0; border: 1px solid transparent; border-radius: 4px;">
+                                                        <!-- top center panel (description) ----------------------------------------------------------------------------------->
+                                                        <div class="panel panel-info" style="height: 100%;">
+                                                            <div class="panel-heading">
+                                                                <h3 class="panel-title">
+                                                                    Description
+                                                                    <span ng-show="selInterpret.iName"> - {{selInterpret.iName}}</span>
+                                                                </h3>
+                                                            </div>
+                                                            <div class="panel-body"
+                                                                 style="margin-left: auto; margin-right: auto; padding-left: 0px; font-size: 12px;">
+                                                                <input id="description" type="text"
+                                                                       style="width: 100%; height: 18px; font-size: 12px; float: left;"
+                                                                       name="iDescription"
+                                                                       ng-model="selInterpret.iDescription"
+                                                                       ng-model-options="{ updateOn: 'blur' }"
+                                                                       ng-keypress="interpretationForm.iDescription.$touched = true"
+                                                                       ng-minlength="10"
+                                                                       tour-step
+                                                                       tour-step-title={{interpretationTour.step3.title}}
+                                                                       tour-step-content={{interpretationTour.step3.message}}
+                                                                       tour-step-order="220"
+                                                                       tour-step-placement="bottom"
+                                                                       tour-step-orphan="false"
+                                                                       tour-step-backdrop="false"
+                                                                       required/>
+                                                                <div ng-show="interpretationForm.iDescription.$invalid"
+                                                                     ng-hide="interpretationForm.iDescription.$touched || interpretationForm.iDescription.$valid"
+                                                                     style="position: absolute; top: 31px; left: 20em; color: red;">
+                                                                    Required (10 characters minimum)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div data-split-pane-divider data-height="3px"
+                                                     style="border: 2px ridge white; background-color: lightgrey;">
+                                                </div>
+                                                <!-- top beneath description center panel (editor) -------------------------------------------------------------------->
+                                                <div id="editor-pane" data-split-pane-component data-height="500px">
+                                                    <div id="editorComponentInner"
+                                                         class="pretty-split-pane-component-inner"
+                                                         style="margin: 0; padding: 0; overflow: hidden;
+                                                                border: 1px solid transparent; border-radius: 4px;">
+                                                        <div id="editorPanel" class="panel panel-info"
+                                                             style="height: 400px;">
+                                                            <div class="panel-heading">
+                                                                <h3 class="panel-title">
+                                                                    Validation Script
+                                                                    <span ng-show="selInterpret.iName"> - {{selInterpret.iName}}</span>
+                                                                </h3>
+                                                            </div>
+                                                            <div id="editorBody" class="panel-body"
+                                                                 style="width: 450px; height: 300px; margin: 0px; padding: 2px;" tour-step
+                                                                 tour-step-title={{interpretationTour.step5.title}}
+                                                                 tour-step-content={{interpretationTour.step5.message}}
+                                                                 tour-step-order="240"
+                                                                 tour-step-placement="right"
+                                                                 tour-step-orphan="false"
+                                                                 tour-step-backdrop="false">
+                                                                <div id="editor" name="editor"
+                                                                     style="border: 1px inset paleturquoise; width: 440px; height: 200px; z-index: 999;">
+                                                                </div>
+                                                                <input id="editorValidationMsg" type="text" readonly
+                                                                       style="width: 200px; height: 18px; margin-top: 6px; font-size: 12px; border: none;"
+                                                                       ng-style="editorValidationMsgStyle"
+                                                                       name="editorValidationMsg"
+                                                                       ng-model="editorValidationState"/>
+                                                                <span>
+                                                                <label for="selectedTheme">Theme</label>
+                                                                <select id="selectedTheme" name="selectedTheme"
+                                                                        style="margin: 0 auto;"
+                                                                        ng-model="editorThemes.selectedTheme"
+                                                                        ng-change="changeEditorTheme()">
+                                                                    <option
+                                                                        ng-repeat="option in editorThemes.availableThemes"
+                                                                        value="{{option.name}}">{{option.name}}
+                                                                    </option>
+                                                                </select>
+                                                                </span>
+                                                                <button class="btn btn-primary btn-xs"
+                                                                        style="float: right; margin-top: 4px; margin-right: 6px;"
+                                                                        uib-tooltip="Test this interpretation using constraints, script, and data"
+                                                                        tooltip-placement="left"
+                                                                        ng-disabled="!selInterpret.iValid ||
+                                                                                     interpretationForm.iDescription.$invalid ||
+                                                                                     interpretationForm.sampleData.$invalid ||
+                                                                                     interpretationForm.mainType.$invalid ||
+                                                                                     interpretationForm.detailType.$invalid"
+                                                                        ng-click="testPythonScript()">
+                                                                    Test Interpretation
+                                                                </button>
+                                                                <button class="btn btn-primary btn-xs"
+                                                                        style="display: none; float: right; margin-top: 4px; margin-right: 8px;"
+                                                                        uib-tooltip="Validate this Python script"
+                                                                        tooltip-placement="left"
+                                                                        ng-disabled="interpretationForm.editorValidationMsg.$dirty"
+                                                                        ng-click="validatePythonScript()">
+                                                                    Validate Script
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-split-pane-divider data-height="3px"
+                                             style="border: 2px ridge white; background-color: lightgrey;">
+                                        </div>
+                                        <!-- bottom center panel ---------------------------------------------------------------------------------------------->
+                                        <div id="bottom-center-pane" data-split-pane-component data-height="270px">
+                                            <div id="bottom-split-pane-1" data-split-pane>
+                                                <!-- bottom center left panel (sample data) --------------------------------------------------------------------------->
+                                                <div id="bottom-split-pane-2" data-split-pane-component
+                                                     data-width="300px">
+                                                    <div id="bottom-split-pane-3"
+                                                         class="pretty-split-pane-component-inner"
+                                                         style="margin: 0; padding: 0; border: 1px solid transparent; border-radius: 4px;">
+                                                        <div id="dataPanel" class="panel panel-info"
+                                                             style="height: 100%;">
+                                                            <div class="panel-heading">
+                                                                <h3 class="panel-title">
+                                                                    Test Data
+                                                            <span
+                                                                ng-show="selInterpret.iName"> - {{selInterpret.iName}}</span>
+                                                                </h3>
+                                                            </div>
+                                                            <div id="dataPanelBody" class="panel-body"
+                                                                 style="margin-left: auto; margin-right: auto; padding-left: 0px;">
+                                                                <textarea id="sampleData" rows=10 cols=37
+                                                                          name="sampleData"
+                                                                          ng-model="selInterpretSampleData"
+                                                                          ng-trim="true"
+                                                                          ng-minlength="1"
+                                                                          ng-focus="selInterpret.iValid = false"
+                                                                          ng-keydown="selInterpret.iValid = false"
+                                                                          ng-model-options="{ debounce: 1000 }"
+                                                                          style="width: 200px; height: inherit; padding: 2px;
+                                                                                 font-family: monospace; font-size: 12px; border: none;"
+                                                                          required
+                                                                          tour-step
+                                                                          tour-step-title={{interpretationTour.step6.title}}
+                                                                          tour-step-content={{interpretationTour.step6.message}}
+                                                                          tour-step-order="250"
+                                                                          tour-step-placement="top"
+                                                                          tour-step-orphan="false"
+                                                                          tour-step-backdrop="false">
+                                                                </textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div data-split-pane-divider data-width="3px"
+                                                     style="border: 2px ridge white; background-color: lightgrey;"></div>
+                                                <!-- bottom center right panel (console) ------------------------------------------------------------------------------>
+                                                <div data-split-pane-component>
+                                                    <div class="pretty-split-pane-component-inner"
+                                                         style="margin: 0; padding: 0; border: 1px solid transparent; border-radius: 4px;">
+                                                        <div id="consolePanel" class="panel panel-info"
+                                                             style="height: 100%;"
+                                                             tour-step
+                                                             tour-step-title={{interpretationTour.step7.title}}
+                                                             tour-step-content={{interpretationTour.step7.message}}
+                                                             tour-step-order="260"
+                                                             tour-step-placement="top"
+                                                             tour-step-orphan="false"
+                                                             tour-step-backdrop="false">
+                                                            <div class="panel-heading">
+                                                                <h3 class="panel-title">
+                                                                    Test Output
+                                                            <span
+                                                                ng-show="selInterpret.iName"> - {{selInterpret.iName}}</span>
+                                                                </h3>
+                                                            </div>
+                                                            <div id="consolePanelBody" class="panel-body"
+                                                                 style="padding-left: 0px;">
+                                                                <textarea id="console" name="console" rows=10 cols=37
+                                                                          ng-model="consoleOutput" ng-trim="false"
+                                                                          readonly
+                                                                          style="width: 200px; height: inherit; padding: 2px;
+                                                                                 font-family: monospace; font-size: 12px; border: none;">
+                                                                </textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div data-split-pane-divider data-width="3px"
+                                     style="border: 2px ridge white; background-color: lightgrey;">
+                                </div>
+                                <!-- right panel ------------------------------------------------------------------------------------------------------>
+                                <div id="right-split-pane" data-split-pane-component data-width="304px">
+                                    <div data-split-pane>
+                                        <!-- top right panel (constraints) ------------------------------------------------------------------------------------>
+                                        <div data-split-pane-component data-height="400px">
+                                            <div class="pretty-split-pane-component-inner"
+                                                 style="margin: 0; padding: 0; border: 1px solid transparent; border-radius: 4px;">
+                                                <div class="panel panel-info" style="height: 340px;"
+                                                     tour-step
+                                                     tour-step-title={{interpretationTour.step4.title}}
+                                                     tour-step-content={{interpretationTour.step4.message}}
+                                                     tour-step-order="230"
+                                                     tour-step-placement="left"
+                                                     tour-step-orphan="false"
+                                                     tour-step-backdrop="false">
+                                                    <div class="panel-heading">
+                                                        <h3 class="panel-title">
+                                                            Constraints
+                                                            <span
+                                                                ng-show="selInterpret.iName"> - {{selInterpret.iName}}</span>
+                                                        </h3>
+                                                    </div>
+                                                    <div class="panel-body" style="white-space: normal"
+                                                         style="width: 300px; height: inherit; margin-left: auto; margin-right: auto; padding: 0px 8px;">
+                                                        <div style="margin-top: 2px; margin-bottom: 6px;">
+                                                            <label for="main-type">Main Type:</label>
+                                                            <select id="main-type"
+                                                                    ng-model="selInterpret.iConstraints['main-type']"
+                                                                    ng-change="resetDetailType()"
+                                                                    name="mainType"
+                                                                    style="font-size: 12px; float: right;"
+                                                                    required>
+                                                                <option value=""></option>
+                                                                <option value="number">number</option>
+                                                                <option value="string">string</option>
+                                                                <option value="binary">binary</option>
+                                                            </select>
+                                                            <div ng-show="interpretationForm.mainType.$invalid"
+                                                                 style="position: relative; float: right; margin-right: 4px; color: red; font-size: 12px;">
+                                                                Required
+                                                            </div>
+                                                        </div>
+
+                                                        <div style="margin-bottom: 5px;">
+                                                            <label for="detail-type" style="margin-top: 1px;">Detail
+                                                                Type:</label>
+                                                            <select id="detail-type"
+                                                                    ng-model="selInterpret.iConstraints['detail-type']"
+                                                                    name="detailType"
+                                                                    style="font-size: 12px; float: right;"
+                                                                    required>
+                                                                <option value=""></option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'number'"
+                                                                    value="integer">integer
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'number'"
+                                                                    value="decimal">decimal
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'number'"
+                                                                    value="exponent">exponent
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'string'"
+                                                                    value="datetime">datetime
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'string'"
+                                                                    value="boolean">boolean
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'string'"
+                                                                    value="term">term
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'string'"
+                                                                    value="phrase">phrase
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'binary'"
+                                                                    value="image">image
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'binary'"
+                                                                    value="video">video
+                                                                </option>
+                                                                <option
+                                                                    ng-show="selInterpret.iConstraints['main-type'] == 'binary'"
+                                                                    value="audio">audio
+                                                                </option>
+                                                            </select>
+                                                            <div ng-show="interpretationForm.detailType.$invalid"
+                                                                 style="position: relative; float: right; margin-right: 4px; color: red; font-size: 12px;">
+                                                                Required
+                                                            </div>
+                                                        </div>
+
+                                                        <div ng-hide="selInterpret.iConstraints['main-type'] == 'binary'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="num-distinct-values">Maximum Distinct Values:</label>
+                                                            <input id="num-distinct-values" type="number"
+                                                                    name="numDistinctValues"
+                                                                    min="0" step="1"
+                                                                    ng-model="selInterpret.iConstraints['num-distinct-values']"
+                                                                    ng-keyup="interpretationForm.numDistinctValues.$setValidity('number', isInteger('numDistinctValues'))"
+                                                                    style="width: 100px; height: 18px; font-size: 12px; text-align: right; float: right;"/>
+                                                            <div ng-show="interpretationForm.numDistinctValues.$touched &&
+                                                                          interpretationForm.numDistinctValues.$viewValue.length > 0 &&
+                                                                          interpretationForm.numDistinctValues.$invalid"
+                                                                 style="color: red; font-size: 12px;">
+                                                                The value is not a valid integer<br>
+                                                            </div>
+                                                        </div>
+
+                                                        <div ng-show="selInterpret.iConstraints['main-type'] == 'number'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="min">Minimum:</label>
+                                                            <input id="min" type="number"
+                                                                   name="min"
+                                                                   step="1"
+                                                                   ng-model="selInterpret.iConstraints['min']"
+                                                                   ng-keyup="interpretationForm.min.$setValidity(
+                                                                                'number',
+                                                                                (selInterpret.iConstraints['detail-type'] == 'integer' && isInteger('min')) ||
+                                                                                (selInterpret.iConstraints['detail-type'] != 'integer' && isNumber('min'))
+                                                                             )"
+                                                                   style="width: 100px;  height: 18px; font-size: 12px; text-align: right; float: right;"/>
+                                                            <div ng-show="interpretationForm.min.$touched &&
+                                                                          interpretationForm.min.$viewValue.length > 0 &&
+                                                                          interpretationForm.min.$invalid"
+                                                                 style="color: red; font-size: 12px;">
+                                                                The value is not a valid integer<br>
+                                                            </div>
+                                                        </div>
+
+                                                        <div ng-show="selInterpret.iConstraints['main-type'] == 'string'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="min-length">Minimum Length:</label>
+                                                            <input id="min-length" type="number"
+                                                                   name="minLength"
+                                                                   min="0" step="1"
+                                                                   ng-model="selInterpret.iConstraints['min-length']"
+                                                                   ng-keyup="interpretationForm.minLength.$setValidity('number', isInteger('minLength'))"
+                                                                   style="width: 100px;  height: 18px; font-size: 12px; text-align: right; float: right;"/>
+                                                            <div ng-show="interpretationForm.minLength.$touched &&
+                                                                          interpretationForm.minLength.$viewValue.length > 0 &&
+                                                                          interpretationForm.minLength.$invalid"
+                                                                 style="color: red; font-size: 12px;">
+                                                                The value is not a valid integer<br>
+                                                            </div>
+                                                        </div>
+
+                                                        <div ng-show="selInterpret.iConstraints['main-type'] == 'binary'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="length">Length:</label>
+                                                            <input id="length" type="number"
+                                                                   name="length"
+                                                                   min="0" step="1"
+                                                                   ng-model="selInterpret.iConstraints['length']"
+                                                                   ng-keyup="interpretationForm.length.$setValidity('number', isInteger('length'))"
+                                                                   style="width: 100px;  height: 18px; font-size: 12px; text-align: right; float: right;"/>
+                                                            <div ng-show="interpretationForm.length.$touched &&
+                                                                          interpretationForm.length.$viewValue.length > 0 &&
+                                                                          interpretationForm.length.$invalid"
+                                                                 style="color: red; font-size: 12px;">
+                                                                The value is not a valid integer<br>
+                                                            </div>
+                                                        </div>
+
+                                                        <div ng-show="selInterpret.iConstraints['main-type'] == 'number'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="max">Maximum:</label>
+                                                            <input id="max" type="number"
+                                                                   name="max"
+                                                                   step="1"
+                                                                   ng-model="selInterpret.iConstraints['max']"
+                                                                   ng-keyup="interpretationForm.min.$setValidity(
+                                                                                'number',
+                                                                                (selInterpret.iConstraints['detail-type'] == 'integer' && isInteger('max')) ||
+                                                                                (selInterpret.iConstraints['detail-type'] != 'integer' && isNumber('max'))
+                                                                             )"
+                                                                   style="width: 100px; height: 18px; font-size: 12px; text-align: right; float: right;"/>
+                                                            <div ng-show="interpretationForm.max.$touched &&
+                                                                          interpretationForm.max.$viewValue.length > 0 &&
+                                                                          interpretationForm.min.$invalid"
+                                                                 style="color: red; font-size: 12px;">
+                                                                The value is not a valid integer<br>
+                                                            </div>
+                                                        </div>
+
+                                                        <div ng-show="selInterpret.iConstraints['main-type'] == 'string'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="max-length">Maximum Length:</label>
+                                                            <input id="max-length" type="number"
+                                                                   name="maxLength"
+                                                                   min="0" step="1"
+                                                                   ng-model="selInterpret.iConstraints['max-length']"
+                                                                   ng-keyup="interpretationForm.maxLength.$setValidity('number', isInteger('maxLength'))"
+                                                                   style="width: 100px; height: 18px; font-size: 12px; text-align: right; float: right;"/>
+                                                            <div ng-show="interpretationForm.maxLength.$touched &&
+                                                                          interpretationForm.maxLength.$viewValue.length > 0 &&
+                                                                          interpretationForm.maxLength.$invalid"
+                                                                 style="color: red; font-size: 12px;">
+                                                                The value is not a valid integer<br>
+                                                            </div>
+                                                        </div>
+
+                                                        <div ng-show="selInterpret.iConstraints['main-type'] == 'number'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="average">Average:</label>
+                                                            <input id="average" type="number"
+                                                                   name="average"
+                                                                   ng-model="selInterpret.iConstraints['average']"
+                                                                   ng-keyup="interpretationForm.average.$setValidity('number', isNumber('average'))"
+                                                                   style="width: 100px; height: 18px; font-size: 12px; text-align: right; float: right;"/>
+                                                            <div ng-show="interpretationForm.average.$touched &&
+                                                                          interpretationForm.average.$viewValue.length > 0 &&
+                                                                          interpretationForm.average.$invalid"
+                                                                 style="color: red; font-size: 12px;">
+                                                                The value is not a valid integer<br>
+                                                            </div>
+                                                        </div>
+
+                                                        <div ng-hide="selInterpret.iConstraints['main-type'] == '' ||
+                                                                      selInterpret.iConstraints['main-type'] !== 'binary'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label ng-hide="selInterpret.iConstraints['main-type'] == '' ||
+                                                                        selInterpret.iConstraints['main-type'] !== 'binary'"
+                                                                   for="mime-type">Mime Type:</label>
+                                                            <input id="mime-type" type="text"
+                                                                   name="mimeType"
+                                                                   ng-model="selInterpret.iConstraints['mime-type']"
+                                                                   style="width: 200px; height: 18px; font-size: 12px; float: right;"/>
+                                                        </div>
+
+                                                        <div ng-hide="selInterpret.iConstraints['main-type'] == '' ||
+                                                                      selInterpret.iConstraints['main-type'] !== 'binary'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="hash">Hash:</label>
+                                                            <input id="hash" type="text"
+                                                                   name="hash"
+                                                                   ng-model="selInterpret.iConstraints['hash']"
+                                                                   style="width: 200px; height: 18px; font-size: 12px; float: right;"/>
+                                                        </div>
+
+                                                        <div ng-hide="selInterpret.iConstraints['main-type'] == '' ||
+                                                                  selInterpret.iConstraints['main-type'] !== 'binary'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="entropy">Entropy:</label>
+                                                            <input id="entropy" type="text"
+                                                                   name="entropy"
+                                                                   ng-model="selInterpret.iConstraints['entropy']"
+                                                                   style="width: 200px; height: 18px; font-size: 12px; float: right;"/>
+                                                        </div>
+
+                                                        <div ng-hide="selInterpret.iConstraints['main-type'] == '' ||
+                                                                  selInterpret.iConstraints['main-type'] == 'binary'"
+                                                             style="margin-bottom: 6px;">
+                                                            <label for="regex">RegEx:</label>
+                                                            <input id="regex" type="text"
+                                                                   name="regex"
+                                                                   ng-model="selInterpret.iConstraints['regex']"
+                                                                   style="width: 200px; height: 18px; font-size: 12px; float: right;"/>
+                                                        </div>
+
+                                                        <div id="quantized" style="margin-bottom: 6px;"
+                                                             ng-hide="selInterpret.iConstraints['main-type'] == ''">
+                                                            <label style="padding-top: 6px;">Quantized:</label>
+                                                            <span style="float: right;">
+                                                                <label for="quantized-true">True</label>
+                                                                <input id="quantized-true" type="radio"
+                                                                       name="quantizedTrue"
+                                                                       ng-model="selInterpret.iConstraints['quantized']"
+                                                                       value="True"/>
+                                                                <label for="quantized-false">False</label>
+                                                                <input id="quantized-false" type="radio"
+                                                                       name="quantizedFalse"
+                                                                       ng-model="selInterpret.iConstraints['quantized']"
+                                                                       value="False"/>
+                                                                <label for="quantized-unknown">Unknown</label>
+                                                                <input id="quantized-unknown" type="radio"
+                                                                       name="quantizedUnknown"
+                                                                       ng-model="selInterpret.iConstraints['quantized']"
+                                                                       value="Unknown"/>
+                                                            </span>
+                                                        </div>
+
+                                                        <div id="ordinal" style="margin-bottom: 6px;"
+                                                             ng-hide="selInterpret.iConstraints['main-type'] == ''">
+                                                            <label style="padding-top: 6px;">Ordinal:</label>
+                                                            <span style="float: right;">
+                                                                <label for="ordinal-true">True</label>
+                                                                <input id="ordinal-true" type="radio"
+                                                                       name="ordinalTrue"
+                                                                       ng-model="selInterpret.iConstraints['ordinal']"
+                                                                       value="True"/>
+                                                                <label for="ordinal-false">False</label>
+                                                                <input id="ordinal-false" type="radio"
+                                                                       name="ordinalFalse"
+                                                                       ng-model="selInterpret.iConstraints['ordinal']"
+                                                                       value="False"/>
+                                                                <label for="ordinal-unknown">Unknown</label>
+                                                                <input id="ordinal-unknown" type="radio"
+                                                                       name="ordinalUnknown"
+                                                                       ng-model="selInterpret.iConstraints['ordinal']"
+                                                                       value="Unknown"/>
+                                                            </span>
+                                                        </div>
+
+                                                        <div id="categorical" style="margin-bottom: 6px;"
+                                                             ng-hide="selInterpret.iConstraints['main-type'] == ''">
+                                                            <label style="padding-top: 6px;">Categorical:</label>
+                                                            <span style="float: right;">
+                                                                <label for="categorical-true">True</label>
+                                                                <input id="categorical-true" type="radio"
+                                                                       name="categoricalTrue"
+                                                                       ng-model="selInterpret.iConstraints['categorical']"
+                                                                       value="True"/>
+                                                                <label for="categorical-false">False</label>
+                                                                <input id="categorical-false" type="radio"
+                                                                       name="categoricalFalse"
+                                                                       ng-model="selInterpret.iConstraints['categorical']"
+                                                                       value="False"/>
+                                                                <label for="categorical-unknown">Unknown</label>
+                                                                <input id="categorical-unknown" type="radio"
+                                                                       name="categoricalUnknown"
+                                                                       ng-model="selInterpret.iConstraints['categorical']"
+                                                                       value="Unknown"/>
+                                                            </span>
+                                                        </div>
+
+                                                        <div id="relational" style="margin-bottom: 6px;"
+                                                             ng-hide="selInterpret.iConstraints['main-type'] == ''">
+                                                            <label style="padding-top: 6px;">Relational:</label>
+                                                            <span style="float: right;">
+                                                                <label for="relational-true">True</label>
+                                                                <input id="relational-true" type="radio"
+                                                                       name="relationalTrue"
+                                                                       ng-model="selInterpret.iConstraints['relational']"
+                                                                       value="True"/>
+                                                                <label for="relational-false">False</label>
+                                                                <input id="relational-false" type="radio"
+                                                                       name="relationalFalse"
+                                                                       ng-model="selInterpret.iConstraints['relational']"
+                                                                       value="False"/>
+                                                                <label for="relational-unknown">Unknown</label>
+                                                                <input id="relational-unknown" type="radio"
+                                                                       name="relationalUnknown"
+                                                                       ng-model="selInterpret.iConstraints['relational']"
+                                                                       selected="selected"
+                                                                       value="Unknown"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-split-pane-divider data-height="3px"
+                                             style="border: 2px ridge white; background-color: lightgrey;"></div>
+                                        <!-- bottom right panel (matching names list) ------------------------------------------------------------------------->
+                                        <div id="matchingNamesPane" data-split-pane-component>
+                                            <div class="pretty-split-pane-component-inner"
+                                                 style="margin: 0; padding: 0; border: 1px ridge white; border-radius: 4px;">
+                                                <div id="matchingNamesPanel" class="panel panel-info">
+                                                    <!-- style="height: 100%;">-->
+                                                    <div class="panel-heading">
+                                                        <h3 class="panel-title">
+                                                            Matching Names
+                                                        <span
+                                                            ng-show="selInterpret.iName"> - {{selInterpret.iName}}</span>
+                                                        </h3>
+                                                    </div>
+                                                    <div id="matchingNamesPanelBody" class="panel-body"
+                                                         style="margin-left: auto; margin-right: auto; padding: 0px 8px;">
+                                                        <div
+                                                            style="margin-left: auto; margin-right: auto; margin-bottom: 0px;">
+                                                            <p>Fields matching these names are<br>
+                                                                candidates for this interpretation:</p>
+                                                            <textarea id="matchingNames" rows=10 cols=37
+                                                                      name="matchingNames"
+                                                                      ng-model="selInterpretMatchingNames"
+                                                                      ng-trim="false"
+                                                                      style="width: 286px; height: inherit; padding: 2px;
+                                                                             font-family: monospace; font-size: 12px;
+                                                                             border: thin solid paleturquoise"
+                                                                      tour-step
+                                                                      tour-step-title={{interpretationTour.step8.title}}
+                                                                      tour-step-content={{interpretationTour.step8.message}}
+                                                                      tour-step-order="270"
+                                                                      tour-step-placement="left"
+                                                                      tour-step-orphan="false"
+                                                                      tour-step-backdrop="false">
+                                                            </textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary"
+                        style="position: absolute; bottom: 34px; right: 17px;"
+                        uib-tooltip="Clear forms, pending changes are lost"
+                        tooltip-placement="left"
+                        ng-click="cancelNewInterpretation()">
+                    Cancel
+                </button>
+                <button class="btn btn-primary"
+                        style="position: absolute; bottom: 34px; right: 95px;"
+                        uib-tooltip="Return to Domains"
+                        tooltip-placement="left"
+                        ng-disabled="newInterpretation !== null ||
+                                     interpretationForm.$dirty"
+                        ng-click="navigateTo('/catalog')"
+                        tour-step
+                        tour-step-title={{interpretationTour.step9.title}}
+                        tour-step-content={{interpretationTour.step9.message}}
+                        tour-step-order="280"
+                        tour-step-placement="top"
+                        tour-step-orphan="true"
+                        tour-step-backdrop="false">
+                    Ok
+                </button>
+                <button class="btn btn-primary"
+                        style="display: none; position: absolute; width: 70px; bottom: 34px; right: 175px;"
+                        uib-tooltip="Update this interpretation "
+                        tooltip-placement="left"
+                        ng-disabled="interpretationForm.iDescription.$invalid ||
+                                     interpretationForm.mainType.$invalid ||
+                                     interpretationForm.detailType.$invalid ||
+                                     interpretationForm.sampleData.$invalid"
+                        ng-show="newInterpretation === null"
+                        ng-click="updateInterpretation()">
+                    Save
+                </button>
+                <button class="btn btn-primary"
+                        style="display: none; position: absolute; width: 70px; bottom: 34px; right: 175px;"
+                        uib-tooltip="Save this interpretation "
+                        tooltip-placement="left"
+                        ng-disabled="interpretationForm.$invalid"
+                        ng-show="newInterpretation !== null"
+                        ng-click="updateInterpretation()">
+                    Save
+                </button>
+                <button class="btn btn-primary"
+                        style="position: absolute; bottom: 34px; right: 253px;"
+                        uib-tooltip="Add an interpretation to this domain"
+                        tooltip-placement="left"
+                        ng-disabled="newInterpretation !== null || interpretationForm.$dirty"
+                        ng-click="addNewInterpretation()">
+                    Create New Interpretation
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--
+<span style="display: inline-block; width: 34.5%; height: 285px;
+                         padding: 6px; padding-top: 0px;
+                         border: thin solid rgb(194,56,194); font-family: monospace;">
+    <h5 style="display: inline;">Available statistics</h5>
+    <hr style="height:1px; margin: 0px; border:none; color:#333; background-color:#333;"/>
+    <div>$main_type</div>
+    <div>$detail_type</div>
+    <div>$num_distinct_values</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'number'">$number_min</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'number'">$number_max</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'number'">$number_average</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'number'">$number_std_dev</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'string'">$string_min_len</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'string'">$string_max_len</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'string'">$string_average_len</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'string'">$string_std_dev_len</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'binary'">$binary_len</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'binary'">$binary_mime_type</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'binary'">$binary_hash</div>
+    <div ng-show="selInterpret.iConstraints['main-type'] == 'binary'">$binary_entropy</div>
+</span>
+-->

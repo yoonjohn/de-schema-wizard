@@ -1,0 +1,86 @@
+<div ng-controller="fileUploadCtrl" ng-model="sampleFile">
+    <div style="width: 500px; margin: 0 auto;">
+        Select a domain, select an invalid data tolerance level, choose one or more<br>
+        sample files which are representative of data sources then press 'Upload' to<br>
+        submit them for processing.
+    </div>
+
+    <div style="margin-left: 2px; margin-top: 10px;">
+        <span style="text-shadow: none; margin-top: 10px;" uib-dropdown>
+            <button id="btn-append-to-domain-button" type="button" class="btn" uib-dropdown-toggle>
+                <span>Choose Domain</span>
+                <span class="caret"></span>
+                <span class="sr-only">Split button!</span>
+            </button>
+            <ul class="dropdown-menu" uib-dropdown-menu role="menu"
+                aria-labelledby="btn-append-to-domain-button"
+                style="font: normal normal 10pt sans-serif;">
+                <li role="menuitem" ng-repeat="domain in domains">
+                    <a href="#" class="dropdown-item"
+                       ng-click="setSchemaDomain($event, domain.dName)">
+                        {{domain.dName}}
+                    </a>
+                </li>
+            </ul>
+        </span>
+        <span id="schema-domain">{{schemaDomain}}</span>
+    </div>
+
+    <div style="margin-left: 2px; margin-top: 10px;">
+        <span style="text-shadow: none; margin-top: 10px;" uib-dropdown>
+            <button id="btn-append-to-tolerance-button" type="button" class="btn btn-primary" uib-dropdown-toggle>
+                <span>Choose Tolerance</span>
+                <span class="caret"></span>
+                <span class="sr-only">Split button!</span>
+            </button>
+            <ul class="dropdown-menu" uib-dropdown-menu role="menu"
+                aria-labelledby="btn-append-to-tolerance-button"
+                style="font: normal normal 10pt sans-serif;" ng-model="schemaTolerance">
+                <li role="menuitem">
+                    <a href="#" class="dropdown-item"
+                       ng-click="setSchemaTolerance($event, 'Strict')">
+                        Strict
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#" class="dropdown-item"
+                       ng-click="setSchemaTolerance($event, 'Moderate')">
+                        Moderate
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#" class="dropdown-item"
+                       ng-click="setSchemaTolerance($event, 'Relaxed')">
+                        Relaxed
+                    </a>
+                </li>
+            </ul>
+        </span>
+        <span id="schema-tolerance">{{schemaTolerance}}</span>
+    </div>
+
+    <!-- Two divs are overlayed in order to provide a styled
+         button for the input tag and display of the chosen file name.
+         The 'file' input tag displays poorly in IE so it is hidden
+         and the file name is displayed in a separate span -->
+    <div style="display: none;">
+        <input id="file-upload" type="file" multiple="multiple" file-model="sampleFile"/>
+                <!--accept="image/jpeg,image/gif,image/png"-->
+    </div>
+    <div style="left: 18px; margin-top: 10px;">
+        <label for="file-upload" class="btn btn-primary">
+            Choose Files
+        </label>
+        <span id="file-upload-name"></span>
+    </div>
+    <div style="margin-left: 2px; margin-top: 10px;">
+        <button id="file-upload-btn" class="btn btn-primary"
+                ng-click="showMask(); uploadFile();" disabled>
+            Upload
+        </button>
+        <button class="btn btn-primary" style="float: right;"
+                ng-click="navigateTo('/startup')">
+            Cancel
+        </button>
+    </div>
+</div>

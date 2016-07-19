@@ -7,6 +7,10 @@ package com.deleidos.dmf.exception;
  *
  */
 public class AnalyticsInitializationRuntimeException extends AnalyticsRuntimeException {
+	
+	public AnalyticsInitializationRuntimeException(Exception e) {
+		super(e);
+	}
 
 	public AnalyticsInitializationRuntimeException(String string) {
 		super(string);

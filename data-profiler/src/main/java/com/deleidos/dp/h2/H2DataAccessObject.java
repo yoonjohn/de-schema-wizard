@@ -1,10 +1,7 @@
 package com.deleidos.dp.h2;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -16,14 +13,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
 
-import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.beans.BinaryDetail;
+import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.beans.DataSampleMetaData;
 import com.deleidos.dp.beans.Detail;
 import com.deleidos.dp.beans.NumberDetail;
@@ -31,6 +27,10 @@ import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.Schema;
 import com.deleidos.dp.beans.SchemaMetaData;
 import com.deleidos.dp.beans.StringDetail;
+import com.deleidos.dp.exceptions.DataAccessException;
+import com.deleidos.hd.h2.H2Config;
+import com.deleidos.hd.h2.H2Database;
+import com.deleidos.hd.h2.H2TestDatabase;
 
 /**
  * Data access object to persist and retrieve schemas, samples, and metrics from
@@ -42,129 +42,48 @@ import com.deleidos.dp.beans.StringDetail;
  */
 public class H2DataAccessObject {
 	public static final Logger logger = Logger.getLogger(H2DataAccessObject.class);
-	private static final String DB_DRIVER = "org.h2.Driver";
-	protected static Server server;
-	private static String h2InitFile = "/h2-init.properties";
-	protected static String DB_DIR;
-	protected static String DB_NAME;
-	protected static String DB_TCP_CONNECTION;
-	protected static String DB_USER;
-	protected static String DB_PASSWORD;
-	protected Connection dbConnection = null;
-	public int emptyHistogramId = 1;
-	public int unknownClassificationId = 1;
-	protected static H2DataAccessObject h2DAO = null;
-	protected static H2MetricsDataAccessObject h2Metrics;
-	protected static H2SampleDataAccessObject h2Samples;
-	protected static H2SchemaDataAccessObject h2Schema;
-	private static volatile boolean shutdownFlag = false;
+	private H2Database h2Database;
+	private boolean isLive;
+	protected static H2DataAccessObject h2Dao = null;
+	private H2MetricsDataAccessObject h2Metrics;
+	private H2SampleDataAccessObject h2Samples;
+	private H2SchemaDataAccessObject h2Schema;
 	public static final boolean debug = false;
 
-	/**
-	 * Protected constructor for H2DAO. Connect to database and instantiate the
-	 * object mapper.
-	 */
-	protected H2DataAccessObject() {
-	}
-
-	/**
-	 * Initialize the H2DAO. If the environmental variable "H2_INIT_PROPERTIES"
-	 * is set, properties will be pulled from that file. Otherwise,
-	 * environmental variables "H2_DB_DIR," "H2_DB_NAME," "H2_DB_USER," and
-	 * "H2_DB_PASSWORD" will be considered. If neither of these are set,
-	 * defaults are DB_DIR = ~/h2, DB_NAME = data, DB_USER = sa, DB_PASSWORD =
-	 * <empty string>
-	 */
-	public static void init() {
-		h2InitFile = (System.getenv("H2_INIT_PROPERTIES") != null) ? System.getenv("H2_INIT_PROPERTIES") : null;
-
-		if (h2InitFile == null) {
-			DB_TCP_CONNECTION = (System.getenv("H2_DB_PORT") != null && DB_TCP_CONNECTION == null)
-					? System.getenv("H2_DB_PORT") : "tcp://localhost:9123";
-			DB_DIR = (System.getenv("H2_DB_DIR") != null && DB_DIR == null) ? System.getenv("H2_DB_DIR") : "~/h2";
-			DB_NAME = (System.getenv("H2_DB_NAME") != null && DB_NAME == null) ? System.getenv("H2_DB_NAME") : "data";
-			DB_USER = (System.getenv("H2_DB_USER") != null && DB_USER == null) ? System.getenv("H2_DB_USER") : "sa";
-			DB_PASSWORD = (System.getenv("H2_DB_PASSWORD") != null && DB_PASSWORD == null)
-					? System.getenv("H2_DB_PASSWORD") : "";
-		} else {
-
-			InputStream initStream;
-			initStream = H2DataAccessObject.class.getResourceAsStream("/h2-init.properties");
-			Properties h2Properties = new Properties();
-			String DB_HOST = null;
-			String DB_PORT = null;
-			try {
-				h2Properties.load(initStream);
-
-				DB_HOST = h2Properties.getProperty("h2.DB_HOST");
-				DB_DIR = h2Properties.getProperty("h2.DB_DIR");
-				DB_NAME = h2Properties.getProperty("h2.DB_NAME");
-				DB_USER = h2Properties.getProperty("h2.DB_USER");
-				DB_PORT = h2Properties.getProperty("h2.DB_PORT");
-				DB_PASSWORD = h2Properties.getProperty("h2.DB_PASSWORD");
-				DB_TCP_CONNECTION = "tcp://" + DB_HOST + ":" + DB_PORT;
-			} catch (IOException e) {
-				logger.error(e);
-				logger.error("H2 Init file not found in path.  Using defaults.");
-				DB_HOST = "localhost";
-				DB_DIR = "~/h2";
-				DB_NAME = "data";
-				DB_USER = "sa";
-				DB_PORT = "9123";
-				DB_PASSWORD = "";
-				DB_TCP_CONNECTION = "tcp://" + DB_HOST + ":" + DB_PORT;
-			}
-
-		}
+	private H2DataAccessObject(H2Database h2Database) {
+		this.h2Database = h2Database;
 	}
 
 	/**
 	 * Get or instantiate the static instance of the H2 Data Access Object.
 	 * 
 	 * @return The static H2DataAccessObject
+	 * @throws DataAccessException 
+	 * @throws IOException 
 	 */
-	public static H2DataAccessObject getInstance() {
-		if (h2DAO == null) {
-			H2DataAccessObject.init();
-
-			h2DAO = new H2DataAccessObject();
-
-			String DB_CONNECTION = "jdbc:h2:" + DB_TCP_CONNECTION + "/" + DB_DIR + File.separator + DB_NAME;
-			logger.info("Connecting with " + DB_CONNECTION);
-			Connection conn = h2DAO.initDBConnection(DB_CONNECTION);
-			h2DAO.setDbConnection(conn);
-
-			h2Metrics = new H2MetricsDataAccessObject(h2DAO);
-			h2Samples = new H2SampleDataAccessObject(h2DAO);
-			h2Schema = new H2SchemaDataAccessObject(h2DAO);
+	public static H2DataAccessObject getInstance() throws DataAccessException {
+		if (h2Dao == null) {
+			try {
+				h2Dao = new H2DataAccessObject(new H2Database());
+				h2Dao.initConnection();
+			} catch (IOException e) {
+				logger.error("Could not find configuration file.");
+				logger.error(e);
+			}
 		}
-		return h2DAO;
+		return h2Dao;
 	}
 
-	/**
-	 * 
-	 * @return test instance of HsDataAccessObject
-	 */
-	public static H2DataAccessObject getInstance(Connection existingConnection) {
-		if (h2DAO == null) {
-
-			h2DAO = new H2DataAccessObject();
-
-			h2DAO.setDbConnection(existingConnection);
-			logger.info("Connection given directly to H2DataAccessObject.  This should only be used for testing.");
-
-			h2Metrics = new H2MetricsDataAccessObject(h2DAO);
-			h2Samples = new H2SampleDataAccessObject(h2DAO);
-			h2Schema = new H2SchemaDataAccessObject(h2DAO);
-		}
-		return h2DAO;
+	public static H2DataAccessObject setInstance(H2Database database) throws DataAccessException {
+		h2Dao = new H2DataAccessObject(database);
+		return h2Dao;
 	}
 
 	/**
 	 * Remove all files in the database directory with the database name.
 	 */
 	public void purge() {
-		DeleteDbFiles.execute(DB_DIR, DB_NAME, true);
+		h2Database.purge();
 	}
 
 	/**
@@ -242,53 +161,26 @@ public class H2DataAccessObject {
 	public Connection getDBConnection() {
 		// return new connection
 		// call driver once
-		return dbConnection;
+		return h2Database.getDbConnection();
 	}
 
-	/**
-	 * Initialize the database connection with the given connection string.
-	 * 
-	 * @param connectionString
-	 *            The string to connect with.
-	 * @return The connection.
-	 */
-	public Connection initDBConnection(String connectionString) {
+	public H2DataAccessObject initConnection () throws DataAccessException {
 		try {
-			Class.forName(DB_DRIVER);
-		} catch (ClassNotFoundException e) {
-			logger.error(e);
+			h2Database.connect();
+			h2Metrics = new H2MetricsDataAccessObject(this);
+			h2Samples = new H2SampleDataAccessObject(this);
+			h2Schema = new H2SchemaDataAccessObject(this);
+		} catch(Exception e) {
+			throw new DataAccessException("Could not connect to H2Database.", e);
 		}
-		try {
-			dbConnection = DriverManager.getConnection(connectionString);
-			return dbConnection;
-		} catch (SQLException e) {
-			logger.error(e);
-			logger.error("H2 database connection failed to be established!");
-		}
-		return dbConnection;
+		return this;
 	}
 
 	/**
 	 * Close the connection.
 	 */
-	public void closeConnection() {
-		try {
-			dbConnection.close();
-		} catch (SQLException e) {
-			logger.warn("H2 connection not successfully closed.");
-			logger.warn(e);
-		}
-	}
-
-	/**
-	 * Stop the server and properly terminate its thread.
-	 */
-	public static void stopServer() {
-		if (server != null) {
-			server.stop();
-			logger.info("Shutting down server.");
-			shutdownFlag = true;
-		}
+	public void closeConnection() throws SQLException {
+		h2Database.closeConnection();
 	}
 
 	/**
@@ -297,8 +189,9 @@ public class H2DataAccessObject {
 	 * @param schemaBean
 	 *            the schema object as a bean
 	 * @return The guid of the schema
+	 * @throws DataAccessException 
 	 */
-	public String addSchema(Schema schemaBean) {
+	public String addSchema(Schema schemaBean) throws DataAccessException {
 		if (schemaBean.getsName() == null) {
 			schemaBean.setsName(schemaBean.getsGuid());
 		}
@@ -308,19 +201,36 @@ public class H2DataAccessObject {
 		if (schemaBean.getsVersion() == null) {
 			schemaBean.setsVersion("1.0");
 		}
-		if (schemaBean.getsLastUpdate() == null) {
-			schemaBean.setsLastUpdate(Timestamp.from(Instant.now()));
-		}
+//		if (schemaBean.getsLastUpdate() == null) {
+		// Always update timestamp
+		schemaBean.setsLastUpdate(Timestamp.from(Instant.now()));
+//		}
 		h2Schema.addSchema(schemaBean);
 		return schemaBean.getsGuid();
 	}
 
 	/**
+	 * Update a schema in H2. TODO
+	 * 
+	 * @param schemaBean
+	 *            the schema object as a bean
+	 * @return The guid of the schema
+	 */
+	//	public String updateSchema(Schema schemaBean) {
+	//		h2Schema.updateSchema(schemaBean);
+	//		
+	//		for (Profile : schemaBean.getsProfile())
+	//		
+	//		return schemaBean.getsGuid();
+	//	}
+
+	/**
 	 * Get a list of the schema meta data in H2
 	 * 
 	 * @return a list of SchemaMetaData beans
+	 * @throws DataAccessException 
 	 */
-	public List<SchemaMetaData> getAllSchemaMetaData() {
+	public List<SchemaMetaData> getAllSchemaMetaData() throws DataAccessException {
 		return h2Schema.getAllSchemaMetaData();
 	}
 
@@ -328,8 +238,9 @@ public class H2DataAccessObject {
 	 * Get a list of the sample meta data in H2
 	 * 
 	 * @return a list of SampleMetaDataBeans
+	 * @throws DataAccessException 
 	 */
-	public List<DataSampleMetaData> getAllSampleMetaData() {
+	public List<DataSampleMetaData> getAllSampleMetaData() throws DataAccessException {
 		return h2Samples.getAllSampleMetaData();
 	}
 
@@ -339,8 +250,9 @@ public class H2DataAccessObject {
 	 * @param guid
 	 *            the desired guid
 	 * @return the SchemaMetaData bean that coincides with the GUID
+	 * @throws DataAccessException 
 	 */
-	public SchemaMetaData getSchemaMetaDataByGuid(String guid) {
+	public SchemaMetaData getSchemaMetaDataByGuid(String guid) throws DataAccessException {
 		SchemaMetaData schemaMetaData = new SchemaMetaData();
 		schemaMetaData = h2Schema.getSchemaMetaDataByGuid(guid);
 		return schemaMetaData;
@@ -355,10 +267,13 @@ public class H2DataAccessObject {
 	 *            true if histogram data should be displayed, false if it should
 	 *            be removed
 	 * @return the Schema bean
+	 * @throws DataAccessException 
 	 */
-	public Schema getSchemaByGuid(String guid, boolean showHistogram) {
-		Schema schema = new Schema();
-		schema = h2Schema.getSchemaByGuid(guid);
+	public Schema getSchemaByGuid(String guid, boolean showHistogram) throws DataAccessException {
+		if(guid == null) {
+			return null;
+		}
+		Schema schema = h2Schema.getSchemaByGuid(guid);
 
 		if (!showHistogram) {
 			for (String key : schema.getsProfile().keySet()) {
@@ -370,7 +285,6 @@ public class H2DataAccessObject {
 				} else if (detail instanceof StringDetail) {
 					StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
 					sm.setTermFreqHistogram(null);
-					sm.setCharFreqHistogram(null);
 				} else if (detail instanceof BinaryDetail) {
 					logger.error("Detected as binary in " + getClass().getName() + ".");
 				}
@@ -389,8 +303,9 @@ public class H2DataAccessObject {
 	 *            True if histogram data should be displayed; False if it should
 	 *            be removed
 	 * @return
+	 * @throws DataAccessException 
 	 */
-	public Map<String, Profile> getSchemaFieldByGuid(String guid, boolean showHistogram) {
+	public Map<String, Profile> getSchemaFieldByGuid(String guid, boolean showHistogram) throws DataAccessException {
 		Map<String, Profile> map = new HashMap<String, Profile>();
 		map = h2Schema.getSchemaFieldByGuid(guid);
 
@@ -404,7 +319,6 @@ public class H2DataAccessObject {
 				} else if (detail instanceof StringDetail) {
 					StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
 					sm.setTermFreqHistogram(null);
-					sm.setCharFreqHistogram(null);
 				} else if (detail instanceof BinaryDetail) {
 					logger.error("Detected as binary in " + getClass().getName() + ".");
 				}
@@ -418,8 +332,9 @@ public class H2DataAccessObject {
 	 * Delete schema based on its guid
 	 * 
 	 * @param guid
+	 * @throws DataAccessException 
 	 */
-	public void deleteSchemaFromDeletionQueue(String guid) {
+	public void deleteSchemaFromDeletionQueue(String guid) throws DataAccessException {
 		logger.info("Deleting schema " + guid +" from database.");
 		h2Schema.deleteSchemaFromDeletionQueue(guid);
 	}
@@ -429,15 +344,10 @@ public class H2DataAccessObject {
 	 * 
 	 * @param sample
 	 *            the DataSample bean to be added
+	 * @throws DataAccessException 
 	 */
-	public String addSample(DataSample sample) {
-		try {
-			return h2Samples.addSample(sample);
-		} catch (SQLException e) {
-			logger.error("Error adding sample");
-			logger.error(e);
-			return null;
-		}
+	public String addSample(DataSample sample) throws DataAccessException {
+		return h2Samples.addSample(sample);
 	}
 
 	/**
@@ -445,8 +355,9 @@ public class H2DataAccessObject {
 	 * names to their respective media types in the database.
 	 * 
 	 * @return
+	 * @throws DataAccessException 
 	 */
-	public Map<String, String> getExistingSampleNames() {
+	public Map<String, String> getExistingSampleNames() throws DataAccessException {
 		return h2Samples.getExistingSampleNames();
 	}
 
@@ -456,9 +367,10 @@ public class H2DataAccessObject {
 	 * @param guids
 	 *            ordered list of guids
 	 * @return an ordered list of DataSample beans
+	 * @throws DataAccessException 
 	 * @throws SQLException
 	 */
-	public List<DataSample> getSamplesByGuids(String[] guids) {
+	public List<DataSample> getSamplesByGuids(String[] guids) throws DataAccessException {
 		List<DataSample> samples = new ArrayList<DataSample>();
 		for (String guid : guids) {
 			samples.add(h2Samples.getSampleByGuid(guid));
@@ -471,8 +383,9 @@ public class H2DataAccessObject {
 	 * 
 	 * @param guid
 	 * @return
+	 * @throws DataAccessException 
 	 */
-	public DataSample getSampleByGuid(String guid) {
+	public DataSample getSampleByGuid(String guid) throws DataAccessException {
 		DataSample sample = new DataSample();
 
 		sample = h2Samples.getSampleByGuid(guid);
@@ -484,8 +397,9 @@ public class H2DataAccessObject {
 	 * 
 	 * @param guid
 	 * @return
+	 * @throws DataAccessException 
 	 */
-	public DataSampleMetaData getSampleMetaDataByGuid(String guid) {
+	public DataSampleMetaData getSampleMetaDataByGuid(String guid) throws DataAccessException {
 		DataSampleMetaData sampleMetaData;
 
 		sampleMetaData = h2Samples.getDataSampleMetaDataByGuid(guid);
@@ -497,8 +411,9 @@ public class H2DataAccessObject {
 	 * 
 	 * @param guid
 	 * @return
+	 * @throws DataAccessException 
 	 */
-	public Map<String, Profile> getSampleFieldByGuid(String guid, boolean showHistogram) {
+	public Map<String, Profile> getSampleFieldByGuid(String guid, boolean showHistogram) throws DataAccessException {
 		Map<String, Profile> map = new HashMap<String, Profile>();
 		map = h2Samples.getSampleFieldByGuid(guid);
 
@@ -512,7 +427,6 @@ public class H2DataAccessObject {
 				} else if (detail instanceof StringDetail) {
 					StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
 					sm.setTermFreqHistogram(null);
-					sm.setCharFreqHistogram(null);
 				} else if (detail instanceof BinaryDetail) {
 					logger.error("Detected as binary in " + getClass().getName() + ".");
 				}
@@ -522,11 +436,11 @@ public class H2DataAccessObject {
 		return map;
 	}
 
-	public void deleteSchemaByGuid(String guid) {
+	public void deleteSchemaByGuid(String guid) throws DataAccessException {
 		h2Schema.deleteSchemaByGuid(guid);
 	}
 
-	public void deleteSampleByGuid(String guid) {
+	public void deleteSampleByGuid(String guid) throws DataAccessException {
 		h2Samples.deleteSampleByGuid(guid);
 	}
 
@@ -535,8 +449,9 @@ public class H2DataAccessObject {
 	 * 
 	 * @param guid
 	 *            An ambiguous GUID belonging to either a Schema or Data Sample
+	 * @throws DataAccessException 
 	 */
-	public void deleteByGuid(String guid) {
+	public void deleteByGuid(String guid) throws DataAccessException {
 		Schema schema = h2Schema.getSchemaByGuid(guid);
 		DataSample sample = h2Samples.getSampleByGuid(guid);
 
@@ -546,109 +461,16 @@ public class H2DataAccessObject {
 			h2Samples.deleteSampleByGuid(guid);
 		} else {
 			logger.error("No such guid exists in the database.");
+			throw new DataAccessException("Error finding guid in H2 database");
 		}
 	}
-
-	public static String getDB_PORT() {
-		String[] splits = DB_TCP_CONNECTION.split(":");
-		return splits[splits.length - 1];
-	}
-
-	public static void setDB_PORT(String dB_PORT) {
-		if (DB_TCP_CONNECTION == null) {
-			DB_TCP_CONNECTION = "tcp::" + dB_PORT;
-		}
-		String[] splits = DB_TCP_CONNECTION.split(":");
-		splits[splits.length - 1] = dB_PORT;
-		String together = null;
-		for (String split : splits) {
-			together += split;
-		}
-		DB_TCP_CONNECTION = together;
-	}
-
-	public static void setDB_HOST(String dB_HOST) {
-		if (DB_TCP_CONNECTION == null) {
-			DB_TCP_CONNECTION = "tcp:" + dB_HOST + ":";
-		}
-		String[] splits = DB_TCP_CONNECTION.split(":");
-		splits[1] = dB_HOST;
-		String together = "";
-		for (String split : splits) {
-			together += split + ":";
-		}
-		together = together.substring(0, together.length() - 1);
-		DB_TCP_CONNECTION = together;
-	}
-
-	public boolean isShutdownFlag() {
-		return shutdownFlag;
-	}
-
-	public void setShutdownFlag() {
-		H2DataAccessObject.shutdownFlag = true;
-	}
-
+	
 	public static H2DataAccessObject getH2DAO() {
-		return h2DAO;
+		return h2Dao;
 	}
 
 	public static void setH2DAO(H2DataAccessObject h2dao) {
-		h2DAO = h2dao;
-	}
-
-	public Connection getDbConnection() {
-		return dbConnection;
-	}
-
-	public void setDbConnection(Connection dbConnection) {
-		this.dbConnection = dbConnection;
-	}
-
-	public int getEmptyHistogramId() {
-		return emptyHistogramId;
-	}
-
-	public static String getH2InitFile() {
-		return h2InitFile;
-	}
-
-	/**
-	 * Set the file that the static H2 server will use to initialize.
-	 * 
-	 * @param h2InitFile
-	 *            The path to the file.
-	 */
-	public static void setH2InitFile(String h2InitFile) {
-		H2DataAccessObject.h2InitFile = h2InitFile;
-	}
-
-	public void setEmptyHistogramId(int emptyHistogramId) {
-		this.emptyHistogramId = emptyHistogramId;
-	}
-
-	public int getUnknownInterpretationId() {
-		return unknownClassificationId;
-	}
-
-	public void setUnknownClassificationId(int unknownClassificationId) {
-		this.unknownClassificationId = unknownClassificationId;
-	}
-
-	public static String getDB_DIR() {
-		return DB_DIR;
-	}
-
-	public static void setDB_DIR(String dB_DIR) {
-		DB_DIR = dB_DIR;
-	}
-
-	public static String getDB_NAME() {
-		return DB_NAME;
-	}
-
-	public static void setDB_NAME(String dB_NAME) {
-		DB_NAME = dB_NAME;
+		h2Dao = h2dao;
 	}
 
 	public H2MetricsDataAccessObject getH2Metrics() {
@@ -661,6 +483,23 @@ public class H2DataAccessObject {
 
 	public H2SchemaDataAccessObject getH2Schema() {
 		return h2Schema;
+	}
+
+	public boolean testConnection() {
+		return testConnection(h2Database.getDbConnection());
+	}
+
+	public boolean testConnection(Connection conn) {
+		try{
+			isLive = conn.isValid(5);
+			return isLive;
+		} catch(SQLException e) {
+			return false;
+		}
+	}
+
+	public boolean isLive() {
+		return isLive;
 	}
 
 	/**
@@ -686,10 +525,18 @@ public class H2DataAccessObject {
 			String substitution = values[i].substring(values[i].indexOf(":") + 1);
 			int markIndex = queryString.indexOf("?");
 			queryString = queryString.substring(0, markIndex) + substitution.trim()
-					+ queryString.substring(markIndex + 1);
+			+ queryString.substring(markIndex + 1);
 		}
 		queryString = queryString.substring(0, queryString.lastIndexOf("}"))
 				+ queryString.substring(queryString.lastIndexOf("}") + 1);
 		return queryString;
+	}
+
+	public H2Database getH2Database() {
+		return h2Database;
+	}
+
+	public void setH2Database(H2Database h2Database) {
+		this.h2Database = h2Database;
 	}
 }

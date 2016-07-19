@@ -21,7 +21,7 @@ public class TermBucketList extends AbstractCoalescingBucketList {
 	@Override
 	public boolean putValue(Object object) {
 		String term = object.toString();
-		if(!simplePutTerm(term)) {
+		if(!binarySearchAdd(object)) {
 			if(bucketList.size() >= getNumBucketsHigh() - 1 && !uniqueBucketStage) {
 				TermBucket tb = new TermBucket(term);
 				tb.incrementCount();
@@ -30,6 +30,10 @@ public class TermBucketList extends AbstractCoalescingBucketList {
 				coalesce();
 			} else if(bucketList.size() == getNumBucketsHigh() && uniqueBucketStage) {
 				transformToRange();
+				TermBucket tb = new TermBucket(term);
+				tb.incrementCount();
+				bucketList.add(tb);
+				Collections.sort(bucketList);
 				uniqueBucketStage = false;
 			} else {
 				TermBucket tb = new TermBucket(term);
@@ -37,26 +41,6 @@ public class TermBucketList extends AbstractCoalescingBucketList {
 				bucketList.add(tb);
 				Collections.sort(bucketList);
 			}
-		}
-		return false;
-	}
-
-	private boolean simplePutTerm(String stringValue) {
-		int min = 0;
-		int max = bucketList.size() - 1;
-		int half = max/2;
-		int c = 0;
-		while(min <= max) {
-			c = bucketList.get(half).belongs(stringValue);
-			if(c > 0) {
-				min = half + 1;
-			} else if(c < 0){
-				max = half - 1;
-			} else {
-				bucketList.get(half).incrementCount();
-				return true;
-			}
-			half = (max - min)/2 + min;
 		}
 		return false;
 	}

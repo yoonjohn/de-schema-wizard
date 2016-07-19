@@ -49,7 +49,7 @@ public class DataSampleDeserializer extends JsonDeserializer<DataSample> {
 		sample.setDsLastUpdate(SerializationUtility.deserialize(rootNode.path("dsLastUpdate"), Timestamp.class));
 		sample.setDsName(rootNode.path("dsName").asText(null));
 		sample.setDsVersion(rootNode.path("dsVersion").asText(null));
-		sample.setRecordsParsedCount(rootNode.path("recordsParseCount").asInt(0));
+		sample.setRecordsParsedCount(rootNode.path("dsNumbRecords").asInt(0));
 		sample.setDsExtractedContentDir(rootNode.path("dsExtractedContentDir").asText(null));
 		return sample;
 		

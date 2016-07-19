@@ -1,0 +1,19 @@
+--- 
+iConstraints: 
+  main-type: number
+  detail-type: decimal
+  min: -180
+  max: 180
+
+iDescription: The decimal value of a longitudinal coordinate
+
+iMatchingNames: 
+  - Longitude
+  - lon
+
+iSampleData:
+  - -179.9
+  - -90.
+  - 0
+  - 90
+  - 179.9

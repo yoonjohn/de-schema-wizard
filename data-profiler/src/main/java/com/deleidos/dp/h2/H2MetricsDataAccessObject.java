@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.deleidos.dp.beans.AliasNameDetails;
 import com.deleidos.dp.beans.BinaryDetail;
 import com.deleidos.dp.beans.Detail;
+import com.deleidos.dp.beans.Histogram;
 import com.deleidos.dp.beans.Interpretation;
 import com.deleidos.dp.beans.NumberDetail;
 import com.deleidos.dp.beans.Profile;
@@ -25,16 +26,9 @@ import com.deleidos.dp.beans.RowEntry;
 import com.deleidos.dp.beans.StringDetail;
 import com.deleidos.dp.enums.DetailType;
 import com.deleidos.dp.enums.MainType;
+import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.histogram.AbstractBucketList;
-import com.deleidos.dp.histogram.ByteBucket;
-import com.deleidos.dp.histogram.ByteBucketList;
-import com.deleidos.dp.histogram.CharacterBucket;
-import com.deleidos.dp.histogram.CharacterBucketList;
-import com.deleidos.dp.histogram.NumberBucket;
-import com.deleidos.dp.histogram.NumberBucketList;
-import com.deleidos.dp.histogram.TermBucket;
-import com.deleidos.dp.histogram.TermBucketList;
-import com.deleidos.dp.interpretation.AbstractJavaInterpretation;
+import com.deleidos.dp.interpretation.builtin.AbstractBuiltinInterpretation;
 
 /**
  * Data Access Object meant to handle external communications with the H2
@@ -44,6 +38,7 @@ import com.deleidos.dp.interpretation.AbstractJavaInterpretation;
  *
  */
 public class H2MetricsDataAccessObject {
+	private static final int EMPTY_HISTOGRAM_ID = 1;
 	public static final Logger logger = H2DataAccessObject.logger;
 	private H2DataAccessObject h2;
 	private Connection dbConnection;
@@ -77,45 +72,46 @@ public class H2MetricsDataAccessObject {
 	private static final String binary_hash_key = "binary_hash";
 	private static final String binary_entropy_key = "binary_entropy";
 	private static final String interpretation_name_key = "i_name";
+	private static final String display_name_key = "display_name";
 
 	private static final String ADD_SAMPLE_NUMBER_FIELD = "INSERT INTO data_sample_field("
 			+ "	field_name, field_order, num_distinct, count, walking_square_sum, walking_sum, presence,"
 			+ "	data_sample_id, number_histogram, detail_type_id, interpretation_id,"
-			+ "	number_min, number_max, number_average, number_std_dev)"
-			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);	";
+			+ "	number_min, number_max, number_average, number_std_dev, display_name)"
+			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);	";
 
 	private static final String ADD_SCHEMA_NUMBER_FIELD = "INSERT INTO schema_field("
 			+ "	field_name, field_order, num_distinct, count, walking_square_sum, walking_sum, presence,"
 			+ "	schema_model_id, number_histogram, detail_type_id, interpretation_id,"
-			+ "	number_min, number_max, number_average, number_std_dev)"
-			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);	";
+			+ "	number_min, number_max, number_average, number_std_dev, display_name)"
+			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);	";
 
 	private static final String ADD_SAMPLE_STRING_FIELD = "INSERT INTO data_sample_field("
 			+ " field_name, field_order, num_distinct, count, walking_square_sum, walking_sum, presence, "
 			+ " data_sample_id, string_character_histogram, string_term_histogram, detail_type_id, interpretation_id,"
-			+ "	string_min_length, string_max_length, string_average_length, string_std_dev_length) "
-			+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?); ";
+			+ "	string_min_length, string_max_length, string_average_length, string_std_dev_length, display_name) "
+			+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?); ";
 
 	private static final String ADD_SCHEMA_STRING_FIELD = "INSERT INTO schema_field("
 			+ "	field_name, field_order, num_distinct, count, walking_square_sum, walking_sum, presence,"
 			+ "	schema_model_id, string_character_histogram, string_term_histogram, detail_type_id, interpretation_id,"
-			+ "	string_min_length, string_max_length, string_average_length, string_std_dev_length)"
-			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?); ";
+			+ "	string_min_length, string_max_length, string_average_length, string_std_dev_length, display_name)"
+			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?); ";
 
 	private static final String ADD_SAMPLE_BINARY_FIELD = "INSERT INTO data_sample_field("
 			+ "	field_name, field_order, num_distinct, count, walking_square_sum, walking_sum, presence,"
 			+ "	data_sample_id, binary_character_histogram, detail_type_id, interpretation_id,"
-			+ "	binary_mime_type, binary_length, binary_hash, binary_entropy)"
-			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);	";
+			+ "	binary_mime_type, binary_length, binary_hash, binary_entropy, display_name)"
+			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);	";
 
 	private static final String ADD_SCHEMA_BINARY_FIELD = "INSERT INTO schema_field("
 			+ "	field_name, field_order, num_distinct, count, walking_square_sum, walking_sum, presence,"
 			+ "	schema_model_id, binary_character_histogram, detail_type_id, interpretation_id,"
-			+ "	binary_mime_type, binary_length, binary_hash, binary_entropy)"
-			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);	";
+			+ "	binary_mime_type, binary_length, binary_hash, binary_entropy, display_name)"
+			+ "	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);	";
 
 	private static final String ADD_EMPTY_SCHEMA_FIELD = "INSERT INTO schema_field("
-			+ " schema_model_id, field_name, detail_type_id, presence) VALUES (?, ?, ?, ?); ";
+			+ " schema_model_id, field_name, detail_type_id, presence, display_name) VALUES (?, ?, ?, ?, ?); ";
 
 	private static final String QUERY_METRICS_BY_SAMPLE_GUID = "SELECT * FROM data_sample_field "
 			+ "	INNER JOIN data_sample ON (data_sample.ds_guid = ? "
@@ -136,7 +132,7 @@ public class H2MetricsDataAccessObject {
 			+ " INNER JOIN schema_model ON (schema_model.s_guid = ? AND schema_field.schema_model_id = schema_model.schema_model_id) "
 			+ " WHERE schema_field.presence < 0; ";
 
-	private static final String QUERY_REGION_HISTOGRAM_BY_PARENT_HISTOGRAM_ID = "SELECT b_definition, b_count, "
+	private static final String QUERY_REGION_HISTOGRAM_BY_PARENT_HISTOGRAM_ID = "SELECT b_short_definition, b_count, "
 			+ "region_histogram.longitude_key_for_region_histograms, region_histogram.latitude_key_for_region_histograms "
 			+ "FROM bucket " + "INNER JOIN histogram AS base " + "ON (base.histogram_id = ?)"
 			+ "INNER JOIN histogram AS region_histogram "
@@ -167,8 +163,6 @@ public class H2MetricsDataAccessObject {
 	 * @param fieldProfile
 	 *            the profile of the field
 	 * @return the generated key of the newly inserted field
-	 * @throws SQLException
-	 *             exception thrown to main H2DataAccessObject
 	 */
 	public int addSampleField(int data_sample_id, String fieldName, Profile fieldProfile) {
 		int fieldId = -1;
@@ -214,20 +208,20 @@ public class H2MetricsDataAccessObject {
 	 * @param fieldProfile
 	 *            the profile of the schema
 	 * @return the generated key of the field
-	 * @throws SQLException
-	 *             exception thrown to main H2DAO
+	 * @throws DataAccessException
 	 */
-	public int addSchemaField(int schema_model_id, String fieldName, Profile fieldProfile) {
+	public int addSchemaField(int schema_model_id, String fieldName, Profile fieldProfile) throws DataAccessException {
 		int fieldId = -1;
 		PreparedStatement ppst = null;
 
 		try {
-			if (Float.floatToRawIntBits(fieldProfile.getPresence()) < 0) {
+			if (fieldProfile.getPresence() < 0) {
 				ppst = dbConnection.prepareStatement(ADD_EMPTY_SCHEMA_FIELD);
 				ppst.setInt(1, schema_model_id);
 				ppst.setString(2, fieldName);
 				ppst.setInt(3, DetailType.fromString(fieldProfile.getDetail().getDetailType()).getIndex());
 				ppst.setDouble(4, fieldProfile.getPresence());
+				ppst.setString(5, fieldProfile.getDisplayName());
 				ppst.execute();
 				int id = h2.getGeneratedKey(ppst);
 				ppst.close();
@@ -247,29 +241,30 @@ public class H2MetricsDataAccessObject {
 				return -1;
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
-
 		addAliasNames(fieldId, fieldProfile.getAliasNames());
 
 		return fieldId;
 	}
 
-	private void addAliasNames(int schemaFieldId, List<AliasNameDetails> aliasNames) {
+	private void addAliasNames(int schemaFieldId, List<AliasNameDetails> aliasNames) throws DataAccessException {
 		PreparedStatement ppst = null;
 
 		try {
 			for (AliasNameDetails and : aliasNames) {
-				int sampleFieldId = H2DataAccessObject.h2Samples.getSampleFieldIdBySampleGuidAndName(and.getDsGuid(),
+				int sampleFieldId = h2.getH2Samples().getSampleFieldIdBySampleGuidAndName(and.getDsGuid(),
 						and.getAliasName());
 				if (sampleFieldId <= 0) {
 					logger.error("Not adding alias name.");
@@ -281,18 +276,19 @@ public class H2MetricsDataAccessObject {
 				}
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
-
 	}
 
 	/**
@@ -301,10 +297,9 @@ public class H2MetricsDataAccessObject {
 	 * @param sampleGuid
 	 *            the guid of the desired sample
 	 * @return a mapping of all fields associated with this sample
-	 * @throws SQLException
-	 *             exception thrown to main H2DAO
+	 * @throws DataAccessException 
 	 */
-	public Map<String, Profile> getFieldMappingBySampleGuid(String sampleGuid) {
+	public Map<String, Profile> getFieldMappingBySampleGuid(String sampleGuid) throws DataAccessException {
 		Map<String, Profile> fieldMapping = new HashMap<String, Profile>();
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
@@ -322,22 +317,25 @@ public class H2MetricsDataAccessObject {
 				logger.warn("Empty result set from sample guid: " + sampleGuid);
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return fieldMapping;
@@ -349,10 +347,9 @@ public class H2MetricsDataAccessObject {
 	 * @param schemaGuid
 	 *            the guid of the desired schema
 	 * @return a mapping of all fields associated with this schema
-	 * @throws SQLException
-	 *             exception thrown to main H2DAO
+	 * @throws DataAccessException 
 	 */
-	public Map<String, Profile> getFieldMappingBySchemaGuid(String schemaGuid) {
+	public Map<String, Profile> getFieldMappingBySchemaGuid(String schemaGuid) throws DataAccessException {
 		Map<String, Profile> fieldMapping = new HashMap<String, Profile>();
 		// h2.queryWithOutput("SELECT * from schema_field; ");
 		PreparedStatement ppst = null;
@@ -384,38 +381,44 @@ public class H2MetricsDataAccessObject {
 				logger.info("No manually created fields for schema with guid :" + schemaGuid + ".");
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (rs2 != null)
 					rs2.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return fieldMapping;
 	}
 
+	// Private methods
 	private void putEmptyMetricsInProfileFieldMapping(Map<String, Profile> fieldMapping, ResultSet rs2) throws SQLException {
 		String fieldName = rs2.getString(field_name_key);
 		float presence = rs2.getFloat(presence_key);
 		int detailIndex = rs2.getInt(detail_type_id_key);
+		String displayName = rs2.getString(display_name_key);
 		DetailType detailType = DetailType.getTypeByIndex(detailIndex);
 		MainType mainType = detailType.getMainType();
 		Profile profile = new Profile();
@@ -438,9 +441,14 @@ public class H2MetricsDataAccessObject {
 			return;
 		}
 		}
+		detail.setDetailType(detailType.toString());
+		profile.setDetail(detail);
+		Interpretation interpretation = new Interpretation();
+		interpretation.setiName("Unknown");
+		profile.setInterpretation(interpretation);
 		profile.setMainType(mainType.toString());
 		profile.setPresence(presence);
-		detail.setDetailType(detailType.toString());
+		profile.setDisplayName(displayName);
 		fieldMapping.put(fieldName, profile);
 	}
 
@@ -451,9 +459,10 @@ public class H2MetricsDataAccessObject {
 				number_max = null, number_average = null;
 		int number_histogram = -1, detail_type_id = -1, interpretation_id = -1;
 		float presence = -1.0f;
-		long num_distinct = -1;
+		String num_distinct = "-1";
 		double number_std_dev = -1.0;
 		int generatedKey = -1;
+		String displayName = profile.getDisplayName();
 
 		// parameter fieldName
 		field_order = null;
@@ -474,7 +483,7 @@ public class H2MetricsDataAccessObject {
 		try {
 			ppst.setString(1, fieldName);
 			ppst.setNull(2, Types.VARCHAR);
-			ppst.setLong(3, num_distinct);
+			ppst.setString(3, num_distinct);
 			ppst.setString(4, count);
 			ppst.setString(5, walking_square_sum);
 			ppst.setString(6, walking_sum);
@@ -487,6 +496,7 @@ public class H2MetricsDataAccessObject {
 			ppst.setString(13, number_max);
 			ppst.setString(14, number_average);
 			ppst.setDouble(15, number_std_dev);
+			ppst.setString(16, displayName);
 
 			ppst.execute();
 
@@ -512,16 +522,17 @@ public class H2MetricsDataAccessObject {
 			Profile profile) {
 		StringDetail sDetail = (StringDetail) profile.getDetail();
 		int generatedKey = -1;
+		String displayName = profile.getDisplayName();
 
 		// parameter fieldName
 		String field_order = null;
-		long num_distinct = sDetail.getNumDistinctValues();
+		String num_distinct = sDetail.getNumDistinctValues();
 		String count = sDetail.getWalkingCount().toString();
 		String walking_square_sum = sDetail.getWalkingSquareSum().toString();
 		String walking_sum = sDetail.getWalkingSum().toString();
 		float presence = profile.getPresence();
 		// parameter data_sample_id
-		int string_character_histogram = insertHistogram(sDetail.getCharFreqHistogram());
+		int string_character_histogram = EMPTY_HISTOGRAM_ID;//insertHistogram(sDetail.getCharFreqHistogram());
 		int string_term_histogram = insertHistogram(sDetail.getTermFreqHistogram());
 		int detail_type_id = DetailType.fromString(sDetail.getDetailType()).getIndex();
 		int interpretation_id = addInterpretation(profile.getInterpretation());
@@ -533,7 +544,7 @@ public class H2MetricsDataAccessObject {
 		try {
 			ppst.setString(1, fieldName);
 			ppst.setNull(2, Types.VARCHAR);
-			ppst.setLong(3, num_distinct);
+			ppst.setString(3, num_distinct);
 			ppst.setString(4, count);
 			ppst.setString(5, walking_square_sum);
 			ppst.setString(6, walking_sum);
@@ -547,6 +558,7 @@ public class H2MetricsDataAccessObject {
 			ppst.setInt(14, string_max_length);
 			ppst.setDouble(15, string_average_length);
 			ppst.setDouble(16, string_std_dev_length);
+			ppst.setString(17, displayName);
 
 			ppst.execute();
 
@@ -577,7 +589,7 @@ public class H2MetricsDataAccessObject {
 
 		// parameter fieldName
 		String field_order = null;
-		long num_distinct = bDetail.getNumDistinctValues();
+		String num_distinct = bDetail.getNumDistinctValues();
 		String count = null;
 		String walking_square_sum = null;
 		String walking_sum = null;
@@ -590,11 +602,12 @@ public class H2MetricsDataAccessObject {
 		long binary_length = bDetail.getLength().longValue();
 		String binary_hash = bDetail.getHash();
 		double binary_entropy = bDetail.getEntropy();
+		String displayName = profile.getDisplayName();
 
 		try {
 			ppst.setString(1, fieldName);
 			ppst.setNull(2, Types.VARCHAR);
-			ppst.setLong(3, num_distinct);
+			ppst.setString(3, num_distinct);
 			ppst.setString(4, count);
 			ppst.setString(5, walking_square_sum);
 			ppst.setString(6, walking_sum);
@@ -607,6 +620,7 @@ public class H2MetricsDataAccessObject {
 			ppst.setLong(13, binary_length);
 			ppst.setString(14, binary_hash);
 			ppst.setDouble(15, binary_entropy);
+			ppst.setString(16, displayName);
 
 			ppst.execute();
 
@@ -633,13 +647,15 @@ public class H2MetricsDataAccessObject {
 		MainType mainType = detailType.getMainType();
 		float presence = rs.getFloat(presence_key);
 		String fieldName = rs.getString(field_name_key);
+		String displayName = rs.getString(display_name_key);
 		Profile profile = new Profile();
 
 		profile.setPresence(presence);
 		profile.setMainType(mainType.toString());
+		profile.setDisplayName(displayName);
 		
 		Interpretation interpretation = new Interpretation();
-		interpretation.setInterpretation(rs.getString(interpretation_name_key));
+		interpretation.setiName(rs.getString(interpretation_name_key));
 		profile.setInterpretation(interpretation);
 
 		switch (mainType) {
@@ -720,7 +736,310 @@ public class H2MetricsDataAccessObject {
 		return profile;
 	}
 
-	private void createBuckets(AbstractBucketList freqHistogram, int histogramId) {
+	/*
+	 * TODO John, this is what I need for the interpretations finish the
+	 * addInterpretations() method use it in addNumberMetrics() and
+	 * addStringMetrics() add joins to all QUERY_NUMBER_FIELDS and
+	 * QUERY_STRING_FIELDS to return the interpretation data and then put the
+	 * interpretation data into the bean
+	 */
+
+	private int addInterpretation(Interpretation interpretation) {
+		PreparedStatement ppst = null;
+		int interpretationId = -1;
+
+		try {
+			ppst = dbConnection.prepareStatement(ADD_INTERPRETATION, PreparedStatement.RETURN_GENERATED_KEYS);
+			ppst.setString(1, interpretation.getiName());
+			ppst.execute();
+			interpretationId = h2.getGeneratedKey(ppst);
+		} catch (SQLException e) {
+			logger.error("Error executing query.");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ppst != null)
+					ppst.close();
+			} catch (SQLException e) {
+				logger.error("Error executing query.");
+				e.printStackTrace();
+			}
+		}
+		return interpretationId;
+	}
+
+	private void addInterpretations(List<AbstractBuiltinInterpretation> interpretations, int fieldId) throws SQLException {
+		// ******************DO NOT IMPLEMENT **********************
+		/*
+		 * TODO write queries for add and retrieve interpretation and add
+		 * histogram
+		 * 
+		 * queries are ADD_INTERPRETATION use setString(1,
+		 * interpretation.getInterpretationName()); h2.getGeneratedKey(^
+		 * statement) and ADD_INTERPRETATION_MAPPING ? 1 = interpretation id ? 2
+		 * = field_id ? 3 = confidence
+		 */
+		boolean ready = false;
+		if (!ready) {
+			return; // TODO finish method
+		}
+
+		dbConnection.setAutoCommit(false);
+		try {
+			List<Integer> interpretationIds = new ArrayList<Integer>();
+			for (AbstractBuiltinInterpretation interpretation : interpretations) {
+				PreparedStatement ppst = dbConnection.prepareStatement(ADD_INTERPRETATION,
+						PreparedStatement.RETURN_GENERATED_KEYS);
+				ppst.setString(1, interpretation.getInterpretationName());
+				ppst.execute();
+				int interpretationId = h2.getGeneratedKey(ppst);
+				interpretationIds.add(interpretationId);
+			}
+			for (Integer i : interpretationIds) {
+				PreparedStatement ppst = dbConnection.prepareStatement(ADD_INTERPRETATION_MAPPING);
+				ppst.setInt(1, i);
+				ppst.setInt(2, fieldId);
+				ppst.setFloat(3, interpretations.get(i).getConfidence().floatValue());
+				ppst.execute();
+			}
+		} catch (SQLException e) {
+			logger.error("SQL error added interpretations.");
+			logger.error(e);
+		}
+	}
+
+	private static String insertBucketsString(int bucketSize, int histogramId) {
+		String s = "INSERT INTO bucket (histogram_id, bucket_id, b_order, b_long_definition, b_short_definition, b_count) VALUES ";
+		int size = bucketSize; // bucketList.size();
+		if (size > 0) {
+			for (int i = 0; i < size - 1; i++) {
+				String v = "(" + histogramId + ", NULL, " + i + ", ?, ?, ?) , ";
+				s += v;
+			}
+			s += "(" + histogramId + ", NULL, " + (size - 1) + ", ?, ?, ?);";
+		} else {
+			return null;
+		}
+		return s;
+	}
+
+	private NumberDetail resultSetToNumberDetail(ResultSet rs, String tableName) throws SQLException {
+		NumberDetail nd = new NumberDetail();
+
+		nd.setAverage(new BigDecimal(rs.getString(tableName + dot + number_average_key)));
+		nd.setDetailType(DetailType.getTypeByIndex(rs.getInt(tableName + dot + detail_type_id_key)).toString());
+		nd.setMin(new BigDecimal(rs.getString(tableName + dot + number_min_key)));
+		nd.setMax(new BigDecimal(rs.getString(tableName + dot + number_max_key)));
+		nd.setStdDev(rs.getDouble(tableName + dot + number_std_dev_key));
+		nd.setNumDistinctValues(rs.getString(tableName + dot + num_distinct_key));
+		nd.setWalkingCount(new BigDecimal(rs.getString(tableName + dot + count_key)));
+		nd.setFreqHistogram(getHistogram(rs.getInt(number_histogram_key)));
+		nd.setWalkingSquareSum(new BigDecimal(rs.getString(tableName + dot + walking_square_sum_key)));
+		nd.setWalkingSum(new BigDecimal(rs.getString(tableName + dot + walking_sum_key)));
+
+		return nd;
+	}
+
+	private StringDetail resultSetToStringDetail(ResultSet rs, String tableName) throws SQLException {
+		StringDetail sd = new StringDetail();
+
+		sd.setAverageLength(rs.getDouble(tableName + dot + string_average_length_key));
+		sd.setDetailType(DetailType.getTypeByIndex(rs.getInt(tableName + dot + detail_type_id_key)).toString());
+		sd.setMinLength(rs.getInt(tableName + dot + string_min_length_key));
+		sd.setMaxLength(rs.getInt(tableName + dot + string_max_length_key));
+		sd.setStdDevLength(rs.getDouble(tableName + dot + string_std_dev_length_key));
+		sd.setNumDistinctValues(rs.getString(tableName + dot + num_distinct_key));
+		sd.setWalkingCount(new BigDecimal(rs.getString(tableName + dot + count_key)));
+		sd.setTermFreqHistogram(getHistogram(rs.getInt(tableName + dot + string_term_histogram_key)));
+		sd.setWalkingSquareSum(new BigDecimal(rs.getString(tableName + dot + walking_square_sum_key)));
+		sd.setWalkingSum(new BigDecimal(rs.getString(tableName + dot + walking_sum_key)));
+
+		return sd;
+	}
+
+	private BinaryDetail resultSetToBinaryDetail(ResultSet rs, String tableName) throws SQLException {
+		BinaryDetail binaryDetail = new BinaryDetail();
+		binaryDetail.setDetailType(DetailType.getTypeByIndex(rs.getInt(detail_type_id_key)).toString());
+		binaryDetail.setEntropy(rs.getDouble(binary_entropy_key));
+		binaryDetail.setMimeType(rs.getString(binary_mime_type_key));
+		binaryDetail.setHash(rs.getString(binary_hash_key));
+		binaryDetail.setLength(BigInteger.valueOf(rs.getLong(binary_length_key)));
+		binaryDetail.setByteHistogram(getHistogram(rs.getInt(binary_character_histogram_key)));
+		return binaryDetail;
+	}
+	
+	private int insertHistogram(Histogram histogram) {
+		PreparedStatement ppst = null;
+		int histogramId = -1;
+
+		try {
+			ppst = dbConnection.prepareStatement(ADD_HISTOGRAM, PreparedStatement.RETURN_GENERATED_KEYS);
+			// H2DataAccessObject.johnOutput.println(H2DataAccessObject.preparedStatementToString(ppst));
+			ppst.setNull(1, Types.INTEGER);
+			ppst.setNull(2, Types.VARCHAR);
+			ppst.setNull(3, Types.VARCHAR);
+			ppst.execute();
+			histogramId = h2.getGeneratedKey(ppst);
+			createBuckets(histogram, histogramId);
+			createRegionHistogram(histogram.getRegionData(), histogramId);
+		} catch (SQLException e) {
+			logger.error("Error executing query.");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ppst != null)
+					ppst.close();
+			} catch (SQLException e) {
+				logger.error("Error executing query.");
+				e.printStackTrace();
+			}
+		}
+		return histogramId;
+	}
+	
+	private void createRegionHistogram(RegionData regionData, int histogramId) {
+		PreparedStatement ppst = null;
+		PreparedStatement ppst2 = null;
+
+		try {
+			if (regionData != null) {
+				ppst = dbConnection.prepareStatement(ADD_HISTOGRAM, PreparedStatement.RETURN_GENERATED_KEYS);
+				ppst.setInt(1, histogramId);
+				ppst.setString(2, regionData.getLatitudeKey());
+				ppst.setString(3, regionData.getLongitudeKey());
+				ppst.execute();
+				int regionDataId = h2.getGeneratedKey(ppst);
+				String createRegionBuckets = insertBucketsString(regionData.getRows().size(), regionDataId);
+				ppst2 = dbConnection.prepareStatement(createRegionBuckets);
+				List<RowEntry> rows = regionData.getRows();
+				for (int i = 1; i <= rows.size(); i++) {
+					String label = rows.get(i - 1).getC().get(0).getV().toString();
+					if (label.length() > 255) {
+						label = label.substring(0, 255);
+					}
+					ppst2.setString((3 * i - 2), label);
+					ppst2.setString((3 * i - 1), label);
+					ppst2.setString((3 * i), rows.get(i - 1).getC().get(1).getV().toString());
+				}
+				ppst2.execute();
+			}
+		} catch (SQLException e) {
+			logger.error("Error executing query.");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ppst != null)
+					ppst.close();
+			} catch (SQLException e) {
+				logger.error("Error executing query.");
+				e.printStackTrace();
+			}
+			try {
+				if (ppst2 != null)
+					ppst2.close();
+			} catch (SQLException e) {
+				logger.error("Error executing query.");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void createBuckets(Histogram histogram, int histogramId) {
+		List<Integer> dataList = histogram.getData();
+		List<String> labelList = histogram.getLabels();
+		List<String> longLabelList = histogram.getLongLabels();
+		int size = 0;
+		if (dataList.size() != labelList.size()) {
+			logger.error("Data and label lists are unequal sizes.");
+		} else {
+			size = dataList.size();
+		}
+		String createBuckets = insertBucketsString(histogram.getData().size(), histogramId);
+		if (createBuckets == null)
+			return;
+
+		PreparedStatement ppst = null;
+		try {
+			ppst = dbConnection.prepareStatement(createBuckets);
+			for (int i = 1; i <= size; i++) {
+				String longLabel = longLabelList.get(i - 1);
+				String label = labelList.get(i - 1);
+				if (longLabel.length() > 255) {
+					longLabel = longLabel.substring(0, 255);
+				}
+				ppst.setString((3 * i - 2), longLabel);
+				ppst.setString((3 * i - 1), label);
+				ppst.setString((3 * i), dataList.get(i - 1).toString());
+			}
+			// H2DataAccessObject.johnOutput.println(H2DataAccessObject.preparedStatementToString(stmt));
+			ppst.execute();
+		} catch (SQLException e) {
+			logger.error("Error executing query.");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ppst != null)
+					ppst.close();
+			} catch (SQLException e) {
+				logger.error("Error executing query.");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private Histogram getHistogram(int histogramId) {
+		Histogram histogram = new Histogram();
+		if (histogramId == EMPTY_HISTOGRAM_ID) {
+			return histogram;
+		} 
+		
+		PreparedStatement ppst = null;
+
+		try {
+			ppst = dbConnection.prepareStatement(QUERY_BUCKETS_BY_HISTOGRAM_ID);
+			ppst.setInt(1, histogramId);
+			ResultSet rs = ppst.executeQuery();
+
+			histogram = new Histogram();
+			int i = 0;
+			List<String> shortLabels = new ArrayList<String>();
+			List<String> longLabels = new ArrayList<String>();
+			List<Integer> data = new ArrayList<Integer>();
+			while (rs.next()) {
+				String definition = rs.getString("b_short_definition");
+				String longDefinition = rs.getString("b_long_definition");
+				int count = rs.getInt("b_count");
+				shortLabels.add(definition);
+				longLabels.add(longDefinition);
+				data.add(count);
+			}
+			
+			histogram.setLabels(shortLabels);
+			histogram.setLongLabels(longLabels);
+			histogram.setData(data);
+
+			RegionData regionData = getRegionData(histogramId);
+			if (regionData != null) {
+				histogram.setType("map");
+			}
+			histogram.setRegionData(regionData);
+		} catch (SQLException e) {
+			logger.error("Error executing query.");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ppst != null)
+					ppst.close();
+			} catch (SQLException e) {
+				logger.error("Error executing query.");
+				e.printStackTrace();
+			}
+		}
+		return histogram;
+	}
+	
+	/*
+	 * 	private void createBuckets(AbstractBucketList freqHistogram, int histogramId) {
 		// List<AbstractBucket> list = freqHistogram.getOrderedBuckets();
 		List<Integer> dataList = freqHistogram.getData();
 		List<String> labelList = freqHistogram.getLabels();
@@ -759,8 +1078,7 @@ public class H2MetricsDataAccessObject {
 			}
 		}
 	}
-
-	private int insertHistogram(AbstractBucketList buckets) {
+	 * private int insertHistogram(AbstractBucketList buckets) {
 		PreparedStatement ppst = null;
 		int histogramId = -1;
 
@@ -835,147 +1153,6 @@ public class H2MetricsDataAccessObject {
 		}
 	}
 
-	/*
-	 * TODO John, this is what I need for the interpretations finish the
-	 * addInterpretations() method use it in addNumberMetrics() and
-	 * addStringMetrics() add joins to all QUERY_NUMBER_FIELDS and
-	 * QUERY_STRING_FIELDS to return the interpretation data and then put the
-	 * interpretation data into the bean
-	 */
-
-	private int addInterpretation(Interpretation interpretation) {
-		PreparedStatement ppst = null;
-		int interpretationId = -1;
-
-		try {
-			ppst = dbConnection.prepareStatement(ADD_INTERPRETATION, PreparedStatement.RETURN_GENERATED_KEYS);
-			ppst.setString(1, interpretation.getInterpretation());
-			ppst.execute();
-			interpretationId = h2.getGeneratedKey(ppst);
-		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
-		} finally {
-			try {
-				if (ppst != null)
-					ppst.close();
-			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
-			}
-		}
-		return interpretationId;
-	}
-
-	private void addInterpretations(List<AbstractJavaInterpretation> interpretations, int fieldId) throws SQLException {
-		// ******************DO NOT IMPLEMENT **********************
-		/*
-		 * TODO write queries for add and retrieve interpretation and add
-		 * histogram
-		 * 
-		 * queries are ADD_INTERPRETATION use setString(1,
-		 * interpretation.getInterpretationName()); h2.getGeneratedKey(^
-		 * statement) and ADD_INTERPRETATION_MAPPING ? 1 = interpretation id ? 2
-		 * = field_id ? 3 = confidence
-		 */
-		boolean ready = false;
-		if (!ready) {
-			return; // TODO finish method
-		}
-
-		dbConnection.setAutoCommit(false);
-		try {
-			List<Integer> interpretationIds = new ArrayList<Integer>();
-			for (AbstractJavaInterpretation interpretation : interpretations) {
-				PreparedStatement ppst = dbConnection.prepareStatement(ADD_INTERPRETATION,
-						PreparedStatement.RETURN_GENERATED_KEYS);
-				ppst.setString(1, interpretation.getInterpretationName());
-				ppst.execute();
-				int interpretationId = h2.getGeneratedKey(ppst);
-				interpretationIds.add(interpretationId);
-			}
-			for (Integer i : interpretationIds) {
-				PreparedStatement ppst = dbConnection.prepareStatement(ADD_INTERPRETATION_MAPPING);
-				ppst.setInt(1, i);
-				ppst.setInt(2, fieldId);
-				ppst.setFloat(3, interpretations.get(i).getConfidence().floatValue());
-				ppst.execute();
-			}
-		} catch (SQLException e) {
-			logger.error("SQL error added interpretations.");
-			logger.error(e);
-		}
-	}
-
-	private static String insertBucketsString(int bucketSize, int histogramId) {
-		String s = "INSERT INTO bucket (histogram_id, bucket_id, b_order, b_definition, b_count) VALUES ";
-		// List<AbstractBucket> bucketList = buckets.getOrderedBuckets();
-		int size = bucketSize; // bucketList.size();
-		if (size > 0) {
-			for (int i = 0; i < size - 1; i++) {
-				String v = "(" + histogramId + ", NULL, " + i + ", ?, ?) , ";
-				s += v;
-			}
-			s += "(" + histogramId + ", NULL, " + (size - 1) + ", ?, ?);";
-		} else {
-			return null;
-		}
-		return s;
-	}
-
-	private NumberDetail resultSetToNumberDetail(ResultSet rs, String tableName) throws SQLException {
-		NumberDetail nd = new NumberDetail();
-
-		nd.setAverage(new BigDecimal(rs.getString(tableName + dot + number_average_key)));
-		nd.setDetailType(DetailType.getTypeByIndex(rs.getInt(tableName + dot + detail_type_id_key)).toString());
-		nd.setMin(new BigDecimal(rs.getString(tableName + dot + number_min_key)));
-		nd.setMax(new BigDecimal(rs.getString(tableName + dot + number_max_key)));
-		nd.setStdDev(rs.getDouble(tableName + dot + number_std_dev_key));
-		nd.setNumDistinctValues(rs.getInt(tableName + dot + num_distinct_key));
-		nd.setWalkingCount(new BigDecimal(rs.getString(tableName + dot + count_key)));
-		nd.setFreqHistogram(getNumberHistogram(rs.getInt(number_histogram_key)));
-		nd.setWalkingSquareSum(new BigDecimal(rs.getString(tableName + dot + walking_square_sum_key)));
-		nd.setWalkingSum(new BigDecimal(rs.getString(tableName + dot + walking_sum_key)));
-
-		return nd;
-	}
-
-	private StringDetail resultSetToStringDetail(ResultSet rs, String tableName) throws SQLException {
-		StringDetail sd = new StringDetail();
-
-		sd.setAverageLength(rs.getDouble(tableName + dot + string_average_length_key));
-		sd.setDetailType(DetailType.getTypeByIndex(rs.getInt(tableName + dot + detail_type_id_key)).toString());
-		sd.setMinLength(rs.getInt(tableName + dot + string_min_length_key));
-		sd.setMaxLength(rs.getInt(tableName + dot + string_max_length_key));
-		sd.setStdDevLength(rs.getDouble(tableName + dot + string_std_dev_length_key));
-		sd.setNumDistinctValues(rs.getInt(tableName + dot + num_distinct_key));
-		sd.setWalkingCount(new BigDecimal(rs.getString(tableName + dot + count_key)));
-		sd.setTermFreqHistogram(getTermHistogram(rs.getInt(tableName + dot + string_term_histogram_key)));
-		sd.setCharFreqHistogram(getCharacterHistogram(rs.getInt(string_character_histogram_key)));
-		sd.setWalkingSquareSum(new BigDecimal(rs.getString(tableName + dot + walking_square_sum_key)));
-		sd.setWalkingSum(new BigDecimal(rs.getString(tableName + dot + walking_sum_key)));
-
-		return sd;
-	}
-
-	private BinaryDetail resultSetToBinaryDetail(ResultSet rs, String tableName) throws SQLException {
-		BinaryDetail binaryDetail = new BinaryDetail();
-		binaryDetail.setDetailType(DetailType.getTypeByIndex(rs.getInt(detail_type_id_key)).toString());
-		binaryDetail.setEntropy(rs.getDouble(binary_entropy_key));
-		binaryDetail.setMimeType(rs.getString(binary_mime_type_key));
-		binaryDetail.setHash(rs.getString(binary_hash_key));
-		binaryDetail.setLength(BigInteger.valueOf(rs.getLong(binary_length_key)));
-		binaryDetail.setByteHistogram(getByteFrequencyHistogram(rs.getInt(binary_character_histogram_key)));
-		return binaryDetail;
-	}
-
-	/**
-	 * The the term histogram based on its histogram ID.
-	 * 
-	 * @param histogramId
-	 * @return
-	 * @throws SQLException
-	 */
 	private TermBucketList getTermHistogram(int histogramId) {
 		TermBucketList histogram = null;
 		PreparedStatement ppst = null;
@@ -995,7 +1172,7 @@ public class H2MetricsDataAccessObject {
 				i++;
 			}
 
-			if (histogramId == h2.getEmptyHistogramId()) {
+			if (histogramId == EMPTY_HISTOGRAM_ID) {
 				histogram = new TermBucketList();
 				return histogram;
 			}
@@ -1020,13 +1197,6 @@ public class H2MetricsDataAccessObject {
 		return histogram;
 	}
 
-	/**
-	 * Get the character histogram based on its ID.
-	 * 
-	 * @param histogramId
-	 * @return
-	 * @throws SQLException
-	 */
 	private CharacterBucketList getCharacterHistogram(int histogramId) {
 		CharacterBucketList histogram = null;
 		PreparedStatement ppst = null;
@@ -1045,7 +1215,7 @@ public class H2MetricsDataAccessObject {
 				histogram.getBucketMap().put(Integer.valueOf(definition.charAt(0)), cb);
 			}
 
-			if (histogramId == h2.getEmptyHistogramId()) {
+			if (histogramId == EMPTY_HISTOGRAM_ID) {
 				histogram = new CharacterBucketList();
 			}
 		} catch (SQLException e) {
@@ -1070,13 +1240,6 @@ public class H2MetricsDataAccessObject {
 		return histogram;
 	}
 
-	/**
-	 * Get the number histogram based on its ID.
-	 * 
-	 * @param histogramId
-	 * @return
-	 * @throws SQLException
-	 */
 	private NumberBucketList getNumberHistogram(int histogramId) {
 		NumberBucketList histogram = null;
 		PreparedStatement ppst = null;
@@ -1089,14 +1252,14 @@ public class H2MetricsDataAccessObject {
 			histogram = new NumberBucketList();
 			int i = 0;
 			while (rs.next()) {
-				String definition = rs.getString("b_definition");
+				String definition = rs.getString("b_long_definition");
 				int count = rs.getInt("b_count");
 				NumberBucket nb = new NumberBucket(definition, BigInteger.valueOf(count));
 				histogram.getBucketList().add(i, nb);
 				i++;
 			}
 
-			if (histogramId == h2.getEmptyHistogramId()) {
+			if (histogramId == EMPTY_HISTOGRAM_ID) {
 				histogram = new NumberBucketList();
 				return histogram;
 			}
@@ -1141,7 +1304,7 @@ public class H2MetricsDataAccessObject {
 				i++;
 			}
 
-			if (histogramId == h2.getEmptyHistogramId()) {
+			if (histogramId == EMPTY_HISTOGRAM_ID) {
 				histogram = new ByteBucketList();
 				return histogram;
 			}
@@ -1164,7 +1327,7 @@ public class H2MetricsDataAccessObject {
 			}
 		}
 		return histogram;
-	}
+	}*/
 
 	private RegionData getRegionData(int baseHistogramId) {
 		final String latitudeKey = "latitude_key_for_region_histograms";
@@ -1185,7 +1348,7 @@ public class H2MetricsDataAccessObject {
 				regionData.setLatitudeKey(rs2.getString(latitudeKey));
 				regionData.setLongitudeKey(rs2.getString(longitudeKey));
 				do {
-					String country = rs2.getString("b_definition");
+					String country = rs2.getString("b_short_definition");
 					Integer count = Integer.valueOf(rs2.getString("b_count"));
 					rows.add(new RowEntry(country, count));
 				} while (rs2.next());

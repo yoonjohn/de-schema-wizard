@@ -1,0 +1,1395 @@
+{
+	"dsProfile": {
+		"vehicle.positions.longitude": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [3.58545, -74.0444, 4.72427, 20.74631, 8.26337, 0.10033, -118.1201, 1.4721, 9.00665, 151.246, -0.58814, -4.6625, -67.15854, 9.06285, 1.86695, -74.1076, -4.64989, -2.27879, 145.0998, -0.55503, 104.0609, 0.49079, 1.2053, -88.17518, 4.94236, 4.45938, 13.35164, 3.629, 2.33417, -76.58106, -79.70732, -0.10829, -0.54453, -1.03111, -0.13617, 3.03367, -0.56535, 9.06454, 0.4181, 1.07399, -1.44164, -0.77284, 0.64806, 11.72452, 1.55654, -0.48384, 8.37137, 12.2225, 12.65729, 12.18128],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 8.70652767680921,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [2, 0, 0, 0, 0, 0, 16, 48, 5, 0, 4, 4, 2, 26, 33, 293, 12, 2, 0, 0, 46, 8, 2, 0, 0, 2, 25, 127, 652, 1765, 819, 313, 72, 26, 43, 13, 2, 0, 4, 0, 0, 0, 0, 0, 0, 2, 0, 12, 39, 6, 25, 0, 0, 11, 84, 35, 205, 73, 0, 0, 2, 4],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-160.000716,-154.521028)", "[-154.521028,-149.041340)", "[-149.041340,-143.561652)", "[-143.561652,-138.081964)", "[-138.081964,-132.602276)", "[-132.602276,-127.122588)", "[-127.122588,-121.642900)", "[-121.642900,-116.163212)", "[-116.163212,-110.683524)", "[-110.683524,-105.203836)", "[-105.203836,-99.724148)", "[-99.724148,-94.244460)", "[-94.244460,-88.764772)", "[-88.764772,-83.285084)", "[-83.285084,-77.805396)", "[-77.805396,-72.325708)", "[-72.325708,-66.846020)", "[-66.846020,-61.366332)", "[-61.366332,-55.886644)", "[-55.886644,-50.406956)", "[-50.406956,-44.927268)", "[-44.927268,-39.447580)", "[-39.447580,-33.967892)", "[-33.967892,-28.488204)", "[-28.488204,-23.008516)", "[-23.008516,-17.528828)", "[-17.528828,-12.049140)", "[-12.049140,-6.569452)", "[-6.569452,-1.089764)", "[-1.089764,4.389924)", "[4.389924,9.869612)", "[9.869612,15.349300)", "[15.349300,20.828988)", "[20.828988,26.308676)", "[26.308676,31.788364)", "[31.788364,37.268052)", "[37.268052,42.747740)", "[42.747740,48.227428)", "[48.227428,53.707116)", "[53.707116,59.186804)", "[59.186804,64.666492)", "[64.666492,70.146180)", "[70.146180,75.625868)", "[75.625868,81.105556)", "[81.105556,86.585244)", "[86.585244,92.064932)", "[92.064932,97.544620)", "[97.544620,103.024308)", "[103.024308,108.503996)", "[108.503996,113.983684)", "[113.983684,119.463372)", "[119.463372,124.943060)", "[124.943060,130.422748)", "[130.422748,135.902436)", "[135.902436,141.382124)", "[141.382124,146.861812)", "[146.861812,152.341500)", "[152.341500,157.821188)", "[157.821188,163.300876)", "[163.300876,168.780564)", "[168.780564,174.260252)", "[174.260252,179.739940)"]
+				},
+				"min": -157.8471,
+				"walkingCount": 4864,
+				"walkingSum": 42348.55062,
+				"max": 175.0666,
+				"num-distinct-values": "4833",
+				"walkingSquareSum": 1.3628788559310729E7,
+				"detail-type": "decimal",
+				"std-dev": 52.212715959889394
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [3.58545, -74.0444, 4.72427, 20.74631, 8.26337, 0.10033, -118.1201, 1.4721, 9.00665, 151.246, -0.58814, -4.6625, -67.15854, 9.06285, 1.86695, -74.1076, -4.64989, -2.27879, 145.0998, -0.55503, 104.0609, 0.49079, 1.2053, -88.17518, 4.94236, 4.45938, 13.35164, 3.629, 2.33417, -76.58106, -79.70732, -0.10829, -0.54453, -1.03111, -0.13617, 3.03367, -0.56535, 9.06454, 0.4181, 1.07399, -1.44164, -0.77284, 0.64806, 11.72452, 1.55654, -0.48384, 8.37137, 12.2225, 12.65729, 12.18128]
+		},
+		"vehicle.positions.speed": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [459, 288, 301, 436, 376, 431, 233, 57, 145, 315, 413, 286, 594, 463, 474, 380, 584, 556, 211, 437, 178, 210, 367, 251, 260, 256, 263, 329, 266, 477, 274, 541, 199, 432, 206, 234, 755, 610, 747, 530, 611, 773, 580, 649, 116, 42, 789, 629, 695, 24],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 341.7339638157895,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [285, 53, 9, 10, 6, 13, 18, 47, 112, 171, 121, 115, 108, 148, 188, 186, 139, 127, 117, 124, 180, 228, 230, 340, 462, 384, 309, 181, 176, 81, 40, 27, 15, 15, 9, 9, 8, 7, 11, 8, 1, 7, 6, 9, 4, 2, 3, 4, 2, 1, 2, 1, 1, 2, 1, 1, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-9.24,8.80)", "[8.80,26.84)", "[26.84,44.88)", "[44.88,62.92)", "[62.92,80.96)", "[80.96,99.00)", "[99.00,117.04)", "[117.04,135.08)", "[135.08,153.12)", "[153.12,171.16)", "[171.16,189.20)", "[189.20,207.24)", "[207.24,225.28)", "[225.28,243.32)", "[243.32,261.36)", "[261.36,279.40)", "[279.40,297.44)", "[297.44,315.48)", "[315.48,333.52)", "[333.52,351.56)", "[351.56,369.60)", "[369.60,387.64)", "[387.64,405.68)", "[405.68,423.72)", "[423.72,441.76)", "[441.76,459.80)", "[459.80,477.84)", "[477.84,495.88)", "[495.88,513.92)", "[513.92,531.96)", "[531.96,550.00)", "[550.00,568.04)", "[568.04,586.08)", "[586.08,604.12)", "[604.12,622.16)", "[622.16,640.20)", "[640.20,658.24)", "[658.24,676.28)", "[676.28,694.32)", "[694.32,712.36)", "[712.36,730.40)", "[730.40,748.44)", "[748.44,766.48)", "[766.48,784.52)", "[784.52,802.56)", "[802.56,820.60)", "[820.60,838.64)", "[838.64,856.68)", "[856.68,874.72)", "[874.72,892.76)", "[892.76,910.80)", "[910.80,928.84)", "[928.84,946.88)", "[946.88,964.92)", "[964.92,982.96)", "[982.96,1001.00)", "[1001.00,1019.04)"]
+				},
+				"min": 0,
+				"walkingCount": 4864,
+				"walkingSum": 1662194,
+				"max": 1000,
+				"num-distinct-values": "616",
+				"walkingSquareSum": 682518756,
+				"detail-type": "integer",
+				"std-dev": 153.4221819111574
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [459, 288, 301, 436, 376, 431, 233, 57, 145, 315, 413, 286, 594, 463, 474, 380, 584, 556, 211, 437, 178, 210, 367, 251, 260, 256, 263, 329, 266, 477, 274, 541, 199, 432, 206, 234, 755, 610, 747, 530, 611, 773, 580, 649, 116, 42, 789, 629, 695, 24]
+		},
+		"vehicle.positions.boat.name": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["SAM HOLMES", "SAMUEL S COURSEN", "TANGIER ISLAND", "SEA WOLF", "PATRICIA", "SARAH ANN", "SEVERN", "DOLPHIN", "JOHN F.KENNEDY", "CALUSA COAST", "JUSTINE MCALLISTER", "RED CLOUD", "DELAWARE", "BARBARA MILLER", "TURECAMO GIRLS", "MORTON BOUCHARD JR", "MORGAN REINAUER", "IRISH SEA", "PEGASUS", "ROBERT E.MCALLISTER", "POCOMOKE", "KIMBERLY TURECAMO", "ANDREA", "BOUCHARD BOYS", "GULF DAWN", "LINDA LEE BOUCHARD", "MISS KATIE", "PATRICIA S", "CONTI BASEL", "ELIZABETH MCALLISTER", "JAMES E BROWN", "JAMES D MORAN", "BARBARA MCALLISTER", "STEPHEN B", "RED HOOK", "EASTERN DAWN", "SAMUEL I.NEWHOUSE", "BRIAN NICHOLAS", "MARY ALICE", "ATLANTIC SALVOR", "DELAWARE BAY", "MCALLISTER GIRLS", "MIRIAM MORAN", "KIRBY MORAN", "THOMAS D.WITTE", "NICOLE MAIREAD", "WILLIAM E.", "REBECCA ANN", "DEVOCEAN", "ROYAL PRINCESS"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 12.047413793103448,
+				"std-dev-length": 3.503986921496233,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 2, 2, 2, 1, 1, 2, 1, 1, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["ANDREA", "ANNABELLEDOROTHY", "BROOKLYN", "DELAWARE", "DEPENDABLE", "DEVOCEAN", "DOLPHIN", "FB343", "FDNYBRAVEST", "GORDON", "HOUMA", "MAGOTHY", "MARYLAND", "MICHIGAN", "PATRICIA", "PEGASUS", "POCOMOKE", "RESOLUTE", "ROANOKE", "SAIMAAGRACHT", "SAM HOLMES", "SASSAFRAS", "SEVERN", "SIMA", "SUNDANCE", "TUCKAHOE", "WEDELLSBORG"]
+				},
+				"walkingCount": 232,
+				"walkingSum": 2795,
+				"num-distinct-values": "134",
+				"walkingSquareSum": 36521,
+				"detail-type": "phrase",
+				"max-length": 20,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [207, 1, 22, 1, 1, 2, 2, 1, 325, 65, 101, 72, 285, 20, 41, 62, 163, 29, 44, 165, 127, 183, 145, 31, 241, 155, 119, 85, 11, 35, 6, 43, 2, 1, 1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [" ", "&", ".", "1", "2", "3", "4", ";", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "m", "p"]
+				},
+				"min-length": 4
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["SAM HOLMES", "SAMUEL S COURSEN", "TANGIER ISLAND", "SEA WOLF", "PATRICIA", "SARAH ANN", "SEVERN", "DOLPHIN", "JOHN F.KENNEDY", "CALUSA COAST", "JUSTINE MCALLISTER", "RED CLOUD", "DELAWARE", "BARBARA MILLER", "TURECAMO GIRLS", "MORTON BOUCHARD JR", "MORGAN REINAUER", "IRISH SEA", "PEGASUS", "ROBERT E.MCALLISTER", "POCOMOKE", "KIMBERLY TURECAMO", "ANDREA", "BOUCHARD BOYS", "GULF DAWN", "LINDA LEE BOUCHARD", "MISS KATIE", "PATRICIA S", "CONTI BASEL", "ELIZABETH MCALLISTER", "JAMES E BROWN", "JAMES D MORAN", "BARBARA MCALLISTER", "STEPHEN B", "RED HOOK", "EASTERN DAWN", "SAMUEL I.NEWHOUSE", "BRIAN NICHOLAS", "MARY ALICE", "ATLANTIC SALVOR", "DELAWARE BAY", "MCALLISTER GIRLS", "MIRIAM MORAN", "KIRBY MORAN", "THOMAS D.WITTE", "NICOLE MAIREAD", "WILLIAM E.", "REBECCA ANN", "DEVOCEAN", "ROYAL PRINCESS"]
+		},
+		"vehicle.positions.latitude": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [48.82501, 40.65999, 52.55962, 51.65181, 48.71443, 51.8922, 51.63011, 52.61911, 45.5962, 48.15115, 51.47713, 47.37049, 19.46814, 44.55301, 49.28672, 40.68413, 53.25837, 53.26428, 47.58835, 53.66593, 52.15961, 51.74826, 52.0758, 55.87763, 51.95793, 49.65406, 49.27457, 51.68723, 38.3646, 46.33172, 53.50556, 52.44636, 41.36458, 35.46396, -23.30017, 51.02172, 48.92086, -34.51227, 51.1908, 51.34058, 35.59882, 48.94186, 35.59264, 51.87334, 51.62434, 47.5249, 46.60011, 48.31819, -34.77596, 54.06377],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 40.82091339432566,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [2, 0, 0, 43, 58, 84, 47, 59, 41, 31, 8, 38, 0, 4, 0, 0, 0, 9, 0, 0, 4, 0, 0, 0, 0, 39, 2, 0, 0, 0, 0, 0, 10, 0, 0, 8, 2, 6, 4, 6, 2, 2, 6, 50, 82, 56, 119, 354, 207, 128, 177, 501, 718, 1304, 485, 88, 38, 10, 30, 0, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-43.4145480,-41.6403824)", "[-41.6403824,-39.8662168)", "[-39.8662168,-38.0920512)", "[-38.0920512,-36.3178856)", "[-36.3178856,-34.5437200)", "[-34.5437200,-32.7695544)", "[-32.7695544,-30.9953888)", "[-30.9953888,-29.2212232)", "[-29.2212232,-27.4470576)", "[-27.4470576,-25.6728920)", "[-25.6728920,-23.8987264)", "[-23.8987264,-22.1245608)", "[-22.1245608,-20.3503952)", "[-20.3503952,-18.5762296)", "[-18.5762296,-16.8020640)", "[-16.8020640,-15.0278984)", "[-15.0278984,-13.2537328)", "[-13.2537328,-11.4795672)", "[-11.4795672,-9.7054016)", "[-9.7054016,-7.9312360)", "[-7.9312360,-6.1570704)", "[-6.1570704,-4.3829048)", "[-4.3829048,-2.6087392)", "[-2.6087392,-0.8345736)", "[-0.8345736,0.9395920)", "[0.9395920,2.7137576)", "[2.7137576,4.4879232)", "[4.4879232,6.2620888)", "[6.2620888,8.0362544)", "[8.0362544,9.8104200)", "[9.8104200,11.5845856)", "[11.5845856,13.3587512)", "[13.3587512,15.1329168)", "[15.1329168,16.9070824)", "[16.9070824,18.6812480)", "[18.6812480,20.4554136)", "[20.4554136,22.2295792)", "[22.2295792,24.0037448)", "[24.0037448,25.7779104)", "[25.7779104,27.5520760)", "[27.5520760,29.3262416)", "[29.3262416,31.1004072)", "[31.1004072,32.8745728)", "[32.8745728,34.6487384)", "[34.6487384,36.4229040)", "[36.4229040,38.1970696)", "[38.1970696,39.9712352)", "[39.9712352,41.7454008)", "[41.7454008,43.5195664)", "[43.5195664,45.2937320)", "[45.2937320,47.0678976)", "[47.0678976,48.8420632)", "[48.8420632,50.6162288)", "[50.6162288,52.3903944)", "[52.3903944,54.1645600)", "[54.1645600,55.9387256)", "[55.9387256,57.7128912)", "[57.7128912,59.4870568)", "[59.4870568,61.2612224)", "[61.2612224,63.0353880)", "[63.0353880,64.8095536)"]
+				},
+				"min": -42.2294,
+				"walkingCount": 4864,
+				"walkingSum": 198552.92275,
+				"max": 63.88024,
+				"num-distinct-values": "4804",
+				"walkingSquareSum": 1.0746957902290108E7,
+				"detail-type": "decimal",
+				"std-dev": 23.30542275864822
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [48.82501, 40.65999, 52.55962, 51.65181, 48.71443, 51.8922, 51.63011, 52.61911, 45.5962, 48.15115, 51.47713, 47.37049, 19.46814, 44.55301, 49.28672, 40.68413, 53.25837, 53.26428, 47.58835, 53.66593, 52.15961, 51.74826, 52.0758, 55.87763, 51.95793, 49.65406, 49.27457, 51.68723, 38.3646, 46.33172, 53.50556, 52.44636, 41.36458, 35.46396, -23.30017, 51.02172, 48.92086, -34.51227, 51.1908, 51.34058, 35.59882, 48.94186, 35.59264, 51.87334, 51.62434, 47.5249, 46.60011, 48.31819, -34.77596, 54.06377]
+		},
+		"vehicle.positions.boat.width": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [0, 10, 18, 8.3, 8.84, 14, 11, 9, 7.92, 8.2, 10.36, 12.27, 22, 43, 9.14, 10.42, 32.28, 32.23, 20.73, 9.61, 5, 8.39, 8.28, 4, 19, 10.6, 9.15, 21.34, 9.44, 8, 9.78, 6, 9.75, 9.5, 10.97, 8.23, 8.17, 24, 7.32, 7.37, 40, 9.2, 8.54, 7, 12, 8.59, 11.08, 21.3, 6.89, 32.31],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 12.373965517241379,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [7, 0, 0, 1, 2, 5, 9, 6, 12, 31, 34, 51, 12, 10, 0, 8, 0, 0, 0, 3, 2, 1, 0, 3, 3, 5, 0, 3, 0, 2, 1, 1, 0, 0, 2, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 3, 0, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[0.00,0.88)", "[0.88,1.76)", "[1.76,2.64)", "[2.64,3.52)", "[3.52,4.40)", "[4.40,5.28)", "[5.28,6.16)", "[6.16,7.04)", "[7.04,7.92)", "[7.92,8.80)", "[8.80,9.68)", "[9.68,10.56)", "[10.56,11.44)", "[11.44,12.32)", "[12.32,13.20)", "[13.20,14.08)", "[14.08,14.96)", "[14.96,15.84)", "[15.84,16.72)", "[16.72,17.60)", "[17.60,18.48)", "[18.48,19.36)", "[19.36,20.24)", "[20.24,21.12)", "[21.12,22.00)", "[22.00,22.88)", "[22.88,23.76)", "[23.76,24.64)", "[24.64,25.52)", "[25.52,26.40)", "[26.40,27.28)", "[27.28,28.16)", "[28.16,29.04)", "[29.04,29.92)", "[29.92,30.80)", "[30.80,31.68)", "[31.68,32.56)", "[32.56,33.44)", "[33.44,34.32)", "[34.32,35.20)", "[35.20,36.08)", "[36.08,36.96)", "[36.96,37.84)", "[37.84,38.72)", "[38.72,39.60)", "[39.60,40.48)", "[40.48,41.36)", "[41.36,42.24)", "[42.24,43.12)", "[43.12,44.00)", "[44.00,44.88)"]
+				},
+				"min": 0,
+				"walkingCount": 232,
+				"walkingSum": 2870.76,
+				"max": 43,
+				"num-distinct-values": "74",
+				"walkingSquareSum": 51516.7098,
+				"detail-type": "decimal",
+				"std-dev": 8.302997109406395
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [0, 10, 18, 8.3, 8.84, 14, 11, 9, 7.92, 8.2, 10.36, 12.27, 22, 43, 9.14, 10.42, 32.28, 32.23, 20.73, 9.61, 5, 8.39, 8.28, 4, 19, 10.6, 9.15, 21.34, 9.44, 8, 9.78, 6, 9.75, 9.5, 10.97, 8.23, 8.17, 24, 7.32, 7.37, 40, 9.2, 8.54, 7, 12, 8.59, 11.08, 21.3, 6.89, 32.31]
+		},
+		"cluster_id": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["8e86aedf-e43b-4ee1-bdd8-2c2f57a3552f", "9fefabfc-8f07-4585-978f-ea3e9a8512d3", "211e6d9d-f0e0-42c2-9f48-dd1b49d4a8e6", "e6b96373-176e-4d23-86dc-650179978b28", "a7cf4a36-ec86-4e33-b30f-180ed374ec68", "fa9acab7-3a9a-4bf6-ae8c-b54f6766371d", "259e35b4-9a05-4390-be10-a67b53e519ab", "7ae5f144-36aa-491c-b85e-97698c71e755", "9ad42968-605a-4917-a788-bdaab6c7d1fd", "1b56989f-a29f-42e5-97b8-26d59155b689", "17985fdd-49c2-4f8a-9b3f-48632d5af339", "bbdb3edc-9703-49e7-805f-4893c6081aad", "91d46895-3dbb-4561-8471-ad4f27332a61", "45b64370-391f-416c-afe3-621672ecf86c", "7eaa24cd-f5a1-4fd1-ad4c-1d39f38246eb", "4f7694bc-466d-4297-9ec0-65b2d471e9bd", "effd0637-10cb-454c-8aa5-585556009f85", "f74e63da-42d2-49f7-a6a5-52a9b448162d", "5935b1d9-1a60-401b-8ce2-4d2450e7b916", "ba06d702-d823-4aca-9f3f-2ff261c6e864", "dea34144-f59c-45b4-a909-3a21f23b46a9", "24aa5216-e79b-4bb3-8dd9-a7728d58493b", "2e584224-4cda-4e71-8403-003d63e557fd", "819a2e35-45d3-41a4-8041-0ecbde2d79ca", "3c17ba7e-9680-4dbb-9c2b-b99fa42c55aa", "48b561e5-31b0-48bc-9f3e-ad669c9589b0", "c4fadd71-76e0-46b7-88aa-059b8f5135d6", "01bed605-2fb7-4ad2-ad72-f17e9551eaf4", "253c9153-9a9b-465a-a136-354789454b1b", "76fdff2a-3d7c-4883-92a6-388646753374", "07e545b3-89d5-4c12-a991-2151fd513f33", "453bcfd0-87f5-4fad-9416-2fbb2751c103", "a6582776-e157-4255-9517-2a4c3cca09ae", "21552205-b745-480d-aa28-0f4c257332ca", "87cab88c-fcef-47c1-ba73-a03f8c37a2e7", "6ec138b6-9bd2-49d1-8133-96771e70bf19", "afb98e1d-59d8-4f5f-995f-cbbc6c7f503d", "a746b11a-b100-4e72-bb45-90e9c3ff820a", "088fb9f3-0b09-42cf-bef2-55dc9c8f0b6a", "ff3b956c-1c3f-45a1-be1a-0d8834671a18", "319b677f-1ba6-4f2e-95c0-cc1ed3cf9863", "c7aa5053-6938-4443-9f35-f7ca94ec20f1", "863876ad-0a39-41a4-8c9f-42f65f74fa16", "8a228131-dd6f-4600-b888-69cf754bb63e", "b410d25c-4e05-4f0c-b25b-74344d2a9ef3", "ee3a7fca-5bb1-43cf-9c32-6df8ff28ff31", "c1c6d7df-97e5-45c1-9b25-09c00d7abe99", "c0f3e7a5-31c1-42cb-b6b3-75f8771bdb1b", "9cffc69e-af06-400e-aa63-20abfae9c357", "83675e03-16b9-4a54-9fe8-bc0b276b81b3"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 36,
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [43, 41, 1, 5, 34, 2, 1, 1, 1, 53, 182, 1, 164, 2, 1, 1, 1, 8, 1, 8, 1, 188, 56, 1, 36, 1, 74, 2, 5, 77, 48, 14, 2, 118, 17, 47, 10, 28, 1, 64, 114, 1, 2, 6, 10, 67, 13, 2, 1, 6, 124, 1, 1, 3, 1, 2, 6, 4, 1, 25, 3, 14, 102, 1, 2, 2, 52, 77, 3, 1, 1, 9, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[000b9ac4-bae1-427d-a18a-ff94f709dab4,06048294-5728-4fdb-a66f-2aadaf63594d]", "[060b0a96-d94b-4178-95e3-cb22a46f9900,0b08505c-e94a-44d4-b503-0701b5950d23]", "0b0fbf60-da6e-4290-959f-f58a4f11d06e", "[0b10b4a6-669c-44c8-8556-ba17535a9b61,0b692cdd-f791-4abe-a447-33d248743469]", "[0b7744ea-b977-491a-bee3-1d949c3f8888,0e1d14b1-4b76-4920-b66e-fa421fad2a3d]", "[0e379f74-0215-4658-8bd4-f9377f9a5659,0e80dc2e-4508-400b-a8df-102a47e50828]", "0e8192b2-2dac-403b-9ccd-93359e74515a", "0eb10237-c2fd-45d9-a626-94e26fcca907", "0f34e67d-0688-43e3-b8a7-f449ed63798e", "[0f386b45-1d42-41a4-b10d-d55803d95847,16396875-aa28-4ee2-8e5c-a31dd6410208]", "[163f29ca-39b4-48da-956a-e9d6d5c8eec4,2f1cb5fa-e13c-4ff0-b6d6-d40c36d38d50]", "2f3c13d4-2c8d-4c62-9592-db70c2a6cdca", "[2f6a3309-74fb-4f85-ac63-d6d2ef2b3039,461e2723-f7a1-4a0b-ab3b-af5d8fd502a0]", "[4623f22e-fc6e-4e15-82eb-cbb15ffc7eb8,4644915a-d7f0-433e-a530-ad25236fae37]", "4699baad-f1a1-4090-ac8f-7fd08d328ec0", "46a64a9d-caa6-4c30-9eec-ca0f7c884163", "471c9683-7390-4ab0-aaf7-678e329f22de", "[47328578-e801-43c6-90fe-4c2e2fc8c894,47d36f93-c48b-462c-a769-bf4539a88f93]", "48418566-0e5c-4595-8a70-3caa9388abc8", "[484c2cf6-6894-4749-99e2-b512f73371b1,4908d27e-e0f1-49fe-8c29-8a8e0361da86]", "49228feb-772b-4f1d-ae60-17545d68d2fe", "[49401c01-362e-4847-b961-67aac0fdc9a2,5ffbe0d2-d807-425d-972a-2fc895e3c3db]", "[601ffe4a-1d96-4899-8b79-160281451676,66d972ff-53ff-4ff8-9431-d05a7c9cf34c]", "66f89ff0-b520-4c2f-8123-f10a6028886c", "[67024a7f-72d4-4b45-820f-fb5ad44aad5c,6c560bec-90b6-4f45-80a1-7dddbe554598]", "6c91c454-b536-42ec-8d7b-28f4653d4341", "[6c9e337e-7ae9-4a87-8262-9805dfff60c6,766a7230-9084-47c0-a94e-f906b394d7ca]", "[7686be5c-d738-4c00-9c74-5bb54d8d6bfd,76aecb0b-6c59-49e2-a64d-ba21f2b69b57]", "[76b441d2-12bf-429d-aff1-bfcbbe1af34c,772136c9-4eb7-4481-81cf-0f3449c19888]", "[7724a925-ba51-4e6b-afa5-f5307efeaee0,8167a2dd-f627-421d-b326-864bf20f701d]", "[819a2e35-45d3-41a4-8041-0ecbde2d79ca,870ab6ab-842f-4bc4-b10d-b496dc4a9a70]", "[87387a80-5626-469e-9930-5c00d11d283c,8910061a-460f-4541-9784-50e043f2b8da]", "[895b818c-96f7-4ad7-8c35-cc5c832cef1f,897a9a64-055e-4f4e-b46a-6f8055d4b976]", "[8993575b-7860-4344-b3d8-6faa16f356ab,98c9d318-e982-45b8-9825-c8667df1e7c1]", "[98effbec-ea0a-4b4d-9afd-db2ed791ef24,9aa9b39e-62e2-42ca-b59b-eaebb1253bc8]", "[9ac8cda3-530d-4d7d-8f7e-0619ac838a17,9ffd2792-dd5c-4056-8b0f-4a342b967b69]", "[a0014c63-2191-4adf-8425-2a3e8af00afc,a13b3aca-1748-4cd7-8438-d018483f2524]", "[a1424e5c-a9b8-4dfa-a755-8a41e8d15b32,a514352b-60b0-4ca7-89e2-cf598ab4a4b1]", "a5151a6a-d500-4059-8d70-a9fd992de2b2", "[a525218f-6019-4446-93ec-63596f690adb,ad9ce208-9466-4064-9cce-3a7bb4f9a726]", "[adab1e87-a4ca-4603-8404-63edfaeec2cb,bdf1e976-fc73-4e76-9af5-fca1b78c102b]", "be021436-4456-4ceb-a8f7-2c90a2229636", "[be201174-065b-48e8-ba0c-951c2d23e0bc,be542acd-a827-446b-ab0d-6180d017390b]", "[be5ae59e-b675-4041-8a77-8da3a5e9ee9a,beebe2a9-19f1-4bd7-acb2-8b34163f268e]", "[bf2bb4b7-88b2-4ab3-952b-23342ec10825,c05783ac-86f8-4305-bee7-556b8aec0467]", "[c0755d8a-d5f2-45a9-b67a-f183b298a29c,c7af198b-faf8-49af-abfc-01ea28de597e]", "[c7ba23d5-f31a-4b59-8d2d-45dec812c80c,c9c58828-29ee-4191-9b7c-da5e62eeff74]", "[c9dff340-3b27-420c-906c-4baa959d160c,c9e3d61f-7dbd-4d4c-84f6-b54769b04b1b]", "ca5c6b9e-94f6-4c82-b22d-149fb83a1a62", "[ca6c7ff4-297f-4b9d-b1bd-98a8feae44ab,cb262d05-b1ba-4c7c-8abd-19f3177d00ba]", "[cb6b3b2e-da0e-42b5-bec3-91f0aac7cbdd,d971c342-bc95-47e2-a2a5-42046791eab4]", "d98da934-e89a-4bc1-932a-7d68d36fb1c9", "d9c2e092-b160-40cb-b63b-bbad2b464b18", "[d9d33e19-0abc-43cd-8078-e381d9e4071a,d9e1bccd-0aad-4b83-bd35-066153a9800f]", "d9f25b81-1b1e-48ad-9838-3fbf7ebfc72a", "[da04d44b-b3ef-48a2-8878-c34679e87974,da065cd5-30cb-4a10-8f58-cbebb5250df3]", "[da5f1e74-8a23-4639-ac3c-dd58f4be81b0,dae71936-2fab-4aea-a426-658513e64004]", "[db2cb3d2-4ef7-4152-8cfa-4ea4268d10ae,db3df8d9-3bc2-4b0a-b279-091534526fcd]", "db70f5ab-6200-41e3-9edc-72f97d639f03", "[dbe1117f-1758-4984-8f9a-a7e73b87124c,df39da3d-4fcb-4299-8557-ff903fed8aae]", "[df9799e9-8cf2-4c5d-ab28-271aa939ed13,dfeaab30-2821-4bdf-86ac-04f57c53f196]", "[e001fab3-e063-4221-9d1e-8aa369eeb9e7,e1b5c65d-f5f4-4b45-b297-eb838f7584d3]", "[e1c25b75-84b2-4fb5-ae62-b620fbe607be,eec385a5-028b-42cb-b666-2ec285dc708d]", "eec719f0-5a00-4fdc-bc2a-7e163be355e8", "[eecb3c38-5a4c-44ce-ae84-ee97be38b149,eecde699-53ca-427e-8220-c183588cea88]", "[eee2e50c-878f-4c93-90ad-aa0ee33667bd,ef0f62ec-59e5-4b89-854b-06e1c097c64d]", "[ef3db9c3-ac16-4fd8-b30a-18b0fd27135b,f545d5c5-a73c-45d0-a691-2fad63093bc0]", "[f5531630-f5fd-42a0-af9b-c615230c8e8e,feaaadd3-e8d1-4ffe-82f7-017590fa8d79]", "[feac9611-652c-4f4c-9347-daa667c0b4ad,fedf2833-8791-4145-af46-3ac9996be022]", "ff1bd74d-9b31-4306-907b-90dfd0fd3692", "ff22bb35-cd99-4deb-ab1a-5fcf63662f0e", "[ff242d51-02e1-47d1-bff4-05219319b98f,ffe3cf6b-a47c-4acf-894c-404f875d4926]", "fff208dc-b2ff-45e0-8c1b-b14a220e03e0"]
+				},
+				"walkingCount": 2000,
+				"walkingSum": 72000,
+				"num-distinct-values": "2000",
+				"walkingSquareSum": 2592000,
+				"detail-type": "term",
+				"max-length": 36,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [8000, 3755, 3756, 3626, 3726, 5755, 3709, 3691, 3779, 4310, 4284, 4277, 4251, 3711, 3657, 3904, 3809],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+				},
+				"min-length": 36
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["8e86aedf-e43b-4ee1-bdd8-2c2f57a3552f", "9fefabfc-8f07-4585-978f-ea3e9a8512d3", "211e6d9d-f0e0-42c2-9f48-dd1b49d4a8e6", "e6b96373-176e-4d23-86dc-650179978b28", "a7cf4a36-ec86-4e33-b30f-180ed374ec68", "fa9acab7-3a9a-4bf6-ae8c-b54f6766371d", "259e35b4-9a05-4390-be10-a67b53e519ab", "7ae5f144-36aa-491c-b85e-97698c71e755", "9ad42968-605a-4917-a788-bdaab6c7d1fd", "1b56989f-a29f-42e5-97b8-26d59155b689", "17985fdd-49c2-4f8a-9b3f-48632d5af339", "bbdb3edc-9703-49e7-805f-4893c6081aad", "91d46895-3dbb-4561-8471-ad4f27332a61", "45b64370-391f-416c-afe3-621672ecf86c", "7eaa24cd-f5a1-4fd1-ad4c-1d39f38246eb", "4f7694bc-466d-4297-9ec0-65b2d471e9bd", "effd0637-10cb-454c-8aa5-585556009f85", "f74e63da-42d2-49f7-a6a5-52a9b448162d", "5935b1d9-1a60-401b-8ce2-4d2450e7b916", "ba06d702-d823-4aca-9f3f-2ff261c6e864", "dea34144-f59c-45b4-a909-3a21f23b46a9", "24aa5216-e79b-4bb3-8dd9-a7728d58493b", "2e584224-4cda-4e71-8403-003d63e557fd", "819a2e35-45d3-41a4-8041-0ecbde2d79ca", "3c17ba7e-9680-4dbb-9c2b-b99fa42c55aa", "48b561e5-31b0-48bc-9f3e-ad669c9589b0", "c4fadd71-76e0-46b7-88aa-059b8f5135d6", "01bed605-2fb7-4ad2-ad72-f17e9551eaf4", "253c9153-9a9b-465a-a136-354789454b1b", "76fdff2a-3d7c-4883-92a6-388646753374", "07e545b3-89d5-4c12-a991-2151fd513f33", "453bcfd0-87f5-4fad-9416-2fbb2751c103", "a6582776-e157-4255-9517-2a4c3cca09ae", "21552205-b745-480d-aa28-0f4c257332ca", "87cab88c-fcef-47c1-ba73-a03f8c37a2e7", "6ec138b6-9bd2-49d1-8133-96771e70bf19", "afb98e1d-59d8-4f5f-995f-cbbc6c7f503d", "a746b11a-b100-4e72-bb45-90e9c3ff820a", "088fb9f3-0b09-42cf-bef2-55dc9c8f0b6a", "ff3b956c-1c3f-45a1-be1a-0d8834671a18", "319b677f-1ba6-4f2e-95c0-cc1ed3cf9863", "c7aa5053-6938-4443-9f35-f7ca94ec20f1", "863876ad-0a39-41a4-8c9f-42f65f74fa16", "8a228131-dd6f-4600-b888-69cf754bb63e", "b410d25c-4e05-4f0c-b25b-74344d2a9ef3", "ee3a7fca-5bb1-43cf-9c32-6df8ff28ff31", "c1c6d7df-97e5-45c1-9b25-09c00d7abe99", "c0f3e7a5-31c1-42cb-b6b3-75f8771bdb1b", "9cffc69e-af06-400e-aa63-20abfae9c357", "83675e03-16b9-4a54-9fe8-bc0b276b81b3"]
+		},
+		"vehicle.positions.boat.year_built": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["N/A", "2013", "1970", "1998", "2003", "2000", "2009", "1986", "1973", "1965", "2007", "1978", "1968", "1982", "1994", "1974", "1969", "1980", "1981", "1975", "2008", "1995", "1966", "2006", "1962", "1967", "2002", "2015", "1961", "1996", "1977", "1979", "2012", "1952", "2011", "1957", "2005", "1972", "2014", "1956"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 3.7142857142857144,
+				"std-dev-length": 0.45175395145262565,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 1, 3, 4, 4, 4, 6, 4, 8, 8, 6, 1, 4, 5, 10, 3, 7, 4, 4, 3, 6, 4, 2, 2, 2, 3, 8, 4, 5, 2, 3, 7, 4, 2, 2, 10, 4, 2, 2, 66],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["1952", "1956", "1957", "1961", "1962", "1965", "1966", "1967", "1968", "1969", "1970", "1972", "1973", "1974", "1975", "1977", "1978", "1979", "1980", "1981", "1982", "1986", "1994", "1995", "1996", "1998", "2000", "2002", "2003", "2005", "2006", "2007", "2008", "2009", "2011", "2012", "2013", "2014", "2015", "N/A"]
+				},
+				"walkingCount": 231,
+				"walkingSum": 858,
+				"num-distinct-values": "40",
+				"walkingSquareSum": 3234,
+				"detail-type": "term",
+				"max-length": 4,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [66, 108, 139, 82, 13, 9, 26, 54, 57, 39, 133, 66, 66],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "N"]
+				},
+				"min-length": 3
+			},
+			"presence": 0.003,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["N/A", "2013", "1970", "1998", "2003", "2000", "2009", "1986", "1973", "1965", "2007", "1978", "1968", "1982", "1994", "1974", "1969", "1980", "1981", "1975", "2008", "1995", "1966", "2006", "1962", "1967", "2002", "2015", "1961", "1996", "1977", "1979", "2012", "1952", "2011", "1957", "2005", "1972", "2014", "1956"]
+		},
+		"vehicle.positions.trip.id": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["EZS8430-1442124042-fa-0124:0", "AFR7660-1442035200-schedule-0000:0", "RYR535-1442036100-schedule-0000:2", "RYR8166-1442034900-schedule-0002:0", "MON278-1442036400-schedule-0000:0", "RYR662-1442035500-schedule-0000:0", "AZA1432-1442033400-schedule-0000:0", "EZY6011-1442036700-schedule-0000:0", "AUA458-1442034000-schedule-0000:0", "SIA368-1442169130-adhoc-0:0", "RYR9976-1442034000-schedule-0003:0", "AFR7673-1442034600-schedule-0000:0", "VOZ859-1442037600-schedule-0003:0", "EZY66-1442037600-schedule-0002:0", "DLH821-1442034900-schedule-0000:0", "JCB1-1441970253-dlad-3917885:6", "KLM602-1442004300-schedule-0001:0", "EXS623-1442039400-schedule-0000:4", "RYR2613-1442046300-schedule-0000:2", "BAW2771-1442048400-schedule-0001:0", "DLH925-1442043000-schedule-0000:0", "NAX3087-1442051700-schedule-0000:6", "RYR9525-1442046000-schedule-0001:2", "MON227-1442047200-schedule-0000:2", "BAW457-1442047049-airline-0009:0", "TAP782-1442045400-schedule-0001:0", "FWI510-1442052600-schedule-0000:2", "RYR1965-1442048700-schedule-0003:0", "BEL2258-1442050800-schedule-0000:2", "AFR1740-1442054100-schedule-0004:0", "GWI9541-1442049600-schedule-0000:0", "NLY8981-1442047800-schedule-0001", "EDW177-1442046000-schedule-0000:0", "N977AE-1442223921-57-0", "SXS970-1442046900-schedule-0001", "TUI2273-1442048400-schedule-0001:0", "TAM3103-1442057100-schedule-0002", "BAW763-1442048068-airline-0058:0", "BAW776-1442040600-schedule-0000:2", "SAA67-1442034900-schedule-0000", "NAX4221-1442034300-schedule-0000:14", "BAW372-1442040600-schedule-0000:2", "SXS540-1442177803-airline-0106", "DLA8218-1442041500-schedule-0000", "VLG1503-1442041800-schedule-0001:0", "BAW1414-1442038500-schedule-0000:0", "SWR451-1442040900-schedule-0001:6", "SWR154-1442043900-schedule-0001:2", "ANA852-1442035800-schedule-0002", "AAL992-1442017200-schedule-0001"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 31.208059210526315,
+				"std-dev-length": 6.618781901899712,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 13, 2, 3, 130, 58, 1, 11, 18, 2, 211, 18, 12, 2, 360, 2, 42, 308, 4, 10, 328, 2, 22, 3, 3, 3, 16, 89, 84, 8, 2, 1, 59, 392, 166, 2, 2, 84, 22, 11, 2, 217, 13, 31, 507, 198, 104, 94, 5, 601, 3, 152, 414, 14],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[AAF232-1442048100-schedule-0000,AAF263-1442041200-schedule-0000]", "[AAF264-1442053200-schedule-0000,AAL1107-1442052000-schedule-0004]", "[AAL1110-1442053800-schedule-0000,AAL1111-1442054700-schedule-0000]", "[AAL120-1442020200-schedule-0001:0,AAL1283-1442105972-airline-0124]", "[AAL1399-1442050800-schedule-0001,ABX2201-1442202969-14-0]", "[ACA63-1442003700-schedule-0000,AFR1233-1442049600-schedule-0000:2]", "AFR1262-1442044200-schedule-0000:6", "[AFR1263-1442056200-schedule-0000:2,AFR1381-1442036400-schedule-0000:0]", "[AFR1381-1442036400-schedule-0000:0,AFR1434-1442036100-schedule-0000:0]", "[AFR1434-1442036100-schedule-0000:0,AFR1442-1442055000-schedule-0000:0]", "[AFR1449-1442033100-schedule-0000:0,AUA9132-1442049300-schedule-0000]", "[AUR604-1442049600-schedule-0003:0,AZA1465-1442053800-schedule-0000:0]", "[AZA156-1442038800-schedule-0000:0,AZA201-1442036700-schedule-0000:0]", "[AZA2025-1442038800-schedule-0001:2,AZA211-1442189775-ed-0006:2]", "[AZA229-1442039100-schedule-0000:0,BAW724-1442037000-schedule-0001:2]", "[BAW726-1442042400-schedule-0001:0,BAW726-1442042400-schedule-0001:2]", "[BAW727-1442047002-airline-0026:0,BAW795-1442033700-schedule-0000:2]", "[BAW8-1442139439-airline-0093:0,CLH308-1442036400-schedule-0000:0]", "[CLH308-1442036400-schedule-0000:0,CLH310-1442049900-schedule-0000:0]", "[CLH314-1442066700-schedule-0001:0,DAL1262-1442123768-airline-0075]", "[DAL136-1442015940-schedule-0001:0,EIN262-1442035800-schedule-0000:0]", "EIN263-1442041800-schedule-0002:0", "[EIN30-1442040000-schedule-0000:0,EIN393-1442046600-schedule-0002:2]", "[EIN402-1442038200-schedule-0000:0,EIN403-1442051700-schedule-0001:0]", "[EIN432-1442038200-schedule-0000:0,EIN432-1442038200-schedule-0000:4]", "[EIN432-1442038200-schedule-0000:6,EIN433-1442049600-schedule-0000:2]", "[EIN446-1442039400-schedule-0001:0,EIN592-1442035200-schedule-0000:0]", "[EIN592-1442035200-schedule-0000:2,EXS601-1442040900-schedule-0001:4]", "[EXS605-1442038500-schedule-0000:6,EZY1840-1442048700-schedule-0000:0]", "[EZY1851-1442040300-schedule-0000:0,EZY193-1442038200-schedule-0000:2]", "[EZY1947-1442036400-schedule-0000:0,EZY1947-1442036400-schedule-0000:4]", "EZY1947-1442036400-schedule-0000:4", "[EZY1985-1442040300-schedule-0000:2,EZY2725-1442049600-schedule-0000:6]", "[EZY2733-1442034000-schedule-0001:2,FWI511-1442007000-schedule-0001:2]", "[GFA2-1442048400-schedule-0000:0,JAL258-1442033700-schedule-0000]", "[JAL328-1442052000-schedule-0000,JAL440-1442053200-schedule-0000]", "[JAL482-1442041200-schedule-0000,JAL5-1441991700-schedule-0000]", "[JAL61-1442004300-schedule-0000,JST514-1442035200-schedule-0000:0]", "[JST514-1442035200-schedule-0000:0,JST617-1442038200-schedule-0000:0]", "[JST661-1442033400-schedule-0000:0,JST752-1442037300-schedule-0000:0]", "JST752-1442037300-schedule-0000:0", "[JST758-1442046300-schedule-0001:0,MON1268-1442034900-schedule-0000:0]", "[MON1268-1442034900-schedule-0000:0,MON1392-1442037600-schedule-0002:0]", "[MON1482-1442038200-schedule-0000:0,MON402-1442034900-schedule-0000:0]", "[MON402-1442034900-schedule-0000:0,QFA537-1442035500-schedule-0000:0]", "[QFA537-1442035500-schedule-0000:0,RYR22-1442035668-airline-0374:0]", "[RYR2224-1442048400-schedule-0000:2,RYR3386-1442046600-schedule-0000:0]", "[RYR3441-1442035200-schedule-0000:0,RYR553-1442040600-schedule-0000:0]", "[RYR553-1442040600-schedule-0000:2,RYR5842-1442051700-schedule-0002:0]", "[RYR585-1442033700-schedule-0001:0,SWR65-1441949341-airline-0086:2]", "[SWR724-1442035200-schedule-0001:0,SWR728-1442054100-schedule-0006:0]", "[SWR737-1442034000-schedule-0000:0,TGW2483-1442049600-schedule-0000:0]", "[TGW252-1442205919-fds-0094,VRD321-1442055600-schedule-0004]", "[VRD34-1442124954-194-1,XLF811-1442047800-schedule-0000]"]
+				},
+				"walkingCount": 4864,
+				"walkingSum": 151796,
+				"num-distinct-values": "2617",
+				"walkingSquareSum": 4950342,
+				"detail-type": "term",
+				"max-length": 35,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [13896, 232, 32784, 9560, 9390, 4854, 13695, 3643, 3141, 2498, 2451, 2455, 4046, 2206, 659, 157, 363, 862, 364, 192, 274, 345, 235, 201, 929, 381, 664, 271, 78, 119, 1782, 730, 385, 204, 201, 795, 249, 1128, 659, 473, 3916, 4139, 8341, 91, 3916, 832, 4308, 416, 28, 416, 3954, 3888],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["-", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "c", "d", "e", "f", "h", "i", "l", "n", "o", "r", "s", "u"]
+				},
+				"min-length": 3
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["EZS8430-1442124042-fa-0124:0", "AFR7660-1442035200-schedule-0000:0", "RYR535-1442036100-schedule-0000:2", "RYR8166-1442034900-schedule-0002:0", "MON278-1442036400-schedule-0000:0", "RYR662-1442035500-schedule-0000:0", "AZA1432-1442033400-schedule-0000:0", "EZY6011-1442036700-schedule-0000:0", "AUA458-1442034000-schedule-0000:0", "SIA368-1442169130-adhoc-0:0", "RYR9976-1442034000-schedule-0003:0", "AFR7673-1442034600-schedule-0000:0", "VOZ859-1442037600-schedule-0003:0", "EZY66-1442037600-schedule-0002:0", "DLH821-1442034900-schedule-0000:0", "JCB1-1441970253-dlad-3917885:6", "KLM602-1442004300-schedule-0001:0", "EXS623-1442039400-schedule-0000:4", "RYR2613-1442046300-schedule-0000:2", "BAW2771-1442048400-schedule-0001:0", "DLH925-1442043000-schedule-0000:0", "NAX3087-1442051700-schedule-0000:6", "RYR9525-1442046000-schedule-0001:2", "MON227-1442047200-schedule-0000:2", "BAW457-1442047049-airline-0009:0", "TAP782-1442045400-schedule-0001:0", "FWI510-1442052600-schedule-0000:2", "RYR1965-1442048700-schedule-0003:0", "BEL2258-1442050800-schedule-0000:2", "AFR1740-1442054100-schedule-0004:0", "GWI9541-1442049600-schedule-0000:0", "NLY8981-1442047800-schedule-0001", "EDW177-1442046000-schedule-0000:0", "N977AE-1442223921-57-0", "SXS970-1442046900-schedule-0001", "TUI2273-1442048400-schedule-0001:0", "TAM3103-1442057100-schedule-0002", "BAW763-1442048068-airline-0058:0", "BAW776-1442040600-schedule-0000:2", "SAA67-1442034900-schedule-0000", "NAX4221-1442034300-schedule-0000:14", "BAW372-1442040600-schedule-0000:2", "SXS540-1442177803-airline-0106", "DLA8218-1442041500-schedule-0000", "VLG1503-1442041800-schedule-0001:0", "BAW1414-1442038500-schedule-0000:0", "SWR451-1442040900-schedule-0001:6", "SWR154-1442043900-schedule-0001:2", "ANA852-1442035800-schedule-0002", "AAL992-1442017200-schedule-0001"]
+		},
+		"vehicle.positions.boat.grt": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["N/A", "270", "231", "903", "142", "175", "327", "500", "448", "2109", "93811", "302", "340", "431", "72737", "23197", "4126", "382", "225", "195", "98", "425", "563", "197", "3335", "240", "149", "96", "229", "350", "585", "147", "388", "687", "283", "145", "292", "65918", "298", "281", "198", "104", "148", "244", "52086", "852", "552", "290", "407", "326"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 3.2294372294372296,
+				"std-dev-length": 0.6541238707367655,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 1, 2, 1, 3, 4, 2, 3, 4, 1, 1, 2, 2, 2, 2, 2, 4, 2, 2, 4, 1, 4, 2, 2, 1, 2, 4, 2, 2, 12, 2, 2, 1, 3, 2, 3, 2, 2, 4, 6, 3, 2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 66],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["104", "12184", "142", "143", "144", "145", "147", "148", "149", "159", "160", "175", "18321", "194", "195", "197", "198", "2109", "225", "229", "23030", "231", "23197", "240", "24167", "24212", "243", "244", "252", "270", "278", "281", "283", "284", "290", "292", "298", "302", "326", "327", "3335", "340", "341", "350", "377", "382", "388", "407", "412", "4126", "425", "431", "445", "448", "500", "50714", "52086", "54465", "552", "563", "585", "61775", "628", "65918", "67671", "687", "72737", "852", "903", "91921", "93811", "96", "98", "N/A"]
+				},
+				"walkingCount": 231,
+				"walkingSum": 746,
+				"num-distinct-values": "74",
+				"walkingSquareSum": 2508,
+				"detail-type": "term",
+				"max-length": 5,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [66, 37, 72, 105, 54, 66, 50, 28, 49, 46, 41, 66, 66],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "N"]
+				},
+				"min-length": 2
+			},
+			"presence": 0.003,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["N/A", "270", "231", "903", "142", "175", "327", "500", "448", "2109", "93811", "302", "340", "431", "72737", "23197", "4126", "382", "225", "195", "98", "425", "563", "197", "3335", "240", "149", "96", "229", "350", "585", "147", "388", "687", "283", "145", "292", "65918", "298", "281", "198", "104", "148", "244", "52086", "852", "552", "290", "407", "326"]
+		},
+		"vehicle.positions.vehicle_id": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["HBJZR", "CSTNM", "WDD4816", "WDF2693", "WDF6802", "EIDPT", "GMLJL", "GEZTL", "GEZTD", "GMEDU", "N196UW", "VHZPB", "FGYAQ", "GEZDX", "OOSNF", "GOZBE", "FGRHB", "GEZBN", "EIEKD", "DASXH", "GEZWO", "GEUXM", "FGKXJ", "LNRRW", "LNTUD", "CSTNH", "N783UA", "FGSTA", "HBIYV", "LNRRH", "CSTTO", "OYKBA", "OYPSG", "A7ACH", "WDD3977", "N8635F", "PHAOL", "TSINP", "GEZAM", "N728AN", "VTJWQ", "FGHQJ", "HBIOR", "ZKOJN", "GEUYD", "OYKAL", "EIENM", "EIEYL", "JYAIG", "JA816A"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 5.186266447368421,
+				"std-dev-length": 0.494468289713421,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [168, 143, 200, 2, 449, 38, 6, 1, 15, 49, 2, 7, 15, 4, 137, 36, 9, 2, 81, 1, 14, 40, 1, 6, 343, 16, 11, 4, 1, 35, 9, 54, 5, 4, 25, 2, 86, 31, 9, 2, 325, 49, 2, 112, 8, 2, 2, 2, 6, 17, 6, 765, 74, 1, 2, 2, 1, 638, 80, 121, 6, 2, 356, 79, 92, 50],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[3EKZ6,CSTNP]", "[CSTNR,DAEME]", "[DAEME,DAIQL]", "DAIQL", "[DAIQM,EIDYA]", "[EIDYE,EIEBD]", "[EIEBF,EIEBI]", "EIEBK", "[EIEBL,EIEBV]", "[EIEBV,EIEFM]", "[EIEFM,EIEFP]", "[EIEFV,EIEFX]", "[EIEFY,EIEGC]", "EIEGC", "[EIEGD,EIENL]", "[EIENL,EIEPB]", "[EIEPC,EIEPG]", "EIEPG", "[EIEPH,EIEVW]", "EIEVW", "[EIEVY,EIEZV]", "[EIEZW,EIRJE]", "EIRJE", "[EIRJF,EIRJO]", "[EIRJO,GDBCF]", "[GDBCG,GEUOC]", "[GEUOC,GEUOF]", "[GEUOG,GEUOH]", "GEUOI", "[GEUPA,GEUPJ]", "[GEUPJ,GEUPL]", "[GEUPM,GEUUL]", "[GEUUL,GEUUM]", "GEUUM", "[GEUUN,GEUUV]", "GEUUV", "[GEUUW,GEUYW]", "[GEUYW,GEZAK]", "[GEZAK,GEZAL]", "GEZAL", "[GEZAM,GEZTX]", "[GEZTX,GEZWH]", "GEZWH", "[GEZWI,GGDFZ]", "[GGDFZ,GLCYS]", "GLCYS", "[GLCYT,GLSAC]", "[GLSAD,GLSAG]", "[GLSAH,GLSAN]", "[GMARA,GMIDT]", "[GMIDT,GMIDX]", "[GMIDY,N171DN]", "[N172DN,N352AA]", "N353AA", "[N354AA,N36444]", "[N366AA,N37277]", "N37468", "[N37470,PHBXD]", "[PHBXD,PHKZR]", "[PHKZS,VHEBC]", "VHEBC", "VHEBJ", "[VHEZG,WCA3764]", "[WCA3764,WDD5445]", "[WDD5445,WDI2873]", "[WDI2873,ZSZWA]"]
+				},
+				"walkingCount": 4864,
+				"walkingSum": 25226,
+				"num-distinct-values": "2080",
+				"walkingSquareSum": 132018,
+				"detail-type": "term",
+				"max-length": 7,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [164, 236, 260, 263, 240, 236, 243, 376, 306, 272, 1295, 1112, 565, 1451, 2428, 765, 2022, 1238, 1541, 507, 453, 578, 370, 1252, 664, 749, 190, 381, 512, 502, 656, 970, 610, 333, 507, 979],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"min-length": 2
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["HBJZR", "CSTNM", "WDD4816", "WDF2693", "WDF6802", "EIDPT", "GMLJL", "GEZTL", "GEZTD", "GMEDU", "N196UW", "VHZPB", "FGYAQ", "GEZDX", "OOSNF", "GOZBE", "FGRHB", "GEZBN", "EIEKD", "DASXH", "GEZWO", "GEUXM", "FGKXJ", "LNRRW", "LNTUD", "CSTNH", "N783UA", "FGSTA", "HBIYV", "LNRRH", "CSTTO", "OYKBA", "OYPSG", "A7ACH", "WDD3977", "N8635F", "PHAOL", "TSINP", "GEZAM", "N728AN", "VTJWQ", "FGHQJ", "HBIOR", "ZKOJN", "GEUYD", "OYKAL", "EIENM", "EIEYL", "JYAIG", "JA816A"]
+		},
+		"vehicle.positions.boat.draught": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [0, 30, 33, 115, 43, 100, 24, 29, 50, 22, 99, 40, 144, 134, 42, 104, 103, 45, 125, 60, 68, 25, 63, 80, 59, 49, 38, 110, 46, 32, 48, 93, 70, 35, 67, 114, 84, 23, 4, 94, 44, 130, 65, 96, 98, 90, 109, 61, 86, 142],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 45.30172413793103,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [38, 1, 0, 0, 0, 0, 0, 7, 9, 0, 30, 6, 3, 38, 14, 10, 6, 12, 0, 0, 6, 2, 2, 4, 2, 0, 0, 3, 2, 1, 0, 1, 4, 4, 7, 4, 0, 3, 0, 4, 0, 0, 0, 2, 2, 0, 2, 0, 1, 2, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[0.0,2.9)", "[2.9,5.8)", "[5.8,8.7)", "[8.7,11.6)", "[11.6,14.5)", "[14.5,17.4)", "[17.4,20.3)", "[20.3,23.2)", "[23.2,26.1)", "[26.1,29.0)", "[29.0,31.9)", "[31.9,34.8)", "[34.8,37.7)", "[37.7,40.6)", "[40.6,43.5)", "[43.5,46.4)", "[46.4,49.3)", "[49.3,52.2)", "[52.2,55.1)", "[55.1,58.0)", "[58.0,60.9)", "[60.9,63.8)", "[63.8,66.7)", "[66.7,69.6)", "[69.6,72.5)", "[72.5,75.4)", "[75.4,78.3)", "[78.3,81.2)", "[81.2,84.1)", "[84.1,87.0)", "[87.0,89.9)", "[89.9,92.8)", "[92.8,95.7)", "[95.7,98.6)", "[98.6,101.5)", "[101.5,104.4)", "[104.4,107.3)", "[107.3,110.2)", "[110.2,113.1)", "[113.1,116.0)", "[116.0,118.9)", "[118.9,121.8)", "[121.8,124.7)", "[124.7,127.6)", "[127.6,130.5)", "[130.5,133.4)", "[133.4,136.3)", "[136.3,139.2)", "[139.2,142.1)", "[142.1,145.0)", "[145.0,147.9)"]
+				},
+				"min": 0,
+				"walkingCount": 232,
+				"walkingSum": 10510,
+				"max": 144,
+				"num-distinct-values": "50",
+				"walkingSquareSum": 746816,
+				"detail-type": "integer",
+				"std-dev": 34.15828263963833
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [0, 30, 33, 115, 43, 100, 24, 29, 50, 22, 99, 40, 144, 134, 42, 104, 103, 45, 125, 60, 68, 25, 63, 80, 59, 49, 38, 110, 46, 32, 48, 93, 70, 35, 67, 114, 84, 23, 4, 94, 44, 130, 65, 96, 98, 90, 109, 61, 86, 142]
+		},
+		"vehicle.positions.vehicle_type": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["aircraft", "boat"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 7.809210526315789,
+				"std-dev-length": 0.8525005991013402,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [4632, 232],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["aircraft", "boat"]
+				},
+				"walkingCount": 4864,
+				"walkingSum": 37984,
+				"num-distinct-values": "2",
+				"walkingSquareSum": 300160,
+				"detail-type": "term",
+				"max-length": 8,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [9496, 232, 4632, 4632, 4632, 232, 9264, 4864],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["a", "b", "c", "f", "i", "o", "r", "t"]
+				},
+				"min-length": 4
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["aircraft", "boat"]
+		},
+		"vehicle.positions.boat.length": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [0, 26, 50, 24.9, 28.65, 27.38, 66, 53, 28, 21, 23.77, 30.49, 59.99, 36.62, 63, 81.76, 336.3, 33.6, 33.16, 32, 33, 289.56, 183.1, 92.76, 31.8, 19, 28.96, 29.14, 30.72, 173, 30, 151, 39.5, 32.55, 94.49, 33.19, 104, 30.48, 20, 29.26, 31.89, 36.88, 29, 29.33, 39.62, 25.9, 25, 30.55, 278.89, 35],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 58.25362068965517,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [5, 1, 22, 38, 89, 17, 6, 3, 3, 6, 3, 0, 2, 2, 6, 1, 0, 0, 0, 0, 1, 0, 2, 0, 0, 1, 3, 4, 0, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 6, 0, 0, 0, 0, 0, 2, 0, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[0.000,6.746)", "[6.746,13.492)", "[13.492,20.238)", "[20.238,26.984)", "[26.984,33.730)", "[33.730,40.476)", "[40.476,47.222)", "[47.222,53.968)", "[53.968,60.714)", "[60.714,67.460)", "[67.460,74.206)", "[74.206,80.952)", "[80.952,87.698)", "[87.698,94.444)", "[94.444,101.190)", "[101.190,107.936)", "[107.936,114.682)", "[114.682,121.428)", "[121.428,128.174)", "[128.174,134.920)", "[134.920,141.666)", "[141.666,148.412)", "[148.412,155.158)", "[155.158,161.904)", "[161.904,168.650)", "[168.650,175.396)", "[175.396,182.142)", "[182.142,188.888)", "[188.888,195.634)", "[195.634,202.380)", "[202.380,209.126)", "[209.126,215.872)", "[215.872,222.618)", "[222.618,229.364)", "[229.364,236.110)", "[236.110,242.856)", "[242.856,249.602)", "[249.602,256.348)", "[256.348,263.094)", "[263.094,269.840)", "[269.840,276.586)", "[276.586,283.332)", "[283.332,290.078)", "[290.078,296.824)", "[296.824,303.570)", "[303.570,310.316)", "[310.316,317.062)", "[317.062,323.808)", "[323.808,330.554)", "[330.554,337.300)", "[337.300,344.046)", "[344.046,350.792)"]
+				},
+				"min": 0,
+				"walkingCount": 232,
+				"walkingSum": 13514.84,
+				"max": 346.98,
+				"num-distinct-values": "97",
+				"walkingSquareSum": 1982831.844,
+				"detail-type": "decimal",
+				"std-dev": 71.78582491902144
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [0, 26, 50, 24.9, 28.65, 27.38, 66, 53, 28, 21, 23.77, 30.49, 59.99, 36.62, 63, 81.76, 336.3, 33.6, 33.16, 32, 33, 289.56, 183.1, 92.76, 31.8, 19, 28.96, 29.14, 30.72, 173, 30, 151, 39.5, 32.55, 94.49, 33.19, 104, 30.48, 20, 29.26, 31.89, 36.88, 29, 29.33, 39.62, 25.9, 25, 30.55, 278.89, 35]
+		},
+		"vehicle.positions.boat.dwt": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["N/A", "212", "69", "200", "0", "391", "103538", "350", "36804", "37221", "420", "254", "170", "160", "602", "92", "194", "401", "705", "50571", "115", "1", "364", "208", "162", "60323", "1032", "66971", "20168", "100", "309", "157", "23660", "526", "24510", "34734", "179", "11630", "182", "30435", "110000", "26000", "10194"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 2.484848484848485,
+				"std-dev-length": 1.3154048472269266,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [83, 2, 2, 1, 2, 2, 1, 2, 1, 1, 2, 2, 2, 1, 2, 2, 3, 2, 2, 8, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 66],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "100", "10194", "1032", "103538", "110000", "115", "11630", "157", "160", "162", "170", "179", "182", "194", "200", "20168", "208", "212", "23660", "24510", "254", "26000", "30435", "309", "34734", "350", "364", "36804", "37221", "391", "401", "420", "50571", "526", "602", "60323", "66971", "69", "705", "92", "N/A"]
+				},
+				"walkingCount": 231,
+				"walkingSum": 574,
+				"num-distinct-values": "43",
+				"walkingSquareSum": 1826,
+				"detail-type": "term",
+				"max-length": 6,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [66, 137, 52, 51, 30, 20, 20, 29, 14, 10, 13, 66, 66],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "N"]
+				},
+				"min-length": 1
+			},
+			"presence": 0.003,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["N/A", "212", "69", "200", "0", "391", "103538", "350", "36804", "37221", "420", "254", "170", "160", "602", "92", "194", "401", "705", "50571", "115", "1", "364", "208", "162", "60323", "1032", "66971", "20168", "100", "309", "157", "23660", "526", "24510", "34734", "179", "11630", "182", "30435", "110000", "26000", "10194"]
+		},
+		"vehicle.positions.aircraft.air_ground": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["A"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 1,
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [4632],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A"]
+				},
+				"walkingCount": 4632,
+				"walkingSum": 4632,
+				"num-distinct-values": "1",
+				"walkingSquareSum": 4632,
+				"detail-type": "term",
+				"max-length": 1,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [4632],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A"]
+				},
+				"min-length": 1
+			},
+			"presence": 0.9965,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["A"]
+		},
+		"vehicle.positions.boat.country": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["US", "DE", "NO", "PT", "TT", "SG", "PA", "NL", "LR", "IT", "CY", "DK", "SA", "MH"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 2,
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1, 4, 1, 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 209],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["CY", "DE", "DK", "IT", "LR", "MH", "NL", "NO", "PA", "PT", "SA", "SG", "TT", "US"]
+				},
+				"walkingCount": 232,
+				"walkingSum": 464,
+				"num-distinct-values": "14",
+				"walkingSquareSum": 928,
+				"detail-type": "term",
+				"max-length": 2,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [3, 1, 5, 4, 2, 1, 1, 1, 4, 1, 4, 2, 4, 2, 212, 7, 209, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "C", "D", "E", "G", "H", "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "Y"]
+				},
+				"min-length": 2
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["US", "DE", "NO", "PT", "TT", "SG", "PA", "NL", "LR", "IT", "CY", "DK", "SA", "MH"]
+		},
+		"vehicle.positions.aircraft.flight_id": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["EZS8430", "AAL185", "CLH2311", "TCX831", "UAL98", "AFR1005", "RYR5993", "EZY2365", "EZY8462", "RYR195", "EZY4511", "AFR1391", "SXD2213", "JAL147", "DLH983", "MON3596", "AAL102", "AFR1000", "AZA602", "RYR1453", "EIN681", "BEL357", "RPA4271", "EZY3112", "FFT627", "KLM1620", "DLH416", "AAL731", "RYR1077", "SXS958", "RYR9176", "SWA1053", "UAL96", "RYR255", "GLO1401", "BAW158", "SAS2616", "RPA4367", "SWR8", "DLH145", "RYR8396", "RYR7346", "DLH2500", "ANA33", "RYR3632", "JBU100", "DLH2091", "EZY843", "SWR254", "RYR901"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 6.393566493955095,
+				"std-dev-length": 0.6497522248488248,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1, 1, 1, 12, 1, 1, 3, 3, 166, 7, 2, 7, 14, 152, 1, 3, 2, 2, 1, 43, 532, 5, 2, 188, 5, 1, 66, 36, 12, 98, 1, 403, 72, 6, 10, 93, 120, 4, 3, 3, 53, 28, 6, 1, 10, 1, 1, 1, 99, 1, 194, 64, 3, 5, 24, 1, 2, 1, 2, 2, 204, 5, 1, 3, 3, 290, 2, 90, 2, 3, 48, 204, 338, 200, 9, 1, 2, 8, 2, 4, 100, 1, 3, 1, 1, 3, 1, 1, 2, 1, 2, 1, 1, 1, 1, 93, 406, 10, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["AAF232", "AAF263", "AAF264", "[AAL102,AAL1107]", "AAL1110", "AAL1111", "[AAL120,AAL1283]", "AAL1399", "[AAL146,AFR1084]", "[AFR1084,AFR1153]", "AFR1161", "[AFR1164,AFR1204]", "[AFR1232,AFR1381]", "[AFR1381,AM321]", "AMC100", "[AMC101,AMC396]", "AMC396", "AMC397", "AMX781", "[ANA1,AUA311]", "[AUA351,BAW948]", "[BAW948,BAW962]", "BAW962", "[BAW963,BKP226]", "[BKP235,BRU811]", "CAW623", "[CCM202,DAL179]", "[DAL1896,DAL410]", "[DAL419,DAL52]", "[DAL52,DLH230]", "DLH230", "[DLH231,EZY1997]", "[EZY2015,EZY3111]", "[EZY3112,EZY3203]", "[EZY3213,EZY3225]", "[EZY3226,EZY5260]", "[EZY5266,EZY7423]", "EZY7423", "EZY7424", "EZY7581", "[EZY7651,EZY8529]", "[EZY8530,EZY8747]", "[EZY8751,EZY8765]", "EZY8781", "[EZY882,EZY8893]", "EZY8893", "EZY8894", "EZY8901", "[EZY8915,GWI396]", "GWI4065", "[GWI520,JST566]", "[JST566,JST965]", "JST974", "[JTE1997,KLM1000]", "[KLM1000,KLM1140]", "KLM1144", "KLM1200", "KLM1201", "KLM1263", "[KLM1322,KLM1372]", "[KLM1412,MON532]", "[MON533,MON5408]", "MON56", "[MON580,MON664]", "MON664", "[MON682,QLK2057]", "[QLK2213,QTR10]", "[QTR11,RYR1664]", "RYR1665", "RYR173", "[RYR1782,RYR2131]", "[RYR2142,RYR5462]", "[RYR5462,SAS500]", "[SAS500,SWR2200]", "[SWR2201,SWR2596]", "SWR2596", "SWR2804", "[SWR2824,SWR332]", "SWR332", "[SWR345,SWR352]", "[SWR359,TAM3351]", "TAM3444", "TAM3466", "TAM3526", "TAM3711", "TAM3720", "TAM3842", "TAM3865", "TAM3866", "TAM3907", "TAM8020", "TAM8046", "TAM8062", "TAM8063", "TAP1050", "[TAP1231,TGW377]", "[TGW529,VRD415]", "[VRD415,WJA1119]", "XLF811"]
+				},
+				"walkingCount": 4632,
+				"walkingSum": 29615,
+				"num-distinct-values": "2431",
+				"walkingSquareSum": 191301,
+				"detail-type": "term",
+				"max-length": 7,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [1221, 2267, 2116, 1650, 1489, 1583, 1476, 1297, 1324, 1221, 1974, 659, 157, 363, 862, 364, 192, 275, 345, 235, 201, 929, 381, 432, 271, 78, 119, 1782, 730, 385, 204, 202, 795, 249, 1128, 659],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"min-length": 4
+			},
+			"presence": 0.9965,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["EZS8430", "AAL185", "CLH2311", "TCX831", "UAL98", "AFR1005", "RYR5993", "EZY2365", "EZY8462", "RYR195", "EZY4511", "AFR1391", "SXD2213", "JAL147", "DLH983", "MON3596", "AAL102", "AFR1000", "AZA602", "RYR1453", "EIN681", "BEL357", "RPA4271", "EZY3112", "FFT627", "KLM1620", "DLH416", "AAL731", "RYR1077", "SXS958", "RYR9176", "SWA1053", "UAL96", "RYR255", "GLO1401", "BAW158", "SAS2616", "RPA4367", "SWR8", "DLH145", "RYR8396", "RYR7346", "DLH2500", "ANA33", "RYR3632", "JBU100", "DLH2091", "EZY843", "SWR254", "RYR901"]
+		},
+		"vehicle.positions.boat.mmsi": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [367659970, 367051230, 367594190, 367002350, 367519170, 366902120, 367371840, 366920980, 367000190, 367029960, 367618310, 338931000, 366914210, 366812330, 366946710, 367007480, 366516380, 366910920, 367158530, 367091120, 367371790, 367061980, 367003310, 367006550, 367005130, 367115000, 367430810, 369500004, 255805674, 362751376, 367669920, 367682610, 367064410, 367645150, 367560590, 367349170, 367000140, 367351520, 366744020, 366744010, 367128570, 366881640, 366939710, 367671080, 367304530, 367676750, 367005710, 367070910, 367401550, 367420280],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 3.636103276939655E8,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [2, 1, 3, 0, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 5, 0, 0, 2, 202, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[204484502.3328,211384251.1664)", "[211384251.1664,218284000.0000)", "[218284000.0000,225183748.8336)", "[225183748.8336,232083497.6672)", "[232083497.6672,238983246.5008)", "[238983246.5008,245882995.3344)", "[245882995.3344,252782744.1680)", "[252782744.1680,259682493.0016)", "[259682493.0016,266582241.8352)", "[266582241.8352,273481990.6688)", "[273481990.6688,280381739.5024)", "[280381739.5024,287281488.3360)", "[287281488.3360,294181237.1696)", "[294181237.1696,301080986.0032)", "[301080986.0032,307980734.8368)", "[307980734.8368,314880483.6704)", "[314880483.6704,321780232.5040)", "[321780232.5040,328679981.3376)", "[328679981.3376,335579730.1712)", "[335579730.1712,342479479.0048)", "[342479479.0048,349379227.8384)", "[349379227.8384,356278976.6720)", "[356278976.6720,363178725.5056)", "[363178725.5056,370078474.3392)", "[370078474.3392,376978223.1728)", "[376978223.1728,383877972.0064)", "[383877972.0064,390777720.8400)", "[390777720.8400,397677469.6736)", "[397677469.6736,404577218.5072)", "[404577218.5072,411476967.3408)", "[411476967.3408,418376716.1744)", "[418376716.1744,425276465.0080)", "[425276465.0080,432176213.8416)", "[432176213.8416,439075962.6752)", "[439075962.6752,445975711.5088)", "[445975711.5088,452875460.3424)", "[452875460.3424,459775209.1760)", "[459775209.1760,466674958.0096)", "[466674958.0096,473574706.8432)", "[473574706.8432,480474455.6768)", "[480474455.6768,487374204.5104)", "[487374204.5104,494273953.3440)", "[494273953.3440,501173702.1776)", "[501173702.1776,508073451.0112)", "[508073451.0112,514973199.8448)", "[514973199.8448,521872948.6784)", "[521872948.6784,528772697.5120)", "[528772697.5120,535672446.3456)", "[535672446.3456,542572195.1792)", "[542572195.1792,549471944.0128)", "[549471944.0128,556371692.8464)", "[556371692.8464,563271441.6800)", "[563271441.6800,570171190.5136)", "[570171190.5136,577070939.3472)", "[577070939.3472,583970688.1808)", "[583970688.1808,590870437.0144)", "[590870437.0144,597770185.8480)", "[597770185.8480,604669934.6816)", "[604669934.6816,611569683.5152)", "[611569683.5152,618469432.3488)", "[618469432.3488,625369181.1824)", "[625369181.1824,632268930.0160)", "[632268930.0160,639168678.8496)"]
+				},
+				"min": 211331640,
+				"walkingCount": 232,
+				"walkingSum": 84357596025,
+				"max": 636092675,
+				"num-distinct-values": "133",
+				"walkingSquareSum": "31165592036581498103",
+				"detail-type": "integer",
+				"std-dev": 4.606493273443426E7
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [367659970, 367051230, 367594190, 367002350, 367519170, 366902120, 367371840, 366920980, 367000190, 367029960, 367618310, 338931000, 366914210, 366812330, 366946710, 367007480, 366516380, 366910920, 367158530, 367091120, 367371790, 367061980, 367003310, 367006550, 367005130, 367115000, 367430810, 369500004, 255805674, 362751376, 367669920, 367682610, 367064410, 367645150, 367560590, 367349170, 367000140, 367351520, 366744020, 366744010, 367128570, 366881640, 366939710, 367671080, 367304530, 367676750, 367005710, 367070910, 367401550, 367420280]
+		},
+		"vehicle.positions.boat.trip.origin": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["N/A", "PINE ORCHARD", "NEW YORK", "MARINERS ON HUDSON", "TOTTENVILLE (STATEN)", "PERTH AMBOY", "BOSTON", "SAINT JOHN", "SOUTHAMPTON", "NEW HAVEN", "SEWAREN", "SITRAH", "CAPE MAY", "MARCUS HOOK", "BUZZARDS BAY", "HUNTS POINT", "PORT JEFFERSON", "YONKERS", "PROVIDENCE", "PAULSBORO", "QUINCY", "DAVISVILLE", "HUDSON POWER BOAT", "PORT QASIM", "EARLE NAVAL STATION", "VON DOHLN", "ALBANY", "CHARLESTON", "NORFOLK", "SPARROWS POINT", "SEPT-ILES", "DUNDALK", "BALTIMORE", "PHILADELPHIA", "SAVANNAH", "HOUSTON", "WILMINGTON NC"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 8.939655172413794,
+				"std-dev-length": 3.099746355316969,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [4, 14, 10, 3, 2, 5, 1, 8, 3, 2, 2, 1, 2, 1, 2, 7, 2, 2, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["ALBANY", "BALTIMORE", "BOSTON", "CHARLESTON", "DAVISVILLE", "DUNDALK", "HOUSTON", "N/A", "NORFOLK", "PAULSBORO", "PHILADELPHIA", "PROVIDENCE", "QUINCY", "SAVANNAH", "SEPT-ILES", "SEWAREN", "SITRAH", "SOUTHAMPTON", "YONKERS"]
+				},
+				"walkingCount": 232,
+				"walkingSum": 2074,
+				"num-distinct-values": "37",
+				"walkingSquareSum": 20770,
+				"detail-type": "phrase",
+				"max-length": 20,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [165, 7, 7, 2, 8, 119, 47, 15, 24, 207, 5, 1, 51, 55, 3, 115, 62, 38, 217, 222, 45, 4, 175, 72, 108, 25, 25, 124, 124, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [" ", "(", ")", "-", "/", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "Y", "Z"]
+				},
+				"min-length": 3
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["N/A", "PINE ORCHARD", "NEW YORK", "MARINERS ON HUDSON", "TOTTENVILLE (STATEN)", "PERTH AMBOY", "BOSTON", "SAINT JOHN", "SOUTHAMPTON", "NEW HAVEN", "SEWAREN", "SITRAH", "CAPE MAY", "MARCUS HOOK", "BUZZARDS BAY", "HUNTS POINT", "PORT JEFFERSON", "YONKERS", "PROVIDENCE", "PAULSBORO", "QUINCY", "DAVISVILLE", "HUDSON POWER BOAT", "PORT QASIM", "EARLE NAVAL STATION", "VON DOHLN", "ALBANY", "CHARLESTON", "NORFOLK", "SPARROWS POINT", "SEPT-ILES", "DUNDALK", "BALTIMORE", "PHILADELPHIA", "SAVANNAH", "HOUSTON", "WILMINGTON NC"]
+		},
+		"vehicle.positions.heading": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [312, 85, 345, 9, 103, 191, 316, 197, 100, 42, 116, 284, 244, 176, 271, 275, 129, 261, 16, 329, 28, 357, 283, 314, 334, 175, 97, 218, 78, 123, 288, 94, 211, 108, 304, 26, 150, 335, 358, 121, 189, 113, 190, 139, 13, 66, 341, 308, 181, 68],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 179.81558388157896,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [27, 69, 87, 65, 77, 60, 92, 62, 60, 65, 58, 76, 85, 166, 169, 194, 92, 66, 73, 100, 82, 134, 123, 101, 126, 77, 103, 104, 118, 137, 119, 109, 102, 87, 120, 70, 86, 102, 180, 124, 108, 101, 81, 78, 52, 71, 77, 122, 68, 46, 59, 54, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-5.08,1.96)", "[1.96,9.00)", "[9.00,16.04)", "[16.04,23.08)", "[23.08,30.12)", "[30.12,37.16)", "[37.16,44.20)", "[44.20,51.24)", "[51.24,58.28)", "[58.28,65.32)", "[65.32,72.36)", "[72.36,79.40)", "[79.40,86.44)", "[86.44,93.48)", "[93.48,100.52)", "[100.52,107.56)", "[107.56,114.60)", "[114.60,121.64)", "[121.64,128.68)", "[128.68,135.72)", "[135.72,142.76)", "[142.76,149.80)", "[149.80,156.84)", "[156.84,163.88)", "[163.88,170.92)", "[170.92,177.96)", "[177.96,185.00)", "[185.00,192.04)", "[192.04,199.08)", "[199.08,206.12)", "[206.12,213.16)", "[213.16,220.20)", "[220.20,227.24)", "[227.24,234.28)", "[234.28,241.32)", "[241.32,248.36)", "[248.36,255.40)", "[255.40,262.44)", "[262.44,269.48)", "[269.48,276.52)", "[276.52,283.56)", "[283.56,290.60)", "[290.60,297.64)", "[297.64,304.68)", "[304.68,311.72)", "[311.72,318.76)", "[318.76,325.80)", "[325.80,332.84)", "[332.84,339.88)", "[339.88,346.92)", "[346.92,353.96)", "[353.96,361.00)", "[361.00,368.04)"]
+				},
+				"min": 0,
+				"walkingCount": 4864,
+				"walkingSum": 874623,
+				"max": 360,
+				"num-distinct-values": "361",
+				"walkingSquareSum": 201799953,
+				"detail-type": "integer",
+				"std-dev": 95.68089136605678
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [312, 85, 345, 9, 103, 191, 316, 197, 100, 42, 116, 284, 244, 176, 271, 275, 129, 261, 16, 329, 28, 357, 283, 314, 334, 175, 97, 218, 78, 123, 288, 94, 211, 108, 304, 26, 150, 335, 358, 121, 189, 113, 190, 139, 13, 66, 341, 308, 181, 68]
+		},
+		"vehicle.positions.timestamp": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [1442209317, 1442209716, 1442209747, 1442210335, 1442210344, 1442210459, 1442210881, 1442211146, 1442211311, 1442211640, 1442211977, 1442212201, 1442212598, 1442212776, 1442213031, 1442213329, 1442213465, 1442213907, 1442224905, 1442225254, 1442225508, 1442225870, 1442226348, 1442226591, 1442227158, 1442227274, 1442227688, 1442227901, 1442228214, 1442228616, 1442228927, 1442229388, 1442229715, 1442230161, 1442230521, 1442230841, 1442231399, 1442214193, 1442214448, 1442214733, 1442214999, 1442215204, 1442215572, 1442216279, 1442216133, 1442216983, 1442216776, 1442217184, 1442217477, 1442217770],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 1.442218880136102E9,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [98, 188, 105, 118, 111, 102, 119, 109, 104, 89, 128, 76, 157, 148, 70, 112, 104, 127, 123, 119, 83, 85, 70, 90, 96, 96, 92, 106, 46, 9, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 67, 66, 97, 108, 83, 74, 80, 51, 112, 82, 108, 91, 72, 79, 81, 74, 76, 69, 81, 65, 63, 85, 14, 4],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[1442209317.0000000,1442209625.8068848)", "[1442209625.8068848,1442209934.6137696)", "[1442209934.6137696,1442210243.4206544)", "[1442210243.4206544,1442210552.2275392)", "[1442210552.2275392,1442210861.0344240)", "[1442210861.0344240,1442211169.8413088)", "[1442211169.8413088,1442211478.6481936)", "[1442211478.6481936,1442211787.4550784)", "[1442211787.4550784,1442212096.2619632)", "[1442212096.2619632,1442212405.0688480)", "[1442212405.0688480,1442212713.8757328)", "[1442212713.8757328,1442213022.6826176)", "[1442213022.6826176,1442213331.4895024)", "[1442213331.4895024,1442213640.2963872)", "[1442213640.2963872,1442213949.1032720)", "[1442213949.1032720,1442214257.9101568)", "[1442214257.9101568,1442214566.7170416)", "[1442214566.7170416,1442214875.5239264)", "[1442214875.5239264,1442215184.3308112)", "[1442215184.3308112,1442215493.1376960)", "[1442215493.1376960,1442215801.9445808)", "[1442215801.9445808,1442216110.7514656)", "[1442216110.7514656,1442216419.5583504)", "[1442216419.5583504,1442216728.3652352)", "[1442216728.3652352,1442217037.1721200)", "[1442217037.1721200,1442217345.9790048)", "[1442217345.9790048,1442217654.7858896)", "[1442217654.7858896,1442217963.5927744)", "[1442217963.5927744,1442218272.3996592)", "[1442218272.3996592,1442218581.2065440)", "[1442218581.2065440,1442218890.0134288)", "[1442218890.0134288,1442219198.8203136)", "[1442219198.8203136,1442219507.6271984)", "[1442219507.6271984,1442219816.4340832)", "[1442219816.4340832,1442220125.2409680)", "[1442220125.2409680,1442220434.0478528)", "[1442220434.0478528,1442220742.8547376)", "[1442220742.8547376,1442221051.6616224)", "[1442221051.6616224,1442221360.4685072)", "[1442221360.4685072,1442221669.2753920)", "[1442221669.2753920,1442221978.0822768)", "[1442221978.0822768,1442222286.8891616)", "[1442222286.8891616,1442222595.6960464)", "[1442222595.6960464,1442222904.5029312)", "[1442222904.5029312,1442223213.3098160)", "[1442223213.3098160,1442223522.1167008)", "[1442223522.1167008,1442223830.9235856)", "[1442223830.9235856,1442224139.7304704)", "[1442224139.7304704,1442224448.5373552)", "[1442224448.5373552,1442224757.3442400)", "[1442224757.3442400,1442225066.1511248)", "[1442225066.1511248,1442225374.9580096)", "[1442225374.9580096,1442225683.7648944)", "[1442225683.7648944,1442225992.5717792)", "[1442225992.5717792,1442226301.3786640)", "[1442226301.3786640,1442226610.1855488)", "[1442226610.1855488,1442226918.9924336)", "[1442226918.9924336,1442227227.7993184)", "[1442227227.7993184,1442227536.6062032)", "[1442227536.6062032,1442227845.4130880)", "[1442227845.4130880,1442228154.2199728)", "[1442228154.2199728,1442228463.0268576)", "[1442228463.0268576,1442228771.8337424)", "[1442228771.8337424,1442229080.6406272)", "[1442229080.6406272,1442229389.4475120)", "[1442229389.4475120,1442229698.2543968)", "[1442229698.2543968,1442230007.0612816)", "[1442230007.0612816,1442230315.8681664)", "[1442230315.8681664,1442230624.6750512)", "[1442230624.6750512,1442230933.4819360)", "[1442230933.4819360,1442231242.2888208)", "[1442231242.2888208,1442231551.0957056)", "[1442231551.0957056,1442231859.9025904)", "[1442231859.9025904,1442232168.7094752)"]
+				},
+				"min": 1442209317,
+				"walkingCount": 4864,
+				"walkingSum": 7014952632982,
+				"max": 1442232014,
+				"num-distinct-values": "4062",
+				"walkingSquareSum": "10117097130813740523562",
+				"detail-type": "integer",
+				"std-dev": 7403.998030268267
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [1442209317, 1442209716, 1442209747, 1442210335, 1442210344, 1442210459, 1442210881, 1442211146, 1442211311, 1442211640, 1442211977, 1442212201, 1442212598, 1442212776, 1442213031, 1442213329, 1442213465, 1442213907, 1442224905, 1442225254, 1442225508, 1442225870, 1442226348, 1442226591, 1442227158, 1442227274, 1442227688, 1442227901, 1442228214, 1442228616, 1442228927, 1442229388, 1442229715, 1442230161, 1442230521, 1442230841, 1442231399, 1442214193, 1442214448, 1442214733, 1442214999, 1442215204, 1442215572, 1442216279, 1442216133, 1442216983, 1442216776, 1442217184, 1442217477, 1442217770]
+		},
+		"cluster_size": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [2, 3, 4, 99, 6, 8, 34, 11, 5, 12, 13, 10, 14, 96, 7, 9, 24, 22],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 2.432,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1675, 224, 45, 18, 12, 1, 3, 2, 5, 2, 3, 2, 3, 1, 1, 1, 1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "22", "24", "34", "96", "99"]
+				},
+				"min": 2,
+				"walkingCount": 2000,
+				"walkingSum": 4864,
+				"max": 99,
+				"num-distinct-values": "18",
+				"walkingSquareSum": 34054,
+				"detail-type": "integer",
+				"std-dev": 3.3335230612671634
+			},
+			"presence": 1,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [2, 3, 4, 99, 6, 8, 34, 11, 5, 12, 13, 10, 14, 96, 7, 9, 24, 22]
+		},
+		"vehicle.positions.aircraft.altitude": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [36000, 5200, 33000, 30900, 8000, 8900, 7600, 19300, 1200, 2400, 41000, 18200, 3800, 29600, 30800, 20700, 37900, 28000, 19200, 35800, 11500, 8500, 10400, 36500, 3900, 34800, 12600, 2300, 6900, 18100, 25900, 13800, 8300, 29200, 5300, 7200, 5900, 23000, 21700, 5700, 21200, 11700, 34900, 34600, 27400, 40700, 24400, 29500, 38400, 38200],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 22078.216753022454,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [151, 63, 163, 128, 138, 123, 121, 122, 90, 114, 99, 90, 91, 92, 88, 60, 68, 61, 61, 45, 41, 54, 47, 54, 52, 43, 36, 36, 37, 47, 30, 48, 53, 49, 64, 117, 129, 163, 269, 43, 296, 488, 260, 137, 54, 14, 1, 0, 0, 0, 0, 2, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-736.04,181.98)", "[181.98,1100.00)", "[1100.00,2018.02)", "[2018.02,2936.04)", "[2936.04,3854.06)", "[3854.06,4772.08)", "[4772.08,5690.10)", "[5690.10,6608.12)", "[6608.12,7526.14)", "[7526.14,8444.16)", "[8444.16,9362.18)", "[9362.18,10280.20)", "[10280.20,11198.22)", "[11198.22,12116.24)", "[12116.24,13034.26)", "[13034.26,13952.28)", "[13952.28,14870.30)", "[14870.30,15788.32)", "[15788.32,16706.34)", "[16706.34,17624.36)", "[17624.36,18542.38)", "[18542.38,19460.40)", "[19460.40,20378.42)", "[20378.42,21296.44)", "[21296.44,22214.46)", "[22214.46,23132.48)", "[23132.48,24050.50)", "[24050.50,24968.52)", "[24968.52,25886.54)", "[25886.54,26804.56)", "[26804.56,27722.58)", "[27722.58,28640.60)", "[28640.60,29558.62)", "[29558.62,30476.64)", "[30476.64,31394.66)", "[31394.66,32312.68)", "[32312.68,33230.70)", "[33230.70,34148.72)", "[34148.72,35066.74)", "[35066.74,35984.76)", "[35984.76,36902.78)", "[36902.78,37820.80)", "[37820.80,38738.82)", "[38738.82,39656.84)", "[39656.84,40574.86)", "[40574.86,41492.88)", "[41492.88,42410.90)", "[42410.90,43328.92)", "[43328.92,44246.94)", "[44246.94,45164.96)", "[45164.96,46082.98)", "[46082.98,47001.00)", "[47001.00,47919.02)"]
+				},
+				"min": 0,
+				"walkingCount": 4632,
+				"walkingSum": 102266300,
+				"max": 47000,
+				"num-distinct-values": "387",
+				"walkingSquareSum": 3161702990000,
+				"detail-type": "integer",
+				"std-dev": 13968.919454392731
+			},
+			"presence": 0.9965,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [36000, 5200, 33000, 30900, 8000, 8900, 7600, 19300, 1200, 2400, 41000, 18200, 3800, 29600, 30800, 20700, 37900, 28000, 19200, 35800, 11500, 8500, 10400, 36500, 3900, 34800, 12600, 2300, 6900, 18100, 25900, 13800, 8300, 29200, 5300, 7200, 5900, 23000, 21700, 5700, 21200, 11700, 34900, 34600, 27400, 40700, 24400, 29500, 38400, 38200]
+		},
+		"vehicle.positions.boat.type": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [60, 52, 31, 99, 32, 69, 79, 22, 35, 82, 80, 54, 56, 0, 67, 70, 33, 30, 90, 36, 37, 95],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 47.41379310344828,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [11, 5, 1, 60, 7, 3, 2, 1, 1, 78, 2, 4, 13, 2, 7, 12, 8, 8, 2, 2, 1, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "22", "30", "31", "32", "33", "35", "36", "37", "52", "54", "56", "60", "67", "69", "70", "79", "80", "82", "90", "95", "99"]
+				},
+				"min": 0,
+				"walkingCount": 232,
+				"walkingSum": 11000,
+				"max": 99,
+				"num-distinct-values": "22",
+				"walkingSquareSum": 613126,
+				"detail-type": "integer",
+				"std-dev": 19.867478609577546
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [60, 52, 31, 99, 32, 69, 79, 22, 35, 82, 80, 54, 56, 0, 67, 70, 33, 30, 90, 36, 37, 95]
+		},
+		"vehicle.positions.boat.imo": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": [0, 8976281, 9665504, 7029811, 9155597, 8983117, 8968777, 9544231, 8643028, 7319010, 8643195, 9343730, 7942295, 8993368, 8107878, 9145449, 9047491, 8990304, 7046170, 6930233, 6604781, 8978497, 9794680, 8101733, 7038393, 7420431, 7702762, 9068574, 9535084, 7914573, 8987462, 8966717, 9544243, 7400481, 9132105, 6709725, 7337880, 9405394, 7391018, 8987307, 5072905, 7512064, 9248136, 7047667, 7048348, 7367419, 9786499, 5107918, 7047629, 9452713],
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average": 6136104.49137931,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [59, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 5, 0, 0, 0, 0, 0, 0, 2, 2, 14, 4, 16, 3, 8, 8, 5, 2, 2, 8, 29, 13, 12, 15, 19, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[0.00,195893.62)", "[195893.62,391787.24)", "[391787.24,587680.86)", "[587680.86,783574.48)", "[783574.48,979468.10)", "[979468.10,1175361.72)", "[1175361.72,1371255.34)", "[1371255.34,1567148.96)", "[1567148.96,1763042.58)", "[1763042.58,1958936.20)", "[1958936.20,2154829.82)", "[2154829.82,2350723.44)", "[2350723.44,2546617.06)", "[2546617.06,2742510.68)", "[2742510.68,2938404.30)", "[2938404.30,3134297.92)", "[3134297.92,3330191.54)", "[3330191.54,3526085.16)", "[3526085.16,3721978.78)", "[3721978.78,3917872.40)", "[3917872.40,4113766.02)", "[4113766.02,4309659.64)", "[4309659.64,4505553.26)", "[4505553.26,4701446.88)", "[4701446.88,4897340.50)", "[4897340.50,5093234.12)", "[5093234.12,5289127.74)", "[5289127.74,5485021.36)", "[5485021.36,5680914.98)", "[5680914.98,5876808.60)", "[5876808.60,6072702.22)", "[6072702.22,6268595.84)", "[6268595.84,6464489.46)", "[6464489.46,6660383.08)", "[6660383.08,6856276.70)", "[6856276.70,7052170.32)", "[7052170.32,7248063.94)", "[7248063.94,7443957.56)", "[7443957.56,7639851.18)", "[7639851.18,7835744.80)", "[7835744.80,8031638.42)", "[8031638.42,8227532.04)", "[8227532.04,8423425.66)", "[8423425.66,8619319.28)", "[8619319.28,8815212.90)", "[8815212.90,9011106.52)", "[9011106.52,9207000.14)", "[9207000.14,9402893.76)", "[9402893.76,9598787.38)", "[9598787.38,9794681.00)", "[9794681.00,9990574.62)"]
+				},
+				"min": 0,
+				"walkingCount": 232,
+				"walkingSum": 1423576242,
+				"max": 9794680,
+				"num-distinct-values": "99",
+				"walkingSquareSum": 12102908600433580,
+				"detail-type": "integer",
+				"std-dev": 3809977.841864983
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": [0, 8976281, 9665504, 7029811, 9155597, 8983117, 8968777, 9544231, 8643028, 7319010, 8643195, 9343730, 7942295, 8993368, 8107878, 9145449, 9047491, 8990304, 7046170, 6930233, 6604781, 8978497, 9794680, 8101733, 7038393, 7420431, 7702762, 9068574, 9535084, 7914573, 8987462, 8966717, 9544243, 7400481, 9132105, 6709725, 7337880, 9405394, 7391018, 8987307, 5072905, 7512064, 9248136, 7047667, 7048348, 7367419, 9786499, 5107918, 7047629, 9452713]
+		},
+		"vehicle.positions.boat.trip.destination": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			},
+			"example-values": ["N/A", "CLINTON PT", "GOV.I BATTERY GOV.I", "NEW YORK", "NEWYORK", "NY HARBOR", "CAPE MAY NJ", "UNKNOWN", "AIBANV", "NEW YORK HARBOR NY", "NEW YORK NY", "S.I. FERRY RUN", "BAYONNE NJ", "WHITEHALL", "S.I FERRY RUN", "US NYC &gt; US ORF", "POSSOM PT. VA", "NEW HAVEN", "NEWBUQGH", "KEASBEY", "CLASS B", "STATEN ISLAND NY", "US NYC&gt;US NYC", "AMBROSE S/B", "SEWAREN", "S.I.FERRY RUN", "WHITEHALL TERMINAL", "NEW YORK N.Y", "ST.GEORGE", "PHILADELPHIA", "MORGAN CITY", "RIVERHEAD", "STAMFORD CT", "NYC", "NEW YORK HARBOR", "PHILADELPIA", "BEVERLY", "TREMBY PT", "USNYC&lt;&gt;USORF", "NEW YORK.NY", "NY", "PORT JEFFERSON", "PORT NEWARK", "NEW YORK NY USA", "US NYC", "PORT READING", "WORLD FI", "HOME", "US PNJ", "WORKING CLAREMONT"],
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"average-length": 8.844827586206897,
+				"std-dev-length": 4.256037189273654,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 1, 11, 1, 2, 2, 2, 43, 1, 1, 4, 2, 1, 6, 2, 2, 2, 2, 1, 1, 2, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["AIBANV", "ANTWERP", "BALTIMORE", "BAYPORT", "BEVERLY", "HOME", "KEASBEY", "N/A", "NEWBUQGH", "NEWINGTON", "NEWYORK", "NY", "NYC", "PHILADELPHIA", "PHILADELPIA", "RIVERHEAD", "SEWAREN", "ST.GEORGE", "SUEZ", "UNKNOWN", "USNYC&lt;&gt;USORF", "WHITEHALL"]
+				},
+				"walkingCount": 232,
+				"walkingSum": 2052,
+				"num-distinct-values": "64",
+				"walkingSquareSum": 22352,
+				"detail-type": "phrase",
+				"max-length": 22,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [186, 10, 1, 22, 45, 1, 10, 159, 52, 33, 28, 164, 17, 18, 41, 67, 10, 76, 69, 46, 215, 140, 40, 1, 170, 75, 67, 36, 15, 89, 1, 127, 1, 8, 2, 10],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [" ", "&", "(", ".", "/", "3", ";", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "g", "l", "t"]
+				},
+				"min-length": 2
+			},
+			"presence": 0.0035,
+			"merged-into-schema": false,
+			"interpretations": [{
+				"iId": null,
+				"interpretation": "Unknown",
+				"iDomainId": null,
+				"iName": "Unknown",
+				"iDescription": null,
+				"iScript": null,
+				"iConstraints": null
+			}],
+			"exampleValues": ["N/A", "CLINTON PT", "GOV.I BATTERY GOV.I", "NEW YORK", "NEWYORK", "NY HARBOR", "CAPE MAY NJ", "UNKNOWN", "AIBANV", "NEW YORK HARBOR NY", "NEW YORK NY", "S.I. FERRY RUN", "BAYONNE NJ", "WHITEHALL", "S.I FERRY RUN", "US NYC &gt; US ORF", "POSSOM PT. VA", "NEW HAVEN", "NEWBUQGH", "KEASBEY", "CLASS B", "STATEN ISLAND NY", "US NYC&gt;US NYC", "AMBROSE S/B", "SEWAREN", "S.I.FERRY RUN", "WHITEHALL TERMINAL", "NEW YORK N.Y", "ST.GEORGE", "PHILADELPHIA", "MORGAN CITY", "RIVERHEAD", "STAMFORD CT", "NYC", "NEW YORK HARBOR", "PHILADELPIA", "BEVERLY", "TREMBY PT", "USNYC&lt;&gt;USORF", "NEW YORK.NY", "NY", "PORT JEFFERSON", "PORT NEWARK", "NEW YORK NY USA", "US NYC", "PORT READING", "WORLD FI", "HOME", "US PNJ", "WORKING CLAREMONT"]
+		}
+	}
+}

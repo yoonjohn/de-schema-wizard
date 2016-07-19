@@ -1,25 +1,25 @@
 package com.deleidos.dp.accumulator;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import com.deleidos.dp.beans.Detail;
-import com.deleidos.dp.beans.Interpretation;
+import com.deleidos.dp.beans.Histogram;
+import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.StringDetail;
 import com.deleidos.dp.calculations.MetricsCalculationsFacade;
+import com.deleidos.dp.enums.DetailType;
 import com.deleidos.dp.enums.MainType;
+import com.deleidos.dp.exceptions.MainTypeException;
 import com.deleidos.dp.histogram.CharacterBucketList;
 import com.deleidos.dp.histogram.TermBucketList;
 
 public class StringProfileAccumulator extends AbstractProfileAccumulator {
-	private Set<Object> distinctHashes;
-	private static Logger logger = Logger.getLogger(StringProfileAccumulator.class);
+	private boolean accumulateHashes = true;
 	protected StringDetail stringDetail;
+	protected TermBucketList termBucketList;
+	protected CharacterBucketList charBucketList;
 
 	public StringProfileAccumulator(String key, Object value) {
 		super(key, value);
@@ -35,33 +35,29 @@ public class StringProfileAccumulator extends AbstractProfileAccumulator {
 		return stringDetail;
 	}
 
-	public void setstringDetail(StringDetail numberDetail) {
+	private void setStringDetail(StringDetail numberDetail) {
 		this.stringDetail = numberDetail;
+		accumulateHashes = false;
 	}
 
 	@Override
-	public boolean accumulate(Object value) {
+	public void accumulate(Object value, boolean accumulatePresence) throws MainTypeException {
+		super.accumulate(value, accumulatePresence);
 		if(value == null) {
-			return false;
+			return;
 		}
 		String objectString = value.toString();
-		accumulateCharacterFreqHistogram(objectString);
+		//accumulateCharacterFreqHistogram(objectString);
 		accumulateDetailType(objectString);
 		accumulateMaxLength(objectString);
 		accumulateMinLength(objectString);
 		accumulateNumDistinctValues(objectString);
 		accumulateTermFreqHistogram(objectString);
 		accumulateWalkingFields(objectString);
-		//accumulateWalkingInterpretationList(objectString);
-		return true;
 	}
 	
 	public void accumulateDetailType(Object value) {
 		detailTypeTracker[MetricsCalculationsFacade.determineStringDetailType(value).getIndex()]++;
-	}
-
-	public void accumulateNumDistinctValues(String objectString) {
-		distinctHashes.add(objectString);
 	}
 
 	public void accumulateMinLength(String objectString) {
@@ -83,41 +79,27 @@ public class StringProfileAccumulator extends AbstractProfileAccumulator {
 		stringDetail.setWalkingSquareSum(stringDetail.getWalkingSquareSum().add(adderSquare));
 	}
 
-	public void accumulateCharacterFreqHistogram(String objectString) {
-		stringDetail.getCharFreqHistogram().putValue(objectString);
-	}
+	/*public void accumulateCharacterFreqHistogram(String objectString) {
+		charBucketList.putValue(objectString);
+	}*/
 
 	public void accumulateTermFreqHistogram(String objectString) {
 		if(objectString.contains(" ")) return;
 		else {
-			stringDetail.getTermFreqHistogram().putValue(objectString);
+			termBucketList.putValue(objectString);
 		}
 	}
 
-	/*@Override
-	protected void accumulateWalkingInterpretationList(Object value) {
-		if(domain == null || !Interpretation.isUnknown(profile.getInterpretation())) {
-			return;
-		}
-		Iterator<String> interpretations = domain.getInterpretationMap().keySet().iterator();
-		while(interpretations.hasNext()) {
-			String classificationName = interpretations.next();
-			if(!domain.getInterpretationMap().get(classificationName).fitsStringMetrics(value.toString())) {
-				logger.debug("Removing " + classificationName + " from possible interpretations "
-						+ "of \"" + getFieldName() + "\" because " + value + " does not fit.");
-				interpretations.remove();
-			}
-		}
-	}*/
-
 	@Override
-	public void setDetail(Detail detail) {
-		this.stringDetail = (StringDetail) detail;
+	public void initializeFromExistingProfile(Profile profile) {
+		super.initializeFromExistingProfile(profile);
+		this.setStringDetail(Profile.getStringDetail(profile));
+		profile.getDetail().getHistogramOptional().ifPresent(x->this.termBucketList = Histogram.toTermBucketList(x));
 	}
 
 	@Override
 	public boolean initFirstValue(Object value) {
-		if(JSONObject.NULL.equals(value)) {
+		if(value == null) {
 			return false;
 		} else {
 			String stringValue = value.toString();
@@ -125,16 +107,20 @@ public class StringProfileAccumulator extends AbstractProfileAccumulator {
 			stringDetail.setMinLength(stringValue.length());
 			stringDetail.setMaxLength(stringValue.length());
 			stringDetail.setAverageLength(stringValue.length());
-			stringDetail.setTermFreqHistogram(new TermBucketList());
+			termBucketList = new TermBucketList();
+			termBucketList.putValue(stringValue);
+			charBucketList = new CharacterBucketList();
+			charBucketList.putValue(stringValue);
+			/*stringDetail.setTermFreqHistogram(new TermBucketList());
 			stringDetail.getTermFreqHistogram().putValue(stringValue);
 			stringDetail.setCharFreqHistogram(new CharacterBucketList());
-			stringDetail.getCharFreqHistogram().putValue(stringValue);
+			stringDetail.getCharFreqHistogram().putValue(stringValue);*/
 			stringDetail.setStdDevLength(0);
 			stringDetail.setWalkingSum(BigDecimal.valueOf(stringValue.length()));
 			stringDetail.setWalkingCount(BigDecimal.ONE);
 			stringDetail.setWalkingSquareSum(BigDecimal.valueOf(stringValue.length()).pow(2));
-			distinctHashes = new HashSet<Object>();
-			distinctHashes.add(stringValue);
+			accumulateHashes = true;
+			distinctValues.add(stringValue);
 			accumulateDetailType(stringValue);
 			presenceCount++;
 			return true;	
@@ -149,7 +135,9 @@ public class StringProfileAccumulator extends AbstractProfileAccumulator {
 	@Override
 	public void finish() {
 		super.finish();
-
+		if(this.getState().getPresence() < 0) {
+			return;
+		}
 		BigDecimal average = stringDetail.getWalkingSum().divide(stringDetail.getWalkingCount()
 				, MetricsCalculationsFacade.DEFAULT_CONTEXT);
 
@@ -163,7 +151,15 @@ public class StringProfileAccumulator extends AbstractProfileAccumulator {
 		double stdDev = Math.sqrt(withDivision.doubleValue());
 		stringDetail.setStdDevLength(stdDev);
 		
-		stringDetail.setNumDistinctValues(distinctHashes.size());
+		if(accumulateHashes) {
+			stringDetail.setNumDistinctValues(String.valueOf(distinctValues.size()));
+		}
+		
+		if(!stringDetail.getDetailType().equals(DetailType.PHRASE)) {
+			stringDetail.setHistogram(termBucketList.asBean());	
+		} else {
+			stringDetail.setHistogram(null);
+		}
 
 	}
 

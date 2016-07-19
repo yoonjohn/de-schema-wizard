@@ -1,6 +1,5 @@
 package com.deleidos.dmf.parser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.apache.log4j.Logger;
 import org.apache.tika.metadata.Metadata;
@@ -47,7 +45,7 @@ public class JSONTikaParser extends AbstractAnalyticsParser {
 	private boolean arrayWrapped;
 
 	@Override
-	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) {
+	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		try {
 			if(metadata.get(JSONDetector.WRAPPED_IN_ARRAY) != null && metadata.get(JSONDetector.WRAPPED_IN_ARRAY).equals(Boolean.TRUE.toString())) {
 				arrayWrapped = true;
@@ -75,10 +73,8 @@ public class JSONTikaParser extends AbstractAnalyticsParser {
 	
 	@Override
 	public ProfilerRecord getNextProfilerRecord(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
-		//return super.flattenedJsonToDefaultProfilerRecord(this.parseSingleRecordAsJson(inputStream, handler, metadata, context));
-
 		try {
-			return mapped();
+			return mapped(context);
 		} catch (IOException e) {
 			throw new AnalyticsTikaProfilingException(e);
 		}
@@ -184,9 +180,7 @@ public class JSONTikaParser extends AbstractAnalyticsParser {
 		return null;
 	}
 	
-	private DefaultProfilerRecord mapped() throws IOException {
-		boolean quotedState = false;
-		Stack<Character> bracketStack = new Stack<Character>();
+	private DefaultProfilerRecord mapped(TikaProfilerParameters context) throws IOException {
 		String content;
 		String tempLine;
 		int tempCharIntRepresentation;
@@ -222,11 +216,10 @@ public class JSONTikaParser extends AbstractAnalyticsParser {
 					this.getParams().setCharsRead(getParams().getCharsRead()+content.length());
 				jsonNode = new ObjectMapper().readTree(content);
 				
-
 				if (!jsonNode.isNull()) {
-					
 						//addKeys("", jsonNode, map);
 					profilerRecord = addKeyWithHierarchicalObjects(jsonNode);
+					profilerRecord.setRecordProgress(context.getCharsRead()+content.length());
 					break;
 
 				} else {

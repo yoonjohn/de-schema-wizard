@@ -1,0 +1,160 @@
+{
+    "mainTour": {
+        "generalTextForBus": {
+            "title": "Schema Wizard Tours",
+            "message": "Look for the tour icon (bus) on pages you visit for brief tours of those pages."
+        },
+        "generalHelp": {
+            "title": "Schema Wizard Help",
+            "message": "General help is available by pressing this icon. Help icons throughout the application provide context sensitive help\n\nThis concludes the 'Catalog Tour'."
+        },
+        "domainsMain": {
+            "title": "Catalog: Domains",
+            "message": "Interpretations are one of the most important pieces in successfully finding semantic meaning for a field.This progressive analysis provides an interpretation that has significant semantic meaning that far exceeds simple syntactic recognition."
+        },
+        "schemaMain": {
+            "title": "Catalog: Schemas",
+            "message": "This tabbed page lists existing domains and a button for creating a new one.\nDomains are a set of interpretations which are managed by selecting a domain."
+        },
+        "dataSampleMain": {
+            "title": "Catalog: Data Samples",
+            "message": "This tabbed page lists files that have been used in the creation of schemas."
+        },
+        "mainPageTour": {
+            "title": "Catalog Tour",
+            "message": "Welcome to the 'Catalog Tour' of Schema Wizard.\n\nThe catalog is composed of three different objects:<ul style='margin-left:20px;'><li>Schemas,</li><li>Data Samples, and</li><li>Domains</li></ul>Lists of these objects and the means to manage them are found ontheir respective tabbed pages. Continue with the tour to take a brief look at each."
+        }
+    },
+    "interpretationsTour": {
+        "step1": {
+            "title": "Interpretations Tour ",
+            "message": "Welcome to the 'Interpretation Tour' of Schema Wizard.Interpretations are one of the most important pieces in successfully finding semantic meaning for a field.This progressive analysis provides an interpretation that has significant semantic meaning that far exceeds simple syntactic recognition."
+        },
+        "step2": {
+            "title": "Name the Interpretation",
+            "message": "Give your interpretation the appropriate name(minimum of two characters)."
+        },
+        "step3": {
+            "title": "Give the Interpretation a Description",
+            "message": "Give the Interpretation an informative description (minimum of 10 characters)."
+        },
+        "step4": {
+            "title": "Constraints",
+            "message": "These constraints define valid values for the interpretation you created.<br />The Main-Type, and Detail-Type are required in order to properly complete analysis on the correct type."
+        },
+        "step5": {
+            "title": "Validation Script Environment",
+            "message": "This is a Python Validation Script Environment, in which you have the ability to write scripts. Use this script to validate your interpretation."
+        },
+        "step6": {
+            "title": "Test Data",
+            "message": "The test data is primarily used to test against the script created."
+        },
+        "step7": {
+            "title": "Test Output",
+            "message": "This area is designed to Output whatever your script returns."
+        },
+        "step8": {
+            "title": "Matching Names",
+            "message": "This allows any additional names to be considered for the interpretation created."
+        },
+        "step9": {
+            "title": "Save and Exit",
+            "message": "After you have completed everything you need to have a valid interpretation you can save and exit, or create more interpretations."
+        }
+    },
+    "inspectSampleTour": {
+        "step1": {
+            "title": "Inspecting Data Samples",
+            "message": "Welcome to the Schema Wizard 'Inspect Samples' section.\n\n Inspecting the data samples that have been selected in order to create a schema is a crucial step as going through each data sample is important for efficient analysis on each file and discarding of unsuitable samples."
+        },
+        "step2": {
+            "title": "Data Sample Details",
+            "message": "This specifies the current data sample that you are inspecting and how many are left in the files that were uploaded."
+        },
+        "step3": {
+            "title": "Data Sample Fields",
+            "message": "Inside of this table, Schema Wizard has analyzed and identified certain fields in the data sample."
+        },
+        "step4": {
+            "title": "Data Sample Legend",
+            "message": "In order to understand all of the fields in the data sample table, this legend explains the forms of analysis that have been executed and what they mean for the analysis of the data sample."
+        },
+        "step5": {
+            "title": "Data Sample Interpretation",
+            "message": "Any of the interpretations created may have been matched to a field in the data sample."
+        },
+        "step6": {
+            "title": "Data Sample Discards",
+            "message": "If the data sample that was uploaded was unsuitable, then clicking the 'Discard' button will get rid of this specific data sample"
+        },
+        "step7": {
+            "title": "Next Data Sample",
+            "message": "Once you have completed your analysis on the data sample clicking 'Next' will move you to the next data sample."
+        }
+    },
+    "inspectDataSourceTour": {
+        "step1": {
+            "title": "Matching Fields Step",
+            "message": "This step in Schema Wizard is crucial for seeing how all of your data sources matched to each other and all of the analytics that came out of the matching.\n\nIn this section you need to uses all of the analysis provided as well as visual tools to make sure the matching went as expected."
+        },
+        "step2": {
+            "title": "Data Source Profile",
+            "message": "Based upon all of the matching done in the previous step, you know have all of your data samples here, as well as the matched fields that have been identified."
+        },
+        "step3": {
+            "title": "Expand Data Sources",
+            "message": "Click on this button to see all of the fields across all of the data sources side-by-side."
+        },
+        "step4": {
+            "title": "Remove Data Sample",
+            "message": "If you find a data sample is now unusable in this step, simply remove it."
+        },
+        "step5": {
+            "title": "Remove Schema Field",
+            "message": "If one of the Schema properties is unusable, it can be removed"
+        },
+        "step6": {
+            "title": "Comparing Samples and Fields",
+            "message": "By clicking on the fields in a specific data sample, you can compare and use the visual tools to see their relevance"
+        },
+        "step7": {
+            "title": "Detail Panel 1",
+            "message": "In this first panel you can see what analysis has been completed on your data source field"
+        },
+        "step8": {
+            "title": "Detail Panel 2",
+            "message": "This second panel is useful for comparing fields of different data sources."
+        },
+        "step9": {
+            "title": "Visual Tools",
+            "message": "Utilizing the visual tools may assist in analysis of data source fields"
+        },
+        "step10": {
+            "title": "Finalize Matching Fields",
+            "message": "Once you have completed your analysis, move onto 'Finalizing the Schema' by clicking 'Next'"
+        }
+    },
+    "finalizeSchemaTour": {
+        "step1": {
+            "title": "Finalize Schema",
+            "message": "This is the final step when it comes to the creation of your schema\nIn this step you need to verify that all of the matchihng fields and thier attributes are propely matched"
+        },
+        "step2": {
+            "title": "Finalize Fields",
+            "message": "Here you can change the name of any field."
+        },
+        "step3": {
+            "title": "Aliases",
+            "message": "If you change any of the Field names, they will be stored here as an 'Alias' to the field"
+        },
+        "step4": {
+            "title": "Add Field",
+            "message": "You have the option to add any additional fields to your schema if necessary"
+        },
+        "step5": {
+            "title": "Finalize Schema",
+            "message": "By clicking 'Next' you will move onto the final step of Finalizing your schema by giving it a name, version, and description\n\n This concludes the Schema Creation Tour"
+        }
+    }
+}

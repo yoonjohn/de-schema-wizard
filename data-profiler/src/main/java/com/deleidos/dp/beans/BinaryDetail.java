@@ -12,7 +12,7 @@ import com.deleidos.dp.histogram.ByteBucketList;
  *
  */
 public class BinaryDetail extends Detail {
-	private ByteBucketList byteHistogram;
+	private Histogram byteHistogram;
 	private String mimeType;
 	private BigInteger length;
 	private String hash;
@@ -42,11 +42,11 @@ public class BinaryDetail extends Detail {
 		this.hash = hash;
 	}
 
-	public ByteBucketList getByteHistogram() {
+	public Histogram getByteHistogram() {
 		return byteHistogram;
 	}
 
-	public void setByteHistogram(ByteBucketList characterHistogram) {
+	public void setByteHistogram(Histogram characterHistogram) {
 		this.byteHistogram = characterHistogram;
 	}
 

@@ -1,0 +1,2670 @@
+[{
+	"dsProfile": {
+		"waypoints.lat": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.LatitudeInterpretation",
+				"interpretation": "Coordinate - Latitude",
+				"unknown": false
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 28.977050951865873,
+				"walkingSum": 107157.13442,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 63.55,
+				"walkingSquareSum": 5235737.946195977,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [21, 20, 97, 107, 63, 23, 21, 35, 18, 10, 9, 6, 18, 8, 8, 5, 5, 0, 3, 1, 1, 2, 2, 4, 1, 5, 1, 0, 1, 26, 30, 20, 13, 49, 36, 75, 326, 519, 593, 596, 400, 142, 77, 108, 70, 45, 41, 9, 15, 5, 5, 3, 0],
+					"region-data": {
+						"latitude-key": "waypoints.lat",
+						"longitude-key": "waypoints.lon",
+						"rows": [{
+							"c": [{
+								"v": "United States"
+							}, {
+								"v": 34
+							}]
+						}, {
+							"c": [{
+								"v": "China"
+							}, {
+								"v": 41
+							}]
+						}, {
+							"c": [{
+								"v": "Russia"
+							}, {
+								"v": 40
+							}]
+						}],
+						"cols": [{
+							"label": "Country"
+						}, {
+							"label": "Frequency"
+						}]
+					},
+					"series": "Values",
+					"type": "map",
+					"yaxis": "Frequency",
+					"labels": ["[-41.8831741808,-39.8446960664)", "[-39.8446960664,-37.8062179520)", "[-37.8062179520,-35.7677398376)", "[-35.7677398376,-33.7292617232)", "[-33.7292617232,-31.6907836088)", "[-31.6907836088,-29.6523054944)", "[-29.6523054944,-27.6138273800)", "[-27.6138273800,-25.5753492656)", "[-25.5753492656,-23.5368711512)", "[-23.5368711512,-21.4983930368)", "[-21.4983930368,-19.4599149224)", "[-19.4599149224,-17.4214368080)", "[-17.4214368080,-15.3829586936)", "[-15.3829586936,-13.3444805792)", "[-13.3444805792,-11.3060024648)", "[-11.3060024648,-9.2675243504)", "[-9.2675243504,-7.2290462360)", "[-7.2290462360,-5.1905681216)", "[-5.1905681216,-3.1520900072)", "[-3.1520900072,-1.1136118928)", "[-1.1136118928,0.9248662216)", "[0.9248662216,2.9633443360)", "[2.9633443360,5.0018224504)", "[5.0018224504,7.0403005648)", "[7.0403005648,9.0787786792)", "[9.0787786792,11.1172567936)", "[11.1172567936,13.1557349080)", "[13.1557349080,15.1942130224)", "[15.1942130224,17.2326911368)", "[17.2326911368,19.2711692512)", "[19.2711692512,21.3096473656)", "[21.3096473656,23.3481254800)", "[23.3481254800,25.3866035944)", "[25.3866035944,27.4250817088)", "[27.4250817088,29.4635598232)", "[29.4635598232,31.5020379376)", "[31.5020379376,33.5405160520)", "[33.5405160520,35.5789941664)", "[35.5789941664,37.6174722808)", "[37.6174722808,39.6559503952)", "[39.6559503952,41.6944285096)", "[41.6944285096,43.7329066240)", "[43.7329066240,45.7713847384)", "[45.7713847384,47.8098628528)", "[47.8098628528,49.8483409672)", "[49.8483409672,51.8868190816)", "[51.8868190816,53.9252971960)", "[53.9252971960,55.9637753104)", "[55.9637753104,58.0022534248)", "[58.0022534248,60.0407315392)", "[60.0407315392,62.0792096536)", "[62.0792096536,64.1176877680)", "[64.1176877680,66.1561658824)"]
+				},
+				"min": -41.39906,
+				"walkingCount": 3698,
+				"num-distinct-values": 1307,
+				"detail-type": "decimal",
+				"std-dev": 24.003336043672036
+			},
+			"presence": 0.20140105,
+			"merged-into-schema": false
+		},
+		"altChange": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 1,
+				"walkingSum": 413,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 413,
+				"max-length": 1,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [24, 389],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [" ", "C"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [389],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["C"]
+				},
+				"walkingCount": 413,
+				"num-distinct-values": 2,
+				"detail-type": "term",
+				"min-length": 1
+			},
+			"presence": 0.72329247,
+			"merged-into-schema": false
+		},
+		"air_ground": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 1,
+				"walkingSum": 418,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 418,
+				"max-length": 1,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [418],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [418],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A"]
+				},
+				"walkingCount": 418,
+				"num-distinct-values": 1,
+				"detail-type": "term",
+				"min-length": 1
+			},
+			"presence": 0.73204905,
+			"merged-into-schema": false
+		},
+		"ident": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 6.2381786339754814,
+				"walkingSum": 3562,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 22518,
+				"max-length": 7,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [131, 308, 212, 183, 156, 197, 158, 152, 169, 139, 372, 22, 92, 58, 43, 71, 33, 61, 29, 44, 46, 152, 38, 71, 48, 12, 37, 46, 124, 62, 52, 68, 77, 27, 17, 55],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"std-dev-length": 0.7219448652114226,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [7, 1, 9, 19, 1, 16, 18, 1, 26, 1, 49, 9, 1, 1, 1, 7, 1, 2, 3, 1, 1, 1, 20, 1, 17, 4, 2, 9, 7, 2, 2, 12, 2, 1, 2, 7, 8, 24, 1, 8, 14, 1, 2, 23, 1, 12, 2, 2, 2, 1, 2, 3, 2, 5, 8, 4, 7, 11, 3, 6, 19, 13, 7, 7, 8, 1, 10, 1, 17, 2, 22, 47],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[AAL1007,AAL1600]", "AAL1655", "[AAL1721,AAL2027]", "[AAL21,AAL609]", "AAL618", "[AAL62,ACA1107]", "[ACA125,AMF1930]", "AMX30", "[AMX404,ASQ4384]", "ASQ4493", "[AVA19,CFG249]", "[CGHJU,CPA496]", "CQH8819", "CQH8930", "CQH8957", "[CRK682,CSN3399]", "CSN3645", "[CSN382,CSN6151]", "CSN6201", "CSZ9251", "CSZ9635", "CSZ9853", "[CTL18,DAL403]", "DAL420", "[DAL662,ETD18]", "[ETD533,EVA828]", "[FD401,FD428]", "[FD860,FFT1251]", "[FFT422,FJI911]", "FLG3812", "[FLY896,FLY897]", "[GEC8187,GLO9006]", "[HAL449,HDA495]", "HDA857", "[HKE1766,IBE6833]", "[IGO171,JAI2093]", "[JAI531,JIA5374]", "[JST293,LOT3]", "MAL7054", "[MDA1261,N252MC]", "[N289DA,N613RF]", "N61TF", "[N6428D,N655TC]", "[N66215,OPT905]", "POE272", "[QFA171,QFA611]", "QFA612", "[QFA678,QFA93]", "[QJE1545,QJE1804]", "QLK2079", "[QLK2209,QLK2353]", "[QLK2404,QTR123]", "[QTR179,QTR807]", "[QTR859,RAM208]", "[RDDL91,RXA375]", "[RXA3871,RXA4754]", "[RXA563,SKW2955]", "[SKW2962,SKW6507]", "[SKW6538,SLI131]", "[SLK346,SWA1602]", "[SWA1616,SWA3335]", "[SWA342,TAM3391]", "[TAM3525,TFR91]", "[TGW406,THY53]", "[THY696,UAL112]", "UAL1184", "[UAL1477,UAL352]", "UAL432", "[UAL451,UTY512]", "[VHAAX,VHANM]", "[VHAYT,VIR108]", "[VIR25,XOJ760]"]
+				},
+				"walkingCount": 571,
+				"num-distinct-values": 502,
+				"detail-type": "term",
+				"min-length": 4
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"timeType": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 6,
+				"walkingSum": 12,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 72,
+				"max-length": 6,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [4, 2, 2, 2, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["a", "c", "l", "t", "u"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["actual"]
+				},
+				"walkingCount": 2,
+				"num-distinct-values": 1,
+				"detail-type": "term",
+				"min-length": 6
+			},
+			"presence": 0.003502627,
+			"merged-into-schema": false
+		},
+		"lon": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.LongitudeInterpretation",
+				"interpretation": "Coordinate - Longitude",
+				"unknown": false
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": -28.262639574468086,
+				"walkingSum": -11955.09654,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 168.56667,
+				"walkingSquareSum": 4234510.18087701,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 0, 1, 0, 0, 0, 13, 33, 16, 22, 30, 41, 30, 36, 18, 15, 3, 2, 4, 19, 3, 0, 0, 0, 3, 0, 1, 0, 1, 1, 3, 4, 5, 1, 1, 4, 9, 0, 0, 3, 4, 0, 0, 0, 3, 6, 9, 30, 6, 3, 3, 11, 10, 10, 0, 5],
+					"region-data": {
+						"latitude-key": "lat",
+						"longitude-key": "lon",
+						"rows": [{
+							"c": [{
+								"v": "United States"
+							}, {
+								"v": 146
+							}]
+						}, {
+							"c": [{
+								"v": "China"
+							}, {
+								"v": 138
+							}]
+						}, {
+							"c": [{
+								"v": "Russia"
+							}, {
+								"v": 139
+							}]
+						}],
+						"cols": [{
+							"label": "Country"
+						}, {
+							"label": "Frequency"
+						}]
+					},
+					"series": "Values",
+					"type": "map",
+					"yaxis": "Frequency",
+					"labels": ["[-162.680053808,-156.759019376)", "[-156.759019376,-150.837984944)", "[-150.837984944,-144.916950512)", "[-144.916950512,-138.995916080)", "[-138.995916080,-133.074881648)", "[-133.074881648,-127.153847216)", "[-127.153847216,-121.232812784)", "[-121.232812784,-115.311778352)", "[-115.311778352,-109.390743920)", "[-109.390743920,-103.469709488)", "[-103.469709488,-97.548675056)", "[-97.548675056,-91.627640624)", "[-91.627640624,-85.706606192)", "[-85.706606192,-79.785571760)", "[-79.785571760,-73.864537328)", "[-73.864537328,-67.943502896)", "[-67.943502896,-62.022468464)", "[-62.022468464,-56.101434032)", "[-56.101434032,-50.180399600)", "[-50.180399600,-44.259365168)", "[-44.259365168,-38.338330736)", "[-38.338330736,-32.417296304)", "[-32.417296304,-26.496261872)", "[-26.496261872,-20.575227440)", "[-20.575227440,-14.654193008)", "[-14.654193008,-8.733158576)", "[-8.733158576,-2.812124144)", "[-2.812124144,3.108910288)", "[3.108910288,9.029944720)", "[9.029944720,14.950979152)", "[14.950979152,20.872013584)", "[20.872013584,26.793048016)", "[26.793048016,32.714082448)", "[32.714082448,38.635116880)", "[38.635116880,44.556151312)", "[44.556151312,50.477185744)", "[50.477185744,56.398220176)", "[56.398220176,62.319254608)", "[62.319254608,68.240289040)", "[68.240289040,74.161323472)", "[74.161323472,80.082357904)", "[80.082357904,86.003392336)", "[86.003392336,91.924426768)", "[91.924426768,97.845461200)", "[97.845461200,103.766495632)", "[103.766495632,109.687530064)", "[109.687530064,115.608564496)", "[115.608564496,121.529598928)", "[121.529598928,127.450633360)", "[127.450633360,133.371667792)", "[133.371667792,139.292702224)", "[139.292702224,145.213736656)", "[145.213736656,151.134771088)", "[151.134771088,157.055805520)", "[157.055805520,162.976839952)", "[162.976839952,168.897874384)"]
+				},
+				"min": -158.4094,
+				"walkingCount": 423,
+				"num-distinct-values": 397,
+				"detail-type": "decimal",
+				"std-dev": 95.97856828700465
+			},
+			"presence": 0.7408056,
+			"merged-into-schema": false
+		},
+		"dest": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 4,
+				"walkingSum": 612,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 2448,
+				"max-length": 4,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [75, 48, 8, 14, 12, 11, 9, 9, 9, 3, 59, 28, 40, 27, 12, 17, 7, 65, 10, 4, 3, 12, 11, 89, 30],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1, 1, 1, 1, 1, 2, 1, 1, 5, 7, 1, 1, 2, 3, 5, 2, 1, 1, 2, 1, 3, 2, 1, 1, 1, 1, 1, 1, 1, 6, 1, 2, 3, 1, 2, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1, 1, 10, 1, 2, 1, 1, 1, 1, 1, 1, 1, 16, 1, 1, 1, 16, 1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["CYMM", "CYYJ", "KBNA", "KBOS", "KCLT", "KDFW", "KIAD", "KJFK", "KLAS", "KLAX", "KLGA", "KMEM", "KMKE", "KONT", "KORD", "KPHX", "KPNE", "KPSP", "KSAT", "KSBA", "KSEA", "KSGF", "KSMF", "KSNA", "KSUS", "KWLW", "MMMX", "MMUN", "MPTO", "NZAA", "NZCH", "NZWN", "SBFZ", "UBBB", "VABB", "VHHH", "WPDL", "WSSS", "YAYE", "YBAF", "YBAS", "YBBN", "YBCS", "YBGE", "YBMA", "YBMK", "YBTH", "YBUD", "YBWX", "YCNK", "YEML", "YJIN", "YKAT", "YKII", "YKRY", "YMAY", "YMDG", "YMEN", "YMML", "YPBO", "YPDN", "YPPF", "YPPH", "YPTN", "YRAP", "YSBK", "YSCB", "YSHK", "YSSY", "YSWG", "YWIO", "YWYY", "ZBAA", "ZGGG", "ZSPD"]
+				},
+				"walkingCount": 153,
+				"num-distinct-values": 75,
+				"detail-type": "term",
+				"min-length": 4
+			},
+			"presence": 0.26795095,
+			"merged-into-schema": false
+		},
+		"type": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 8.52014010507881,
+				"walkingSum": 4865,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 41893,
+				"max-length": 10,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [155, 3, 6, 148, 148, 148, 986, 298, 566, 836, 569, 10, 418, 569, 3, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["a", "d", "e", "f", "g", "h", "i", "l", "n", "o", "p", "r", "s", "t", "u", "v"]
+				},
+				"std-dev-length": 0.8803342670267726,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 3, 148, 418],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["arrival", "departure", "flightplan", "position"]
+				},
+				"walkingCount": 571,
+				"num-distinct-values": 4,
+				"detail-type": "term",
+				"min-length": 7
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"speed": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 343.6621621621622,
+				"walkingSum": 50862,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 506,
+				"walkingSquareSum": 19974356,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 0, 0, 0, 0, 0, 1, 3, 1, 1, 0, 0, 4, 7, 2, 5, 4, 3, 0, 2, 2, 1, 3, 9, 0, 6, 3, 0, 0, 0, 2, 2, 2, 1, 4, 2, 0, 0, 0, 1, 1, 0, 5, 6, 27, 12, 12, 3, 7, 2, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[25.00,34.52)", "[34.52,44.04)", "[44.04,53.56)", "[53.56,63.08)", "[63.08,72.60)", "[72.60,82.12)", "[82.12,91.64)", "[91.64,101.16)", "[101.16,110.68)", "[110.68,120.20)", "[120.20,129.72)", "[129.72,139.24)", "[139.24,148.76)", "[148.76,158.28)", "[158.28,167.80)", "[167.80,177.32)", "[177.32,186.84)", "[186.84,196.36)", "[196.36,205.88)", "[205.88,215.40)", "[215.40,224.92)", "[224.92,234.44)", "[234.44,243.96)", "[243.96,253.48)", "[253.48,263.00)", "[263.00,272.52)", "[272.52,282.04)", "[282.04,291.56)", "[291.56,301.08)", "[301.08,310.60)", "[310.60,320.12)", "[320.12,329.64)", "[329.64,339.16)", "[339.16,348.68)", "[348.68,358.20)", "[358.20,367.72)", "[367.72,377.24)", "[377.24,386.76)", "[386.76,396.28)", "[396.28,405.80)", "[405.80,415.32)", "[415.32,424.84)", "[424.84,434.36)", "[434.36,443.88)", "[443.88,453.40)", "[453.40,462.92)", "[462.92,472.44)", "[472.44,481.96)", "[481.96,491.48)", "[491.48,501.00)", "[501.00,510.52)"]
+				},
+				"min": 25,
+				"walkingCount": 148,
+				"num-distinct-values": 80,
+				"detail-type": "integer",
+				"std-dev": 129.83906639718504
+			},
+			"presence": 0.2591944,
+			"merged-into-schema": false
+		},
+		"squawk": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 3329.6160714285716,
+				"walkingSum": 745834,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 7753,
+				"walkingSquareSum": 3442225568,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 3, 0, 3, 8, 2, 1, 7, 5, 10, 12, 7, 10, 0, 6, 6, 6, 5, 15, 7, 0, 8, 7, 4, 6, 2, 3, 2, 6, 7, 3, 2, 3, 1, 3, 5, 5, 0, 1, 3, 0, 1, 5, 9, 2, 2, 2, 0, 2, 8, 4, 2, 1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-133.2,15.0)", "[15.0,163.2)", "[163.2,311.4)", "[311.4,459.6)", "[459.6,607.8)", "[607.8,756.0)", "[756.0,904.2)", "[904.2,1052.4)", "[1052.4,1200.6)", "[1200.6,1348.8)", "[1348.8,1497.0)", "[1497.0,1645.2)", "[1645.2,1793.4)", "[1793.4,1941.6)", "[1941.6,2089.8)", "[2089.8,2238.0)", "[2238.0,2386.2)", "[2386.2,2534.4)", "[2534.4,2682.6)", "[2682.6,2830.8)", "[2830.8,2979.0)", "[2979.0,3127.2)", "[3127.2,3275.4)", "[3275.4,3423.6)", "[3423.6,3571.8)", "[3571.8,3720.0)", "[3720.0,3868.2)", "[3868.2,4016.4)", "[4016.4,4164.6)", "[4164.6,4312.8)", "[4312.8,4461.0)", "[4461.0,4609.2)", "[4609.2,4757.4)", "[4757.4,4905.6)", "[4905.6,5053.8)", "[5053.8,5202.0)", "[5202.0,5350.2)", "[5350.2,5498.4)", "[5498.4,5646.6)", "[5646.6,5794.8)", "[5794.8,5943.0)", "[5943.0,6091.2)", "[6091.2,6239.4)", "[6239.4,6387.6)", "[6387.6,6535.8)", "[6535.8,6684.0)", "[6684.0,6832.2)", "[6832.2,6980.4)", "[6980.4,7128.6)", "[7128.6,7276.8)", "[7276.8,7425.0)", "[7425.0,7573.2)", "[7573.2,7721.4)", "[7721.4,7869.6)"]
+				},
+				"min": 7,
+				"walkingCount": 224,
+				"num-distinct-values": 199,
+				"detail-type": "integer",
+				"std-dev": 2068.993776079569
+			},
+			"presence": 0.39229423,
+			"merged-into-schema": false
+		},
+		"eta": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 1.4462624031059604E9,
+				"walkingSum": 218385622869,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 1446424860,
+				"walkingSquareSum": "315842915811565250551",
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [3, 48, 42, 24, 8, 2, 1, 0, 0, 0, 1, 3, 14, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[1446246890.38,1446250380.00)", "[1446250380.00,1446253869.62)", "[1446253869.62,1446257359.24)", "[1446257359.24,1446260848.86)", "[1446260848.86,1446264338.48)", "[1446264338.48,1446267828.10)", "[1446267828.10,1446271317.72)", "[1446271317.72,1446274807.34)", "[1446274807.34,1446278296.96)", "[1446278296.96,1446281786.58)", "[1446281786.58,1446285276.20)", "[1446285276.20,1446288765.82)", "[1446288765.82,1446292255.44)", "[1446292255.44,1446295745.06)", "[1446295745.06,1446299234.68)", "[1446299234.68,1446302724.30)", "[1446302724.30,1446306213.92)", "[1446306213.92,1446309703.54)", "[1446309703.54,1446313193.16)", "[1446313193.16,1446316682.78)", "[1446316682.78,1446320172.40)", "[1446320172.40,1446323662.02)", "[1446323662.02,1446327151.64)", "[1446327151.64,1446330641.26)", "[1446330641.26,1446334130.88)", "[1446334130.88,1446337620.50)", "[1446337620.50,1446341110.12)", "[1446341110.12,1446344599.74)", "[1446344599.74,1446348089.36)", "[1446348089.36,1446351578.98)", "[1446351578.98,1446355068.60)", "[1446355068.60,1446358558.22)", "[1446358558.22,1446362047.84)", "[1446362047.84,1446365537.46)", "[1446365537.46,1446369027.08)", "[1446369027.08,1446372516.70)", "[1446372516.70,1446376006.32)", "[1446376006.32,1446379495.94)", "[1446379495.94,1446382985.56)", "[1446382985.56,1446386475.18)", "[1446386475.18,1446389964.80)", "[1446389964.80,1446393454.42)", "[1446393454.42,1446396944.04)", "[1446396944.04,1446400433.66)", "[1446400433.66,1446403923.28)", "[1446403923.28,1446407412.90)", "[1446407412.90,1446410902.52)", "[1446410902.52,1446414392.14)", "[1446414392.14,1446417881.76)", "[1446417881.76,1446421371.38)", "[1446421371.38,1446424861.00)", "[1446424861.00,1446428350.62)"]
+				},
+				"min": 1446249660,
+				"walkingCount": 151,
+				"num-distinct-values": 119,
+				"detail-type": "integer",
+				"std-dev": 22618.833782583413
+			},
+			"presence": 0.26444834,
+			"merged-into-schema": false
+		},
+		"aat": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 1446250170,
+				"walkingSum": 2892500340,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 1446250500,
+				"walkingSquareSum": 4183279108450275600,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["1446249840", "1446250500"]
+				},
+				"min": 1446249840,
+				"walkingCount": 2,
+				"num-distinct-values": 2,
+				"detail-type": "integer",
+				"std-dev": 330
+			},
+			"presence": 0.003502627,
+			"merged-into-schema": false
+		},
+		"reg": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 5.374677002583979,
+				"walkingSum": 2080,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 11280,
+				"max-length": 6,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [51, 72, 61, 62, 45, 80, 85, 86, 80, 58, 94, 92, 36, 42, 28, 46, 52, 124, 23, 31, 42, 31, 35, 203, 26, 47, 26, 35, 30, 36, 30, 157, 31, 34, 37, 32],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"std-dev-length": 0.5100332730325717,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [7, 5, 7, 3, 6, 2, 2, 9, 2, 2, 2, 2, 4, 11, 2, 2, 12, 5, 9, 9, 2, 4, 5, 12, 14, 10, 7, 13, 5, 9, 7, 6, 3, 6, 15, 3, 7, 2, 9, 3, 3, 8, 13, 20, 59, 2, 24, 7, 2, 3],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[4KAZ03,A6APA]", "[A6EDR,A6EFD]", "[A7ACC,A7BCH]", "[B1502,B1639]", "[B16462,B18315]", "[B18351,B18358]", "[B18360,B1859]", "[B18608,B5427]", "[B5565,B5970]", "[B6115,B6292]", "[B6296,B6298]", "[B6301,B6309]", "[B6469,B6546]", "[B6562,BLPG]", "[CCBFI,CCBFV]", "[CFBWI,CFMEP]", "[CFTWJ,DAIHX]", "[DAIKM,ECINO]", "[EIISB,GTCXB]", "[GVWAG,HSTBB]", "[HSTJU,HSTQF]", "[JA315J,LVCBS]", "[LXUCV,N14235]", "[N149SY,N244WN]", "[N273AY,N392AN]", "[N39356,N464AS]", "[N504VL,N551TG]", "[N552UW,N633VA]", "[N634VA,N651SW]", "[N655TC,N711HK]", "[N718AN,N761AJ]", "[N76503,N7717D]", "[N7720F,N7736A]", "[N7743B,N806DN]", "[N809NW,N860NN]", "[N863NN,N865NN]", "[N8670A,N89308]", "[N899NN,N9008U]", "[N9013A,N958NN]", "[N969NN,OHLBR]", "[PKGMJ,PKGPP]", "[PKLGL,PRAXT]", "[PRGGY,PTSNK]", "[PTXPB,VHJFE]", "[VHJFS,VHXFP]", "[VHXPN,VHXZA]", "[VHXZI,VTSGJ]", "[XAAMG,ZKMVE]", "[ZKNCJ,ZKNFB]", "[ZKTLD,ZKZQE]"]
+				},
+				"walkingCount": 387,
+				"num-distinct-values": 346,
+				"detail-type": "term",
+				"min-length": 4
+			},
+			"presence": 0.67775834,
+			"merged-into-schema": false
+		},
+		"ete": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 9537.905405405405,
+				"walkingSum": 1411610,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 49800,
+				"walkingSquareSum": 25708969152,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [11, 9, 14, 15, 11, 8, 9, 6, 8, 3, 8, 5, 6, 11, 5, 4, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 2, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[360.00,1348.82)", "[1348.82,2337.64)", "[2337.64,3326.46)", "[3326.46,4315.28)", "[4315.28,5304.10)", "[5304.10,6292.92)", "[6292.92,7281.74)", "[7281.74,8270.56)", "[8270.56,9259.38)", "[9259.38,10248.20)", "[10248.20,11237.02)", "[11237.02,12225.84)", "[12225.84,13214.66)", "[13214.66,14203.48)", "[14203.48,15192.30)", "[15192.30,16181.12)", "[16181.12,17169.94)", "[17169.94,18158.76)", "[18158.76,19147.58)", "[19147.58,20136.40)", "[20136.40,21125.22)", "[21125.22,22114.04)", "[22114.04,23102.86)", "[23102.86,24091.68)", "[24091.68,25080.50)", "[25080.50,26069.32)", "[26069.32,27058.14)", "[27058.14,28046.96)", "[28046.96,29035.78)", "[29035.78,30024.60)", "[30024.60,31013.42)", "[31013.42,32002.24)", "[32002.24,32991.06)", "[32991.06,33979.88)", "[33979.88,34968.70)", "[34968.70,35957.52)", "[35957.52,36946.34)", "[36946.34,37935.16)", "[37935.16,38923.98)", "[38923.98,39912.80)", "[39912.80,40901.62)", "[40901.62,41890.44)", "[41890.44,42879.26)", "[42879.26,43868.08)", "[43868.08,44856.90)", "[44856.90,45845.72)", "[45845.72,46834.54)", "[46834.54,47823.36)", "[47823.36,48812.18)", "[48812.18,49801.00)", "[49801.00,50789.82)"]
+				},
+				"min": 360,
+				"walkingCount": 148,
+				"num-distinct-values": 119,
+				"detail-type": "integer",
+				"std-dev": 9096.021740550392
+			},
+			"presence": 0.2591944,
+			"merged-into-schema": false
+		},
+		"id": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 29.334500875656744,
+				"walkingSum": 16750,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 497282,
+				"max-length": 34,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [1713, 2650, 1335, 806, 512, 1707, 482, 1043, 522, 424, 379, 98, 371, 22, 93, 58, 43, 71, 33, 61, 28, 44, 46, 152, 38, 71, 48, 12, 38, 46, 124, 62, 52, 68, 77, 27, 17, 55, 220, 229, 300, 628, 73, 229, 370, 404, 185, 13, 185, 270, 216],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "c", "d", "e", "f", "h", "i", "l", "n", "o", "r", "s", "u"]
+				},
+				"std-dev-length": 3.222379692164176,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [7, 1, 9, 19, 1, 16, 9, 35, 4, 1, 7, 2, 1, 49, 31, 17, 1, 1, 17, 13, 2, 2, 1, 1, 2, 1, 13, 3, 7, 3, 2, 3, 19, 1, 12, 15, 1, 28, 24, 10, 1, 14, 3, 7, 20, 13, 7, 7, 8, 1, 10, 1, 21, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 46],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[AAL1007-1446018012-airline-0324,AAL1600-1446018014-airline-0543]", "AAL1655-1446018014-airline-0092", "[AAL1721-1446070800-schedule-0001,AAL2027-1446070500-schedule-0000]", "[AAL21-1446018012-airline-0003,AAL609-1446070200-schedule-0000]", "AAL618-1446070500-schedule-0001", "[AAL62-1446018012-airline-0140:0,ACA1107-1446072300-schedule-0000]", "[ACA125-1446062700-schedule-0001,AFR1121-1446236945-ed-0006:0]", "[AFR945-1446072600-schedule-0003:0,ASH5776-1446074100-schedule-0000]", "[ASQ4384-1446074340-schedule-0000,AXM182-1446201164-airline-0011]", "AZA681-1446051000-schedule-0000:0", "[AZA784-1446040800-schedule-0002:0,AZU6966-1446077040-schedule-0000:0]", "[BAW103-1446022695-airline-0097:0,BAW103-1446022695-airline-0097:2]", "BAW184-1446075300-schedule-0000:0", "[BAW2036-1446074700-schedule-0000:0,CRK682-1446207991-airline-0201]", "[CRL991-1446076500-schedule-0000,DAL2004-1446075480-schedule-0000]", "[DAL2307-1446074700-schedule-0000,DLH680-1446064800-schedule-0000:2]", "EIN11EA-1446234815-ed-0000:2", "EJM100-1446238718-dlad-4003416:0", "[EJM551-1446244228-274-1,FFT1215-1446068700-schedule-0000]", "[FFT1251-1446069600-schedule-0000,GEC8187-1446231984-ed-0035:0]", "[GEC8188-1446230707-ed-0007:0,GEC8188-1446230707-ed-0007:2]", "[GIA161-1446247630-airline-0177,GIA611-1446245576-airline-0000]", "GIA865-1446248539-adhoc-0", "GJS3652-1446027250-airline-0021", "[GLO1368-1446248912-airline-0164,GLO1422-1446076500-schedule-0000]", "GLO1450-1446077100-schedule-0000", "[GLO1719-1446077220-schedule-0000,JAF5538-1446070800-schedule-0000:0]", "[JAI2093-1446205370-airline-0071:0,JAL3040-1446165494-airline-0096]", "[JBU1170-1446073920-schedule-0000,JST293-1446201653-airline-0048]", "[JST511-1446210221-airline-0094,JST660-1446100014-airline-0338]", "[JST660-1446100014-airline-0338:0,JST67-1446238223-fds-0026]", "[JST793-1446100014-airline-0478,JST793-1446100014-airline-0478:0]", "[JZA8165-1446074400-schedule-0000,N1165L-1446236059-86-0]", "N16BM-1446238063-75-0", "[N202TT-1446235339-619-0,N453ND-1446246637-103-0]", "[N50MS-1446235753-242-0,N955DG-1446246031-124-1]", "N95HJ-1446241306-424-0", "[N964SP-1446249149-adhoc-0,QFA611-1446199404-airline-0154]", "[QFA611-1446199404-airline-0154:0,ROU7089-1446244476-507-0]", "[RPA4270-1446018032-airline-0291,SEJ18-1446204755-airline-0047]", "SIA328-1446045000-schedule-0000:2", "[SKW2495-1446242581-856-0,SKW6507-1446070920-schedule-0000]", "[SKW6538-1446063000-schedule-0001,SLI131-1446247800-schedule-0000]", "[SLK346-1446206186-airline-0063:0,SWA1602-1446037533-airline-0094]", "[SWA1616-1446039626-airline-0054,SWA3335-1446040823-airline-0141]", "[SWA342-1446037590-airline-0176,TAM3391-1446068580-schedule-0000]", "[TAM3525-1446069000-schedule-0000,TFR91-1446241738-fds-0061]", "[TGW406-1446246658-fds-0063,THY53-1446038700-schedule-0002:0]", "[THY696-1446226589-ed-0013:0,UAL112-1446057180-schedule-0000]", "UAL1184-1446073980-schedule-0000", "[UAL1477-1446063600-schedule-0000,UAL352-1446072840-schedule-0000]", "UAL432-1446033205-airline-0017", "[UAL451-1446065640-schedule-0000,VHJFS-1446229616-fds-0001]", "[VHJGV-1446250507-fds-0018,VHKDT-1446242473-fds-0053]", "[VHKJD-1446197597-fds-0008,VHLWN-1446204186-fds-0017]", "[VHMDK-1446208969-fds-0000,VHSFR-1446246203-fds-0042]", "[VHSKH-1446246360-fds-0006,VHSMK-1446200419-fds-0034]", "[VHTIL-1446243674-fds-0014,VHTQU-1446244023-fds-0050]", "[VHTZY-1446239677-fds-0029,VHUMF-1446240013-fds-0071]", "[VHXEV-1446233869-fds-0005,VHXFP-1446246485-fds-0034]", "[VHXPN-1446231627-fds-0010,VHYBX-1446242620-fds-0014]", "[VHYDR-1446247089-fds-0069,VHYGM-1446238432-fds-0000]", "[VHZMF-1446208857-fds-0001,VIR108-1446074100-schedule-0000:0]", "[VIR25-1446062700-schedule-0000:4,XOJ760-1446228310-383-0]"]
+				},
+				"walkingCount": 571,
+				"num-distinct-values": 532,
+				"detail-type": "term",
+				"min-length": 21
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"lat": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.LatitudeInterpretation",
+				"interpretation": "Coordinate - Latitude",
+				"unknown": false
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 25.944938368794325,
+				"walkingSum": 10974.70893,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 61.1,
+				"walkingSquareSum": 549854.3501781049,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 0, 0, 0, 8, 6, 15, 5, 2, 2, 3, 2, 2, 10, 0, 2, 1, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 1, 2, 6, 1, 1, 1, 5, 12, 14, 24, 19, 10, 12, 30, 28, 24, 30, 44, 28, 15, 11, 9, 4, 7, 5, 3, 2, 5, 1, 2, 3, 0],
+					"region-data": {
+						"latitude-key": "lat",
+						"longitude-key": "lon",
+						"rows": [{
+							"c": [{
+								"v": "United States"
+							}, {
+								"v": 146
+							}]
+						}, {
+							"c": [{
+								"v": "China"
+							}, {
+								"v": 138
+							}]
+						}, {
+							"c": [{
+								"v": "Russia"
+							}, {
+								"v": 139
+							}]
+						}],
+						"cols": [{
+							"label": "Country"
+						}, {
+							"label": "Frequency"
+						}]
+					},
+					"series": "Values",
+					"type": "map",
+					"yaxis": "Frequency",
+					"labels": ["[-45.81798772,-44.09415728)", "[-44.09415728,-42.37032684)", "[-42.37032684,-40.64649640)", "[-40.64649640,-38.92266596)", "[-38.92266596,-37.19883552)", "[-37.19883552,-35.47500508)", "[-35.47500508,-33.75117464)", "[-33.75117464,-32.02734420)", "[-32.02734420,-30.30351376)", "[-30.30351376,-28.57968332)", "[-28.57968332,-26.85585288)", "[-26.85585288,-25.13202244)", "[-25.13202244,-23.40819200)", "[-23.40819200,-21.68436156)", "[-21.68436156,-19.96053112)", "[-19.96053112,-18.23670068)", "[-18.23670068,-16.51287024)", "[-16.51287024,-14.78903980)", "[-14.78903980,-13.06520936)", "[-13.06520936,-11.34137892)", "[-11.34137892,-9.61754848)", "[-9.61754848,-7.89371804)", "[-7.89371804,-6.16988760)", "[-6.16988760,-4.44605716)", "[-4.44605716,-2.72222672)", "[-2.72222672,-0.99839628)", "[-0.99839628,0.72543416)", "[0.72543416,2.44926460)", "[2.44926460,4.17309504)", "[4.17309504,5.89692548)", "[5.89692548,7.62075592)", "[7.62075592,9.34458636)", "[9.34458636,11.06841680)", "[11.06841680,12.79224724)", "[12.79224724,14.51607768)", "[14.51607768,16.23990812)", "[16.23990812,17.96373856)", "[17.96373856,19.68756900)", "[19.68756900,21.41139944)", "[21.41139944,23.13522988)", "[23.13522988,24.85906032)", "[24.85906032,26.58289076)", "[26.58289076,28.30672120)", "[28.30672120,30.03055164)", "[30.03055164,31.75438208)", "[31.75438208,33.47821252)", "[33.47821252,35.20204296)", "[35.20204296,36.92587340)", "[36.92587340,38.64970384)", "[38.64970384,40.37353428)", "[40.37353428,42.09736472)", "[42.09736472,43.82119516)", "[43.82119516,45.54502560)", "[45.54502560,47.26885604)", "[47.26885604,48.99268648)", "[48.99268648,50.71651692)", "[50.71651692,52.44034736)", "[52.44034736,54.16417780)", "[54.16417780,55.88800824)", "[55.88800824,57.61183868)", "[57.61183868,59.33566912)", "[59.33566912,61.05949956)", "[61.05949956,62.78333000)", "[62.78333000,64.50716044)"]
+				},
+				"min": -44.78333,
+				"walkingCount": 423,
+				"num-distinct-values": 396,
+				"detail-type": "decimal",
+				"std-dev": 25.035020547999682
+			},
+			"presence": 0.7408056,
+			"merged-into-schema": false
+		},
+		"hexid": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 6,
+				"walkingSum": 1710,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 10260,
+				"max-length": 6,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [178, 72, 83, 69, 121, 70, 109, 154, 140, 86, 207, 97, 108, 71, 88, 57],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [9, 7, 2, 2, 5, 6, 5, 1, 2, 2, 2, 5, 1, 1, 1, 1, 1, 1, 1, 9, 4, 2, 1, 1, 5, 9, 7, 3, 6, 11, 5, 1, 2, 11, 4, 7, 6, 3, 5, 12, 3, 3, 1, 4, 3, 4, 1, 5, 1, 4, 5, 4, 3, 5, 3, 2, 1, 7, 1, 1, 1, 1, 9, 12, 2, 5, 2, 1, 3, 4, 9, 3, 1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[020090,0D0641]", "[0D0804,3C6518]", "3C656D", "[3C6741,40058B]", "[4005C2,406832]", "[40688F,44A9F3]", "[47340F,4CA9F3]", "4CAAB7", "[4CAAF9,4CC4C6]", "[4D010A,502C44]", "[71BF28,71BF57]", "[71BF86,76B4E5]", "76CEEC", "780238", "7802AE", "7802BE", "7802C0", "7802CB", "780304", "[78031E,78096D]", "[7809AA,780A3C]", "[780A40,780A52]", "780C9F", "780CC5", "[780D62,780D97]", "[780DCF,7C1470]", "[7C2E48,7C6B36]", "[7C6B38,7C6BBF]", "[7C6C73,7C6D2E]", "[7C6DB9,7C77FC]", "[7C7A3A,800B1A]", "800B3C", "[800B58,8511A8]", "[8681B6,899050]", "[8990A6,8990F1]", "[89910E,8A02FE]", "[8A040A,A0C5C6]", "[A0E607,A15B05]", "[A1A8DA,A1FB8F]", "[A2B1B8,A47FDE]", "[A48A44,A49441]", "[A4945F,A4F7CB]", "A5A11A", "[A5A888,A67538]", "[A6C4D7,A703CA]", "[A704D2,A722B1]", "A762D3", "[A7A9CD,A7E62D]", "A7F762", "[A84ABD,A86DDF]", "[A8701D,A923EF]", "[A92DDF,A999D2]", "[A9D605,AA305F]", "[AA3417,AA56D4]", "[AA6F46,AA7315]", "[AA7757,AA7AA6]", "AA9800", "[AACF19,AB38A1]", "AB5BF0", "AB5EB2", "AB6229", "AB7BA5", "[AB9F6D,ABEB31]", "[AC0418,AD478C]", "[AD5398,AD7ECE]", "[ADE201,C03472]", "C04EB6", "C07FB1", "[E03093,E48009]", "[E482C5,E48BB2]", "[E48BE3,E490C2]", "[E4917D,E491A8]", "E80269", "E80279"]
+				},
+				"walkingCount": 285,
+				"num-distinct-values": 262,
+				"detail-type": "term",
+				"min-length": 6
+			},
+			"presence": 0.49912435,
+			"merged-into-schema": false
+		},
+		"aircrafttype": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 3.9536423841059603,
+				"walkingSum": 597,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 2367,
+				"max-length": 4,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [40, 25, 51, 95, 20, 7, 7, 73, 38, 19, 42, 62, 20, 19, 20, 5, 1, 10, 9, 2, 2, 5, 11, 8, 3, 3],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "L", "M", "P", "R", "S", "T", "W"]
+				},
+				"std-dev-length": 0.21025838233625885,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1, 2, 17, 7, 2, 5, 1, 1, 2, 2, 1, 2, 2, 7, 20, 4, 1, 1, 1, 8, 2, 2, 1, 2, 3, 1, 2, 1, 1, 1, 1, 4, 4, 1, 1, 2, 6, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 2, 3, 2, 4, 1, 3],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A306", "A319", "A320", "A321", "A332", "A333", "A388", "AT72", "AT75", "B06", "B350", "B712", "B733", "B737", "B738", "B739", "B744", "B752", "B763", "B772", "B788", "BE20", "BE30", "BE36", "BE40", "BE58", "BE99", "C172", "C210", "C404", "C750", "CRJ7", "CRJ9", "DA42", "DH8A", "DH8C", "DH8D", "DHC2", "E120", "E170", "E190", "EC25", "EC30", "GLF4", "LJ60", "MD80", "MD83", "PA31", "PC12", "R44", "SF34", "SR22", "SW4"]
+				},
+				"walkingCount": 151,
+				"num-distinct-values": 53,
+				"detail-type": "term",
+				"min-length": 3
+			},
+			"presence": 0.26444834,
+			"merged-into-schema": false
+		},
+		"heading": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 180.67703349282297,
+				"walkingSum": 75523,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 360,
+				"walkingSquareSum": 17827229,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [6, 3, 4, 13, 6, 13, 5, 7, 9, 12, 15, 8, 18, 6, 6, 6, 12, 8, 4, 6, 3, 4, 4, 9, 5, 9, 9, 3, 8, 6, 10, 4, 13, 12, 2, 18, 22, 11, 17, 12, 10, 9, 14, 5, 5, 4, 5, 6, 4, 4, 4],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[0.0,7.1)", "[7.1,14.2)", "[14.2,21.3)", "[21.3,28.4)", "[28.4,35.5)", "[35.5,42.6)", "[42.6,49.7)", "[49.7,56.8)", "[56.8,63.9)", "[63.9,71.0)", "[71.0,78.1)", "[78.1,85.2)", "[85.2,92.3)", "[92.3,99.4)", "[99.4,106.5)", "[106.5,113.6)", "[113.6,120.7)", "[120.7,127.8)", "[127.8,134.9)", "[134.9,142.0)", "[142.0,149.1)", "[149.1,156.2)", "[156.2,163.3)", "[163.3,170.4)", "[170.4,177.5)", "[177.5,184.6)", "[184.6,191.7)", "[191.7,198.8)", "[198.8,205.9)", "[205.9,213.0)", "[213.0,220.1)", "[220.1,227.2)", "[227.2,234.3)", "[234.3,241.4)", "[241.4,248.5)", "[248.5,255.6)", "[255.6,262.7)", "[262.7,269.8)", "[269.8,276.9)", "[276.9,284.0)", "[284.0,291.1)", "[291.1,298.2)", "[298.2,305.3)", "[305.3,312.4)", "[312.4,319.5)", "[319.5,326.6)", "[326.6,333.7)", "[333.7,340.8)", "[340.8,347.9)", "[347.9,355.0)", "[355.0,362.1)"]
+				},
+				"min": 0,
+				"walkingCount": 418,
+				"num-distinct-values": 233,
+				"detail-type": "integer",
+				"std-dev": 100.02341112946986
+			},
+			"presence": 0.73204905,
+			"merged-into-schema": false
+		},
+		"alt": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 25391.947565543072,
+				"walkingSum": 13559300,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 47000,
+				"walkingSquareSum": 428048190000,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 7, 7, 7, 7, 6, 7, 6, 14, 11, 17, 9, 10, 6, 12, 3, 4, 1, 5, 4, 4, 4, 5, 1, 4, 6, 6, 7, 1, 3, 7, 7, 4, 3, 12, 8, 9, 4, 7, 20, 1, 18, 16, 19, 4, 33, 33, 41, 1, 35, 20, 24, 17, 0, 3, 0, 0, 0, 0, 1, 0, 0, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-280.06,479.96)", "[479.96,1239.98)", "[1239.98,2000.00)", "[2000.00,2760.02)", "[2760.02,3520.04)", "[3520.04,4280.06)", "[4280.06,5040.08)", "[5040.08,5800.10)", "[5800.10,6560.12)", "[6560.12,7320.14)", "[7320.14,8080.16)", "[8080.16,8840.18)", "[8840.18,9600.20)", "[9600.20,10360.22)", "[10360.22,11120.24)", "[11120.24,11880.26)", "[11880.26,12640.28)", "[12640.28,13400.30)", "[13400.30,14160.32)", "[14160.32,14920.34)", "[14920.34,15680.36)", "[15680.36,16440.38)", "[16440.38,17200.40)", "[17200.40,17960.42)", "[17960.42,18720.44)", "[18720.44,19480.46)", "[19480.46,20240.48)", "[20240.48,21000.50)", "[21000.50,21760.52)", "[21760.52,22520.54)", "[22520.54,23280.56)", "[23280.56,24040.58)", "[24040.58,24800.60)", "[24800.60,25560.62)", "[25560.62,26320.64)", "[26320.64,27080.66)", "[27080.66,27840.68)", "[27840.68,28600.70)", "[28600.70,29360.72)", "[29360.72,30120.74)", "[30120.74,30880.76)", "[30880.76,31640.78)", "[31640.78,32400.80)", "[32400.80,33160.82)", "[33160.82,33920.84)", "[33920.84,34680.86)", "[34680.86,35440.88)", "[35440.88,36200.90)", "[36200.90,36960.92)", "[36960.92,37720.94)", "[37720.94,38480.96)", "[38480.96,39240.98)", "[39240.98,40001.00)", "[40001.00,40761.02)", "[40761.02,41521.04)", "[41521.04,42281.06)", "[42281.06,43041.08)", "[43041.08,43801.10)", "[43801.10,44561.12)", "[44561.12,45321.14)", "[45321.14,46081.16)", "[46081.16,46841.18)", "[46841.18,47601.20)"]
+				},
+				"min": 400,
+				"walkingCount": 534,
+				"num-distinct-values": 177,
+				"detail-type": "integer",
+				"std-dev": 12523.472745817278
+			},
+			"presence": 0.9352014,
+			"merged-into-schema": false
+		},
+		"atcident": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 0.7951807228915663,
+				"walkingSum": 132,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 800,
+				"max-length": 7,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [3, 4, 8, 5, 8, 9, 2, 5, 1, 5, 9, 3, 1, 3, 3, 2, 3, 3, 7, 5, 5, 2, 2, 2, 3, 2, 3, 1, 2, 5, 3, 13],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "H", "I", "J", "K", "L", "M", "N", "Q", "R", "S", "T", "U", "V", "W", "Y", "Z"]
+				},
+				"std-dev-length": 2.046207400625699,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [144, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["", "BAW9E", "DLH9Y", "EIN11EA", "JZA165", "JZA243", "JZA290", "JZA434", "JZA447", "JZA557", "NZM14", "QLK209", "QLK353D", "RLK222", "SKW306M", "SKW585Z", "THY5CU", "VIR25B", "WZZ7TF"]
+				},
+				"walkingCount": 166,
+				"num-distinct-values": 19,
+				"detail-type": "term",
+				"min-length": 0
+			},
+			"presence": 0.29071805,
+			"merged-into-schema": false
+		},
+		"clock": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 1.4462504043564594E9,
+				"walkingSum": 604532669021,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 1446250508,
+				"walkingSquareSum": "874305617018322986605",
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 2, 1, 1, 1, 13, 30, 4, 46, 8, 2, 2, 2, 3, 11, 2, 1, 1, 1, 2, 3, 1, 2, 3, 4, 8, 58, 102, 84, 19],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["1446248601", "1446250174", "1446250183", "1446250184", "1446250185", "1446250186", "1446250187", "1446250188", "1446250189", "1446250190", "1446250193", "1446250195", "1446250196", "1446250198", "1446250199", "1446250201", "1446250493", "1446250496", "1446250497", "1446250498", "1446250499", "1446250500", "1446250501", "1446250502", "1446250503", "1446250504", "1446250505", "1446250506", "1446250507", "1446250508"]
+				},
+				"min": 1446248601,
+				"walkingCount": 418,
+				"num-distinct-values": 30,
+				"detail-type": "integer",
+				"std-dev": 170.433389923632
+			},
+			"presence": 0.73204905,
+			"merged-into-schema": false
+		},
+		"gs": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 379.0430622009569,
+				"walkingSum": 158440,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 596,
+				"walkingSquareSum": 65747974,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 0, 1, 1, 3, 3, 1, 9, 6, 1, 8, 5, 0, 1, 7, 1, 5, 1, 5, 9, 4, 8, 9, 15, 4, 1, 4, 2, 7, 6, 8, 13, 15, 9, 14, 17, 14, 19, 21, 19, 24, 15, 18, 20, 19, 7, 7, 9, 5, 2, 3, 2, 4, 4, 1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[54.66,64.44)", "[64.44,74.22)", "[74.22,84.00)", "[84.00,93.78)", "[93.78,103.56)", "[103.56,113.34)", "[113.34,123.12)", "[123.12,132.90)", "[132.90,142.68)", "[142.68,152.46)", "[152.46,162.24)", "[162.24,172.02)", "[172.02,181.80)", "[181.80,191.58)", "[191.58,201.36)", "[201.36,211.14)", "[211.14,220.92)", "[220.92,230.70)", "[230.70,240.48)", "[240.48,250.26)", "[250.26,260.04)", "[260.04,269.82)", "[269.82,279.60)", "[279.60,289.38)", "[289.38,299.16)", "[299.16,308.94)", "[308.94,318.72)", "[318.72,328.50)", "[328.50,338.28)", "[338.28,348.06)", "[348.06,357.84)", "[357.84,367.62)", "[367.62,377.40)", "[377.40,387.18)", "[387.18,396.96)", "[396.96,406.74)", "[406.74,416.52)", "[416.52,426.30)", "[426.30,436.08)", "[436.08,445.86)", "[445.86,455.64)", "[455.64,465.42)", "[465.42,475.20)", "[475.20,484.98)", "[484.98,494.76)", "[494.76,504.54)", "[504.54,514.32)", "[514.32,524.10)", "[524.10,533.88)", "[533.88,543.66)", "[543.66,553.44)", "[553.44,563.22)", "[563.22,573.00)", "[573.00,582.78)", "[582.78,592.56)", "[592.56,602.34)"]
+				},
+				"min": 64,
+				"walkingCount": 418,
+				"num-distinct-values": 250,
+				"detail-type": "integer",
+				"std-dev": 116.69687581539056
+			},
+			"presence": 0.73204905,
+			"merged-into-schema": false
+		},
+		"waypoints.lon": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.LongitudeInterpretation",
+				"interpretation": "Coordinate - Longitude",
+				"unknown": false
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": -68.0287808355868,
+				"walkingSum": -251570.43153,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 180,
+				"walkingSquareSum": 4.367201906113673E7,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 2, 1, 1, 3, 1, 2, 2, 1, 1, 0, 576, 603, 221, 118, 349, 246, 387, 214, 401, 57, 10, 2, 2, 1, 1, 1, 0, 1, 0, 0, 0, 2, 1, 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 11, 23, 23, 13, 28, 135, 170, 12, 13, 7, 21, 3],
+					"region-data": {
+						"latitude-key": "waypoints.lat",
+						"longitude-key": "waypoints.lon",
+						"rows": [{
+							"c": [{
+								"v": "United States"
+							}, {
+								"v": 34
+							}]
+						}, {
+							"c": [{
+								"v": "China"
+							}, {
+								"v": 41
+							}]
+						}, {
+							"c": [{
+								"v": "Russia"
+							}, {
+								"v": 40
+							}]
+						}],
+						"cols": [{
+							"label": "Country"
+						}, {
+							"label": "Frequency"
+						}]
+					},
+					"series": "Values",
+					"type": "map",
+					"yaxis": "Frequency",
+					"labels": ["[-183.63087201584,-178.18188361440)", "[-178.18188361440,-172.73289521296)", "[-172.73289521296,-167.28390681152)", "[-167.28390681152,-161.83491841008)", "[-161.83491841008,-156.38593000864)", "[-156.38593000864,-150.93694160720)", "[-150.93694160720,-145.48795320576)", "[-145.48795320576,-140.03896480432)", "[-140.03896480432,-134.58997640288)", "[-134.58997640288,-129.14098800144)", "[-129.14098800144,-123.69199960000)", "[-123.69199960000,-118.24301119856)", "[-118.24301119856,-112.79402279712)", "[-112.79402279712,-107.34503439568)", "[-107.34503439568,-101.89604599424)", "[-101.89604599424,-96.44705759280)", "[-96.44705759280,-90.99806919136)", "[-90.99806919136,-85.54908078992)", "[-85.54908078992,-80.10009238848)", "[-80.10009238848,-74.65110398704)", "[-74.65110398704,-69.20211558560)", "[-69.20211558560,-63.75312718416)", "[-63.75312718416,-58.30413878272)", "[-58.30413878272,-52.85515038128)", "[-52.85515038128,-47.40616197984)", "[-47.40616197984,-41.95717357840)", "[-41.95717357840,-36.50818517696)", "[-36.50818517696,-31.05919677552)", "[-31.05919677552,-25.61020837408)", "[-25.61020837408,-20.16121997264)", "[-20.16121997264,-14.71223157120)", "[-14.71223157120,-9.26324316976)", "[-9.26324316976,-3.81425476832)", "[-3.81425476832,1.63473363312)", "[1.63473363312,7.08372203456)", "[7.08372203456,12.53271043600)", "[12.53271043600,17.98169883744)", "[17.98169883744,23.43068723888)", "[23.43068723888,28.87967564032)", "[28.87967564032,34.32866404176)", "[34.32866404176,39.77765244320)", "[39.77765244320,45.22664084464)", "[45.22664084464,50.67562924608)", "[50.67562924608,56.12461764752)", "[56.12461764752,61.57360604896)", "[61.57360604896,67.02259445040)", "[67.02259445040,72.47158285184)", "[72.47158285184,77.92057125328)", "[77.92057125328,83.36955965472)", "[83.36955965472,88.81854805616)", "[88.81854805616,94.26753645760)", "[94.26753645760,99.71652485904)", "[99.71652485904,105.16551326048)", "[105.16551326048,110.61450166192)", "[110.61450166192,116.06349006336)", "[116.06349006336,121.51247846480)", "[121.51247846480,126.96146686624)", "[126.96146686624,132.41045526768)", "[132.41045526768,137.85944366912)", "[137.85944366912,143.30843207056)", "[143.30843207056,148.75742047200)", "[148.75742047200,154.20640887344)", "[154.20640887344,159.65539727488)", "[159.65539727488,165.10438567632)", "[165.10438567632,170.55337407776)", "[170.55337407776,176.00236247920)", "[176.00236247920,181.45135088064)"]
+				},
+				"min": -178.58333,
+				"walkingCount": 3698,
+				"num-distinct-values": 1939,
+				"detail-type": "decimal",
+				"std-dev": 84.74501140350056
+			},
+			"presence": 0.20140105,
+			"merged-into-schema": false
+		},
+		"facility_hash": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 40,
+				"walkingSum": 22840,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 913600,
+				"max-length": 40,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [1435, 1695, 1488, 1144, 1163, 1548, 1658, 1327, 1491, 1617, 1130, 1389, 1686, 1257, 1530, 1282],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [6, 1, 4, 3, 2, 1, 1, 1, 4, 1, 2, 2, 3, 1, 4, 77, 4, 3, 8, 15, 23, 9, 4, 11, 2, 4, 1, 17, 3, 1, 1, 6, 5, 5, 3, 1, 10, 3, 1, 6, 13, 1, 7, 12, 11, 7, 1, 4, 3, 2, 1, 3, 4, 1, 7, 2, 1, 4, 1, 2, 6, 16, 4, 2, 4, 24, 1, 1, 2, 1, 1, 4, 5, 1, 4, 3, 7, 1, 2, 8, 6, 1, 1, 3, 2, 2, 45, 7, 3, 1, 1, 55],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[00aed5980df43bdd637de124a57fbaa51a0c63d9,047e9d8eef8d1d53fd92dbf8225b1fd18d5e3efa]", "066c5f3fe14dc94f13daec169f8423e6d02c7b24", "[081499fbadc94800ace64fc9ae61b77aff81def4,089f0170085485d7be9d024770b5c25bd4ae4fe2]", "[091c7dde583446a9af847412ee1504a9016e02f0,11a93031f87b628b9f0afbe8c38f537043c9c269]", "11b2fb33eb3ec71e3648b4ba81061a996676f50b", "15f4aec1c10e4bdbad9fad307e2b2176802750b0", "1605c3aecd7eb2cf07aab19511d07d6083a50751", "163baa849d76ccb0e48f4537d0d5250a32020300", "[16a48edc2a3e7c49058c55ff7d67eced82a500ab,1867b40f2e4d4b3108304a8484687c52b4ec9e49]", "18b421b877ffb98d0aff3e6cb511b63e80c22098", "1922af6b96bbfee80c4ea75695d2cb4b4e80d954", "[1a9ca7957c6a34d93dccca53fac268f659817141,1ae56595aa9a5c612930a328c5fd7ae3c4730a65]", "[1ba15ba819c2ceb28fc83291f787c72d85c9db78,1c0f335ec743942e82ab4cf7cebfc278c7909bb2]", "1f13afd81ccf81df3af7d7856cc99ad4f75e7016", "[1faf3620da2fbca5d1d6757cd8a65a27a6d901bb,2292bcf83b6a61ba190936abc3c8327b8590f096]", "2600cbeccf576d6e3f78e219d6a926991dc1f22e", "[27d991e433ad032896936cc053354309532ee62a,29d62529cf74d3e9ec65e89e5d5584b8a17e3537]", "2be318077571df61a037e1e91f48d54256be8336", "[2c168a745523ab6b4cd7ae89a61c2a738cf6e517,2f5357f6e3c9a0198c88daf60cd04c75419b2153]", "[3080070461fdff7e756be5080a2b96c447bb3205,36a5ccb51dc000b0aab977996e9f706afcb7d030]", "[3862b65d160b4e72b6e53432a9339c5b6404c135,3911ce1d54cbb5886df74edd85a3a725d0ac86c9]", "[3aa840f1c7d9591bdc3b772b7047d1808343472a,445e828c1bd0fa6e7e8988dd0ebe5c5065c9613f]", "[4705062389010ccccc9d853f7c2b992058c73af8,499a8858cc87b07fa667a8f37cf269bcaf48a10a]", "[4b6c1f41c4052ed950c9736791073b2624d11e65,4f10ac07ce14bfcbb354ca26df0d6b7768097984]", "4f86b0b9cab309c9057e35c5165725418de558c3", "[5011d6e6356d773bbc3cc45f1cca21bd387e4239,517901953609fe269fce847ce496e05bbf3ec31c]", "523802fa1d7ee8cadac892e03210ae148fc7513c", "[53df630488ccec737886571a4a918c8c21788f4c,57e295a87297503ee80e3a2a25fbd5097a6092ef]", "5a1e6d5c292d8e832b78e1de13141e8df797c91d", "5a34c12054d9a46abebb1818ab812a083ee9095a", "5ad976f4b4df7573c66940ef94e331533b244189", "[5d3b579846365c932c9109d8fe9c4f994e91f812,5e258c3508ff3c04527c623066fa672c196eb13d]", "[60b60b6e3a79d758d818bf16ef03f6612f86397b,60bf496b5543a737a3318554b6d51bb35c6635bf]", "60bf496b5543a737a3318554b6d51bb35c6635bf", "[61df05077439f17c1f71bbe64d4ea4b9e962817c,633b7d880c04da627df6e7c5d0442962ae5f0b2c]", "633b7d880c04da627df6e7c5d0442962ae5f0b2c", "[6493f636632c1a9a7ba1866fdee2df699b532dfa,69ae32f994a20c569e51b4f9363f9c78df51e474]", "[69feb6e9b2b0494d664758ca598a7a4053e052bc,6afdd52b01e8d5400fa6111f38a61c773f1e4c9c]", "6b2bb37bbc2f35a743b274ee62c5689193ee5662", "[6e68aceee4a3ff89c059b9069e5baeac9c8f5d5f,6f86828e1b27c9b2c5c6cf8420ea07295dfa5b3f]", "[720f5422381dd3dee9e30291bfcfc7af0a0138b4,77386bbf8457c23f9c181bad84691f0c897b6720]", "7a5e1433f7512783da0b9af5e11b7df9f6bf64ac", "[7ad219c365a5cb6f499d9d728950cf0136cee351,7b83a328b497807bcf5a0a1d69ce2253d360fcde]", "[7bc6471766275871a0ea57920b5593fac772400e,7da8935eaedb6934d1101364c0184c24d5682215]", "[7fa251e99de5037e09b789398373996ebede4738,8230bd2e8a8db97feb715487696a494f170ddbd0]", "862dcb52add502e41bd592a667f3c5f325035b0f", "86c276a90e21a4df885d00c5556655e36620b0ee", "[8778fdf930c28d8e0e001227396e07931cfc7470,915b3d7cd43a3506214be131d50c1c6e4a592cab]", "915b3d7cd43a3506214be131d50c1c6e4a592cab", "[9161d930d9340862754622e583d255f68c9f3927,921347a02c7e9f3667d1f8055b39b0c8545ee959]", "927905fc522a2bea96ec493b50f4907e681aa674", "[94d1bd6bcdcdacab2d19c7b9c78a9230fe0e27d0,9822695943f6f73cafd0019d436681f7af72bb1e]", "[9b32f07aa7f62b2e7a8e8734cb3e24513eefa178,9d99b0cec7bab64de7ac5b9f61bec951f96b52fb]", "9f1c2773f0ade8b1f7d457efeae5ad2afde74d2b", "[9ff1df9b25df72baccf50e9f2b10e1b7a2abc5c8,a57da550ea7a845058f523b7ad937dba3cceef4e]", "[a650a1cac589c6ce78d344c1f5db191f5d494087,a840d9c3b4e8970832b6972ddd57691905002fc7]", "a856eeb26ed510bfe42388e1c4a24b2cf0bd4cec", "[a90f8f33533e4c15b0cf4f2a7c77cb0ef23761f2,a9f1061c30fb04e6b960bd547b19041089418e97]", "a9ffeda19442761b7923fe5380ad0877da66ca8a", "[ab1dcc4d8b80d165f7685d33eae4e9de9307dd21,aba397fff89f62b41ad09821f14e3850f4084f4b]", "[acac467d4f62015fd30a60dfe558d3489b24d6d3,adab96859d7ef1cdd47aa16bc8d02d9a2ab207c2]", "adff6aa0e2e4c19af6e7c62048ae68168ba041ac", "af5817e60a57599b5d7958ad182701d7f503655f", "b0d8e75f26709e55980ac5cc4329886355c16700", "[b42f6e169f19fa545635a6f2d7354c7c77422cbe,b4da10a98ba2efe8797565077a15b9315c018347]", "[b5b2ecd0c67887e4739c16605fc8d007dd670850,bb9638eaf4e7d30a73a73e00db1d3a1bb4fe4676]", "bd3e55e0955b8fdad7dcd30ab37745300b0fd84c", "bebd2d3750dafbe3ef3d21a6e6dd2de1a7f50d17", "[c0b6fdf726e160b438a5033a560c67138fee8238,c202c369a0bd069ebb0ead09946c3d6c0d62ded3]", "c37417a38802fb8aa21c941f2a0e2db34116585a", "c38bbf08453f7a6ccdc5138173a471c42e93752f", "[c47827db094ca04fe2179779643e4ea9458e7289,c4d69f2912dd43cc9f597a16f6ff2febfa6e1c50]", "[c4e20ae39b4d8f66310608b6e6733ff52b4a054d,c4f1093eb7249cf17a0d193c27958fbd951041a5]", "c4f1093eb7249cf17a0d193c27958fbd951041a5", "[c604c3d9c332cfbeb0cb517671d4cf0c2aaf3df4,c6e53affea19ee320f0da9f07aaaab28400d07ff]", "[c8cf816f49f5d5dc8107e4ec23bfc5996eb0bc69,cc338165308f09ead33ba3d2cf9f035833f6a2cd]", "[cc3d3ee10ecf50ef7c90182efad01580a1bd1456,cfef445955a139417c04ecae16bfc904c97010bd]", "cfef445955a139417c04ecae16bfc904c97010bd", "cff1e431b934c10d9c2c7ac908fab869fbe0ea12", "[d15bb8e9f951849321163179598ae27ad3469813,d15ce70afc2b7a17a10c54940a0295636f457345]", "[d1b86e5d0f262d3f7296a28f73090e4c7962c23d,ddb419ef05818e2b967a3ed609f827cd58374d8c]", "dde4c9c86596ac6218dd0f746d0156a686e0ee5d", "df0ed23ff85e9ecd4c8c5a6fadd8a8241a1e3f66", "[e2a3a775a4a7321a4dc8f433f290fdb65508a9ae,e2f88e51b283c9b844b6cf4926789c6934f79e5b]", "e2f88e51b283c9b844b6cf4926789c6934f79e5b", "e5ef94761df937125affbbb4991860baf27c9871", "[e61114eb59bdc2926bb85b7d4b21a2c6574f4688,e656d17fa49340f8dd8d95b407ed27d0bd84d3d9]", "[e96dd03689151c155c2507f4b3cec1c3498ee34e,f14eb46abd858ba7a9ba67870289fc7841beee51]", "[f68292f52a94f41ad14f05d5b4052050a5a09772,f821b1053699c0fe634ade3ac1fb752e49ad74a8]", "f9f9ed591c06150a8bc2f5e64b70468c6d3eeb12", "fb8873b1bc1ea3852299902710457e947bd5e55c", "[fc3e54cbb08826109198b9e8e5d096008eb15f1c,ff84c994c9c8e5c060b44b12cf4c8af36e14692c]"]
+				},
+				"walkingCount": 571,
+				"num-distinct-values": 187,
+				"detail-type": "term",
+				"min-length": 40
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"facility_name": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 13.560420315236428,
+				"walkingSum": 7743,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 130523,
+				"max-length": 26,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [562, 1, 1, 287, 1, 619, 287, 223, 299, 7, 287, 9, 8, 53, 44, 17, 10, 6, 2, 288, 11, 5, 2, 7, 458, 13, 26, 770, 332, 290, 386, 12, 359, 24, 335, 100, 489, 204, 528, 6, 26, 295, 54],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [" ", "(", ")", "-", ".", "A", "B", "C", "D", "E", "F", "G", "J", "K", "L", "M", "N", "O", "R", "S", "T", "V", "W", "Z", "a", "c", "d", "e", "g", "h", "i", "k", "l", "m", "n", "o", "r", "s", "t", "u", "v", "w", "y"]
+				},
+				"std-dev-length": 6.685932312821924,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [107],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [""]
+				},
+				"walkingCount": 571,
+				"num-distinct-values": 16,
+				"detail-type": "phrase",
+				"min-length": 0
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"adt": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 1446250484,
+				"walkingSum": 4338751452,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 1446250506,
+				"walkingSquareSum": 6274921387410705672,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["1446250440", "1446250506"]
+				},
+				"min": 1446250440,
+				"walkingCount": 3,
+				"num-distinct-values": 2,
+				"detail-type": "integer",
+				"std-dev": 31.11269837220809
+			},
+			"presence": 0.0052539404,
+			"merged-into-schema": false
+		},
+		"route": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 58.795081967213115,
+				"walkingSum": 7173,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 749745,
+				"max-length": 321,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [862, 1, 380, 127, 523, 281, 223, 222, 218, 185, 133, 144, 115, 115, 267, 144, 300, 302, 151, 146, 72, 91, 95, 37, 159, 157, 159, 249, 118, 75, 20, 145, 204, 384, 58, 50, 107, 19, 109, 26],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [" ", "*", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"std-dev-length": 51.85160707384895,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["CYEG./.GTF317010..LAA..POTTY.DEBBB2.KDFW", "CYVR..HUH..GEG..DLN..CYS..ICT..RZC.BRBBQ1.KMEM", "CYVR./.5243N/11720W..BOXUN.LEXON2.CYMM", "CYYC..ROVMA..UKSAP.T602.BOOTH.APASS4.CYYJ", "EPWA./.4827N/08202W..OBSTR.PAITN4.KORD", "KAPA./.BCE208076..LX.LUXOR2.LAS", "KBLI./.ECA084074..LANDO.J65.PMD.V137.PSP..KPSP/0023", "KBUR..ELMOO.V186.PDZ..ONT/0015", "KBUR.BURN39.SBA/0022", "KBUR.BURN9.ONT/0015", "KCLT./.SBY029008..JFK.ROBUC1.KBOS/0021", "KCLT./.TINGS197025..SLN..HLC.J80.FQF.J116.EKR.J84.MVA..BABIT.SLMMR2.KSMF/0331", "KCLT.BOBZY1.BNA..KK45K..KK48E..KD45W..LRAIN.TYSSN3.KLAS/0254", "KCRQ./.PKE056023..ROD.J152.JST.BUNTS1.KPNE/0300", "KDCA*.WYNGS2.RAMAY..FWA..CGT.CGT007..V170.BRAVE..KMKE", "KDCA.WYNGS2.RAMAY..FWA..CGT.CGT007..V170.BRAVE..KMKE", "KDEN./.AKO211034..RANTS.RYYMN2.KBNA/0133", "KDFW.ZACHH1.BSKAT..FTZ.TRTLL3.KORD/0047", "KEWR./.LBF134046..BLD.J60.HEC.RIIVR2.KLAX/0132", "KIAD./.COYNU..KG72M..CAPPR..KP72E..KP72C..KD72A..KD69Y..CRIMS..KD60S..BCE.GRNPA1.KLAS/0246", "KLAS./.BCE209121..NICLE..AIR.J162.MGW.GIBBZ2.KIAD/0244", "KLAS./.ICT102073..BVRLY..KSGF", "KLAS./.LAS229025..BIKKR.SHEAD9.OAL.J92.YERIN..BTG.HAWKZ4.KSEA/0228", "KLGB./.ELB246015..TRM..BLH.HYDRR1.KPHX/0058", "KMCI./.LAA..DRO..PGS.TYSSN3.KLAS/0042", "KMDW./.RBS336025..BUUDD.BUUDD2.KSUS/0046", "KMIA./.VALLY..PERMT.AR16.ILM.J191.PXT.KORRY3.KLGA/0159", "KMSP./.SLN066059..ABI.STV1.KSAT/0209", "KSAT./.EMG329027..FTZ.TRTLL3.KORD/0132", "KSFO./.SNS281052..MCKEY.OFFSH9.SXC..SLI..KSNA", "KSFO.SSTIK3.EBAYE..AVE.SADDE6.KLAX/0053", "KSJC.TECKY2.LOSHN..PMD.ZIGGY5.KONT/0059", "KSMF./.BTY310023..MYCAL.SUNST3.KLAS/0027", "KSTL./.STL235011..LMN..OVR..ONL.J151.BIL.J136.MLP.GLASR9.KSEA/0431", "MDPC./.2940N/07759W..PROMM.HUSTN2.KCLT/0045", "MMMX./.2626N/08542W..CHS.J121.BARTL.J121.SIE.CAMRN4.KJFK", "MMPR./.ASUTA.J93.JLI.VISTA2.KLAX", "NZDN.BIDEL1Q.BIDEL.DNCH1.LADIS.LADIS4B.NZCH", "NZTG.TGAA2.NOBAR.NOBAR5A.NZAA"]
+				},
+				"walkingCount": 122,
+				"num-distinct-values": 110,
+				"detail-type": "phrase",
+				"min-length": 13
+			},
+			"presence": 0.21366024,
+			"merged-into-schema": false
+		},
+		"edt": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 1.44625296775E9,
+				"walkingSum": 214045439227,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 1446420600,
+				"walkingSquareSum": "309563851789273661247",
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [2, 1, 3, 1, 0, 3, 17, 34, 39, 28, 2, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[1446216803.98,1446220800.00)", "[1446220800.00,1446224796.02)", "[1446224796.02,1446228792.04)", "[1446228792.04,1446232788.06)", "[1446232788.06,1446236784.08)", "[1446236784.08,1446240780.10)", "[1446240780.10,1446244776.12)", "[1446244776.12,1446248772.14)", "[1446248772.14,1446252768.16)", "[1446252768.16,1446256764.18)", "[1446256764.18,1446260760.20)", "[1446260760.20,1446264756.22)", "[1446264756.22,1446268752.24)", "[1446268752.24,1446272748.26)", "[1446272748.26,1446276744.28)", "[1446276744.28,1446280740.30)", "[1446280740.30,1446284736.32)", "[1446284736.32,1446288732.34)", "[1446288732.34,1446292728.36)", "[1446292728.36,1446296724.38)", "[1446296724.38,1446300720.40)", "[1446300720.40,1446304716.42)", "[1446304716.42,1446308712.44)", "[1446308712.44,1446312708.46)", "[1446312708.46,1446316704.48)", "[1446316704.48,1446320700.50)", "[1446320700.50,1446324696.52)", "[1446324696.52,1446328692.54)", "[1446328692.54,1446332688.56)", "[1446332688.56,1446336684.58)", "[1446336684.58,1446340680.60)", "[1446340680.60,1446344676.62)", "[1446344676.62,1446348672.64)", "[1446348672.64,1446352668.66)", "[1446352668.66,1446356664.68)", "[1446356664.68,1446360660.70)", "[1446360660.70,1446364656.72)", "[1446364656.72,1446368652.74)", "[1446368652.74,1446372648.76)", "[1446372648.76,1446376644.78)", "[1446376644.78,1446380640.80)", "[1446380640.80,1446384636.82)", "[1446384636.82,1446388632.84)", "[1446388632.84,1446392628.86)", "[1446392628.86,1446396624.88)", "[1446396624.88,1446400620.90)", "[1446400620.90,1446404616.92)", "[1446404616.92,1446408612.94)", "[1446408612.94,1446412608.96)", "[1446412608.96,1446416604.98)", "[1446416604.98,1446420601.00)", "[1446420601.00,1446424597.02)"]
+				},
+				"min": 1446220020,
+				"walkingCount": 148,
+				"num-distinct-values": 92,
+				"detail-type": "integer",
+				"std-dev": 22341.430021155822
+			},
+			"presence": 0.2591944,
+			"merged-into-schema": false
+		},
+		"orig": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 4,
+				"walkingSum": 612,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 2448,
+				"max-length": 4,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [21, 44, 27, 18, 7, 12, 17, 11, 16, 2, 49, 24, 47, 19, 8, 33, 1, 16, 72, 19, 7, 7, 18, 2, 97, 18],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 2, 1, 1, 1, 1, 3, 3, 1, 2, 1, 3, 1, 1, 5, 2, 1, 1, 1, 1, 2, 1, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 2, 1, 1, 1, 7, 3, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 10, 1, 2, 1, 1, 1, 1, 1, 1, 5, 1, 2, 12, 2, 1, 1, 1, 1, 1, 1, 2, 3, 2, 4, 2, 3],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["CYEG", "CYVR", "CYYC", "EPWA", "KAPA", "KBLI", "KBUR", "KCLT", "KCRQ", "KDCA", "KDEN", "KDFW", "KEWR", "KIAD", "KLAS", "KLGB", "KMCI", "KMDW", "KMER", "KMIA", "KMSP", "KSAT", "KSFO", "KSJC", "KSMF", "KSTL", "MDPC", "MMLO", "MMMX", "MMPR", "MROC", "NFFN", "NZDN", "NZTG", "OIIE", "OMDW", "RCTP", "SBKP", "VIDP", "VTBS", "WIII", "WSSS", "YBAF", "YBBN", "YBCG", "YBDA", "YBRK", "YBSU", "YBWW", "YBYU", "YCFS", "YGTH", "YKII", "YMDA", "YMHB", "YMIA", "YMMB", "YMML", "YMTI", "YPAD", "YPAY", "YPDN", "YPJT", "YPKS", "YPKT", "YPPF", "YPPH", "YRAP", "YSBK", "YSSY", "YSTW", "YSWG", "YTST", "YWIO", "YWLM", "YWVR", "YWYY", "ZGGG", "ZSCN", "ZSNB", "ZSSS", "ZUCK", "ZYHB"]
+				},
+				"walkingCount": 153,
+				"num-distinct-values": 83,
+				"detail-type": "term",
+				"min-length": 4
+			},
+			"presence": 0.26795095,
+			"merged-into-schema": false
+		},
+		"status": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 1,
+				"walkingSum": 148,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 148,
+				"max-length": 1,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [91, 32, 21, 1, 3],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "F", "S", "X", "Z"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [91, 32, 21, 1, 3],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "F", "S", "X", "Z"]
+				},
+				"walkingCount": 148,
+				"num-distinct-values": 5,
+				"detail-type": "term",
+				"min-length": 1
+			},
+			"presence": 0.2591944,
+			"merged-into-schema": false
+		},
+		"updateType": {
+			"alias-names": null,
+			"used-in-schema": true,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 1,
+				"walkingSum": 418,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 418,
+				"max-length": 1,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [285, 133],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "Z"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [285, 133],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "Z"]
+				},
+				"walkingCount": 418,
+				"num-distinct-values": 2,
+				"detail-type": "term",
+				"min-length": 1
+			},
+			"presence": 0.73204905,
+			"merged-into-schema": false
+		}
+	},
+	"dsName": "FlightJson",
+	"dsFileType": "application/json",
+	"data-sample-id": 1,
+	"dsId": "f109f5a3-0bee-49ef-8465-0d0cec63c5b3",
+	"dsLastUpdate": null,
+	"dsDescription": null,
+	"dsFileName": "FlightJson.txt",
+	"dsVersion": null
+}, {
+	"dsProfile": {
+		"altChange": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 98,
+				"matching-field": "altChange"
+			}, {
+				"confidence": 91,
+				"matching-field": "facility_hash"
+			}, {
+				"confidence": 89,
+				"matching-field": "updateType"
+			}, {
+				"confidence": 86,
+				"matching-field": "atcident"
+			}, {
+				"confidence": 85,
+				"matching-field": "aircrafttype"
+			}, {
+				"confidence": 85,
+				"matching-field": "status"
+			}, {
+				"confidence": 81,
+				"matching-field": "dest"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 1,
+				"walkingSum": 1493,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 1493,
+				"max-length": 1,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [344, 1138, 11],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [" ", "C", "D"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1138, 11],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["C", "D"]
+				},
+				"walkingCount": 1493,
+				"num-distinct-values": 3,
+				"detail-type": "term",
+				"min-length": 1
+			},
+			"presence": 0.42571998,
+			"merged-into-schema": false
+		},
+		"air_ground": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 100,
+				"matching-field": "air_ground"
+			}, {
+				"confidence": 84,
+				"matching-field": "altChange"
+			}, {
+				"confidence": 83,
+				"matching-field": "updateType"
+			}, {
+				"confidence": 80,
+				"matching-field": "timeType"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 1,
+				"walkingSum": 3507,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 3507,
+				"max-length": 1,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [3507],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [3507],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A"]
+				},
+				"walkingCount": 3507,
+				"num-distinct-values": 1,
+				"detail-type": "term",
+				"min-length": 1
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"heading": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [{
+				"confidence": 98,
+				"matching-field": "heading"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 187.31583452211126,
+				"walkingSum": 656542,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 360,
+				"walkingSquareSum": 160814400,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [25, 35, 34, 48, 76, 52, 53, 68, 61, 72, 78, 83, 78, 102, 69, 99, 72, 90, 111, 84, 54, 45, 47, 47, 34, 41, 47, 26, 23, 41, 76, 50, 53, 55, 58, 62, 64, 73, 84, 78, 65, 120, 114, 144, 95, 95, 112, 72, 48, 41, 51, 73, 27],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-3.8,3.1)", "[3.1,10.0)", "[10.0,16.9)", "[16.9,23.8)", "[23.8,30.7)", "[30.7,37.6)", "[37.6,44.5)", "[44.5,51.4)", "[51.4,58.3)", "[58.3,65.2)", "[65.2,72.1)", "[72.1,79.0)", "[79.0,85.9)", "[85.9,92.8)", "[92.8,99.7)", "[99.7,106.6)", "[106.6,113.5)", "[113.5,120.4)", "[120.4,127.3)", "[127.3,134.2)", "[134.2,141.1)", "[141.1,148.0)", "[148.0,154.9)", "[154.9,161.8)", "[161.8,168.7)", "[168.7,175.6)", "[175.6,182.5)", "[182.5,189.4)", "[189.4,196.3)", "[196.3,203.2)", "[203.2,210.1)", "[210.1,217.0)", "[217.0,223.9)", "[223.9,230.8)", "[230.8,237.7)", "[237.7,244.6)", "[244.6,251.5)", "[251.5,258.4)", "[258.4,265.3)", "[265.3,272.2)", "[272.2,279.1)", "[279.1,286.0)", "[286.0,292.9)", "[292.9,299.8)", "[299.8,306.7)", "[306.7,313.6)", "[313.6,320.5)", "[320.5,327.4)", "[327.4,334.3)", "[334.3,341.2)", "[341.2,348.1)", "[348.1,355.0)", "[355.0,361.9)"]
+				},
+				"min": 0,
+				"walkingCount": 3505,
+				"num-distinct-values": 360,
+				"detail-type": "integer",
+				"std-dev": 103.89516192204796
+			},
+			"presence": 0.9994297,
+			"merged-into-schema": false
+		},
+		"ident": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "ident"
+			}, {
+				"confidence": 96,
+				"matching-field": "id"
+			}, {
+				"confidence": 95,
+				"matching-field": "dest"
+			}, {
+				"confidence": 90,
+				"matching-field": "reg"
+			}, {
+				"confidence": 89,
+				"matching-field": "hexid"
+			}, {
+				"confidence": 89,
+				"matching-field": "aircrafttype"
+			}, {
+				"confidence": 89,
+				"matching-field": "atcident"
+			}, {
+				"confidence": 85,
+				"matching-field": "facility_hash"
+			}, {
+				"confidence": 84,
+				"matching-field": "status"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 6.185913886512689,
+				"walkingSum": 21694,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 136022,
+				"max-length": 7,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [1118, 1460, 1254, 974, 1208, 1061, 964, 871, 1474, 811, 2159, 232, 421, 288, 657, 281, 171, 267, 268, 251, 285, 792, 262, 453, 141, 229, 199, 346, 609, 404, 346, 188, 326, 133, 389, 402],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"std-dev-length": 0.7213364307745903,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [5, 24, 134, 53, 2, 28, 2, 2, 241, 2, 4, 4, 3, 54, 98, 228, 4, 7, 3, 5, 2, 2, 2, 2, 101, 152, 4, 2, 448, 3, 4, 133, 2, 2, 61, 231, 245, 2, 4, 2, 8, 2, 298, 288, 4, 283, 17, 152, 27, 120],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[3H532,3H821]", "[AAF521,AAL1487]", "[AAL1497,AAY9426]", "[AAY9883,AEE609]", "[AEE773,AEE938]", "[AER32,AFR102]", "[AFR107,AFR111]", "[AFR1121,AFR1144]", "[AFR132,ARG1303]", "[ARG1360,ARG1458]", "[ARG1515,ARG1682]", "[ARG1691,ARG1836]", "[ARG1845,ARG1871]", "[ARG1873,ASQ4649]", "[ASQ4704,BAW181]", "[BAW183,CONN455]", "[CPA101,CPA105]", "[CPA156,CPA170]", "[CPA2095,CPA23]", "[CPA233,CPA250]", "[CPA251,CPA255]", "[CPA260,CPA261]", "[CPA289,CPA3291]", "[CPA357,CPA379]", "[CPA383,DAL1687]", "[DAL1690,ELY11]", "[ELY27,ELY332]", "[ELY336,ELY344]", "[ELY352,GIA531]", "[GIA560,GIA607]", "[GIA611,GIA660]", "[GIA690,JAI560]", "[JAI561,JAI565]", "[JAI567,JAI580]", "[JAI76,JBU824]", "[JBU89,LXP239]", "[LXP269,N855PT]", "[N867DB,N87FL]", "[N881AF,N910LJ]", "[N9118C,N917LJ]", "[N919HP,N9561Y]", "[N956Z,N96455]", "[N96UJ,ROU1846]", "[ROU1852,SWA3062]", "[SWA313,SWA3165]", "[SWA32,UAE656]", "[UAE7,UAE82]", "[UAE823,UPS391]", "[UPS403,VHOZO]", "[VHPNA,ZKJRA]"]
+				},
+				"walkingCount": 3507,
+				"num-distinct-values": 2922,
+				"detail-type": "term",
+				"min-length": 1
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"alt": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "alt"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 26459.817073170732,
+				"walkingSum": 43394100,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 43000,
+				"walkingSquareSum": 1425394770000,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [12, 24, 24, 42, 42, 34, 28, 34, 28, 35, 20, 13, 19, 15, 15, 10, 8, 11, 13, 18, 17, 9, 8, 17, 18, 5, 7, 12, 10, 17, 10, 10, 11, 10, 24, 11, 12, 29, 19, 44, 49, 3, 75, 110, 335, 101, 3, 73, 70, 48, 22, 0, 1, 5],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[301.98,1100.00)", "[1100.00,1898.02)", "[1898.02,2696.04)", "[2696.04,3494.06)", "[3494.06,4292.08)", "[4292.08,5090.10)", "[5090.10,5888.12)", "[5888.12,6686.14)", "[6686.14,7484.16)", "[7484.16,8282.18)", "[8282.18,9080.20)", "[9080.20,9878.22)", "[9878.22,10676.24)", "[10676.24,11474.26)", "[11474.26,12272.28)", "[12272.28,13070.30)", "[13070.30,13868.32)", "[13868.32,14666.34)", "[14666.34,15464.36)", "[15464.36,16262.38)", "[16262.38,17060.40)", "[17060.40,17858.42)", "[17858.42,18656.44)", "[18656.44,19454.46)", "[19454.46,20252.48)", "[20252.48,21050.50)", "[21050.50,21848.52)", "[21848.52,22646.54)", "[22646.54,23444.56)", "[23444.56,24242.58)", "[24242.58,25040.60)", "[25040.60,25838.62)", "[25838.62,26636.64)", "[26636.64,27434.66)", "[27434.66,28232.68)", "[28232.68,29030.70)", "[29030.70,29828.72)", "[29828.72,30626.74)", "[30626.74,31424.76)", "[31424.76,32222.78)", "[32222.78,33020.80)", "[33020.80,33818.82)", "[33818.82,34616.84)", "[34616.84,35414.86)", "[35414.86,36212.88)", "[36212.88,37010.90)", "[37010.90,37808.92)", "[37808.92,38606.94)", "[38606.94,39404.96)", "[39404.96,40202.98)", "[40202.98,41001.00)", "[41001.00,41799.02)", "[41799.02,42597.04)", "[42597.04,43395.06)"]
+				},
+				"min": 500,
+				"walkingCount": 1640,
+				"num-distinct-values": 295,
+				"detail-type": "integer",
+				"std-dev": 13000.81662409585
+			},
+			"presence": 0.46763617,
+			"merged-into-schema": false
+		},
+		"lon": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.LongitudeInterpretation",
+				"interpretation": "Coordinate - Longitude",
+				"unknown": false
+			},
+			"main-type": "number",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "waypoints.lon"
+			}, {
+				"confidence": 91,
+				"matching-field": "waypoints.lat"
+			}, {
+				"confidence": 90,
+				"matching-field": "lon"
+			}, {
+				"confidence": 90,
+				"matching-field": "lat"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": -3.2087225691474193,
+				"walkingSum": -11252.99005,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 179.53256,
+				"walkingSquareSum": 2.9016010643900037E7,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [4, 3, 13, 15, 26, 25, 15, 27, 24, 58, 90, 89, 99, 174, 188, 237, 229, 83, 43, 32, 48, 37, 30, 22, 11, 28, 38, 33, 80, 95, 124, 84, 141, 88, 70, 68, 91, 62, 83, 52, 42, 21, 42, 53, 38, 76, 48, 59, 73, 92, 88, 45, 17, 17, 36, 1],
+					"region-data": {
+						"latitude-key": "lat",
+						"longitude-key": "lon",
+						"rows": [{
+							"c": [{
+								"v": "United States"
+							}, {
+								"v": 1169
+							}]
+						}, {
+							"c": [{
+								"v": "China"
+							}, {
+								"v": 1169
+							}]
+						}, {
+							"c": [{
+								"v": "Russia"
+							}, {
+								"v": 1169
+							}]
+						}],
+						"cols": [{
+							"label": "Country"
+						}, {
+							"label": "Frequency"
+						}]
+					},
+					"series": "Values",
+					"type": "map",
+					"yaxis": "Frequency",
+					"labels": ["[-184.0653760,-177.4787328)", "[-177.4787328,-170.8920896)", "[-170.8920896,-164.3054464)", "[-164.3054464,-157.7188032)", "[-157.7188032,-151.1321600)", "[-151.1321600,-144.5455168)", "[-144.5455168,-137.9588736)", "[-137.9588736,-131.3722304)", "[-131.3722304,-124.7855872)", "[-124.7855872,-118.1989440)", "[-118.1989440,-111.6123008)", "[-111.6123008,-105.0256576)", "[-105.0256576,-98.4390144)", "[-98.4390144,-91.8523712)", "[-91.8523712,-85.2657280)", "[-85.2657280,-78.6790848)", "[-78.6790848,-72.0924416)", "[-72.0924416,-65.5057984)", "[-65.5057984,-58.9191552)", "[-58.9191552,-52.3325120)", "[-52.3325120,-45.7458688)", "[-45.7458688,-39.1592256)", "[-39.1592256,-32.5725824)", "[-32.5725824,-25.9859392)", "[-25.9859392,-19.3992960)", "[-19.3992960,-12.8126528)", "[-12.8126528,-6.2260096)", "[-6.2260096,0.3606336)", "[0.3606336,6.9472768)", "[6.9472768,13.5339200)", "[13.5339200,20.1205632)", "[20.1205632,26.7072064)", "[26.7072064,33.2938496)", "[33.2938496,39.8804928)", "[39.8804928,46.4671360)", "[46.4671360,53.0537792)", "[53.0537792,59.6404224)", "[59.6404224,66.2270656)", "[66.2270656,72.8137088)", "[72.8137088,79.4003520)", "[79.4003520,85.9869952)", "[85.9869952,92.5736384)", "[92.5736384,99.1602816)", "[99.1602816,105.7469248)", "[105.7469248,112.3335680)", "[112.3335680,118.9202112)", "[118.9202112,125.5068544)", "[125.5068544,132.0934976)", "[132.0934976,138.6801408)", "[138.6801408,145.2667840)", "[145.2667840,151.8534272)", "[151.8534272,158.4400704)", "[158.4400704,165.0267136)", "[165.0267136,171.6133568)", "[171.6133568,178.2000000)", "[178.2000000,184.7866432)"]
+				},
+				"min": -179.67624,
+				"walkingCount": 3507,
+				"num-distinct-values": 3312,
+				"detail-type": "decimal",
+				"std-dev": 90.90349483011391
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"atcident": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 97,
+				"matching-field": "atcident"
+			}, {
+				"confidence": 94,
+				"matching-field": "id"
+			}, {
+				"confidence": 93,
+				"matching-field": "ident"
+			}, {
+				"confidence": 90,
+				"matching-field": "hexid"
+			}, {
+				"confidence": 90,
+				"matching-field": "aircrafttype"
+			}, {
+				"confidence": 89,
+				"matching-field": "facility_hash"
+			}, {
+				"confidence": 88,
+				"matching-field": "dest"
+			}, {
+				"confidence": 88,
+				"matching-field": "orig"
+			}, {
+				"confidence": 86,
+				"matching-field": "status"
+			}, {
+				"confidence": 82,
+				"matching-field": "altChange"
+			}, {
+				"confidence": 81,
+				"matching-field": "updateType"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 6.2368421052631575,
+				"walkingSum": 474,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 2986,
+				"max-length": 7,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [10, 12, 19, 16, 23, 11, 15, 21, 16, 15, 32, 14, 5, 7, 13, 6, 10, 6, 10, 13, 12, 8, 12, 11, 4, 11, 27, 15, 14, 5, 9, 24, 10, 16, 22],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"std-dev-length": 0.6255191749476164,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 1, 1, 1, 1, 2, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["AWI737A", "AZA60M", "BAW26AV", "BAW28J", "BAW73N", "BAW7TG", "BAW97A", "BAW9CG", "BAW9WZ", "EIN1MN", "EIN85X", "EXS6GR", "EZY47VT", "EZY79RP", "JZA249", "JZA250", "JZA271", "JZA416", "JZA660", "JZA754", "JZA758", "JZA793", "JZA828", "NZM1", "NZM202", "NZM224", "PGT74C", "QLK331D", "QLK466D", "QLK723D", "QXE426", "QXE538", "RLK440", "RYR14F", "RYR89QR", "SKW420R", "SKW448F", "SKW535J", "SKW693L", "SKW733Y", "SKW882V", "SXD6CF", "SXS3EG", "SXS4HT", "SXS5MR", "THY1ZU", "THY2UL", "THY3EW", "THY4DT", "THY4JP", "TUI7GM", "UCA855", "VIR1F", "VIR400M"]
+				},
+				"walkingCount": 76,
+				"num-distinct-values": 54,
+				"detail-type": "term",
+				"min-length": 4
+			},
+			"presence": 0.021670943,
+			"merged-into-schema": false
+		},
+		"clock": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "clock"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 1.4452947162486455E9,
+				"walkingSum": 5068648569884,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 1445295122,
+				"walkingSquareSum": "7325690996583396708320",
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [11, 7, 5, 1, 4, 0, 0, 2, 7, 5, 8, 2, 0, 0, 1, 2, 0, 4, 3, 0, 0, 0, 0, 5, 8, 6, 6, 7, 6, 7, 8, 7, 9, 8, 7, 7, 7, 4, 7, 7, 7, 8, 4, 5, 13, 9, 10, 9, 504, 248, 2512],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[1445283044.00,1445283285.36)", "[1445283285.36,1445283526.72)", "[1445283526.72,1445283768.08)", "[1445283768.08,1445284009.44)", "[1445284009.44,1445284250.80)", "[1445284250.80,1445284492.16)", "[1445284492.16,1445284733.52)", "[1445284733.52,1445284974.88)", "[1445284974.88,1445285216.24)", "[1445285216.24,1445285457.60)", "[1445285457.60,1445285698.96)", "[1445285698.96,1445285940.32)", "[1445285940.32,1445286181.68)", "[1445286181.68,1445286423.04)", "[1445286423.04,1445286664.40)", "[1445286664.40,1445286905.76)", "[1445286905.76,1445287147.12)", "[1445287147.12,1445287388.48)", "[1445287388.48,1445287629.84)", "[1445287629.84,1445287871.20)", "[1445287871.20,1445288112.56)", "[1445288112.56,1445288353.92)", "[1445288353.92,1445288595.28)", "[1445288595.28,1445288836.64)", "[1445288836.64,1445289078.00)", "[1445289078.00,1445289319.36)", "[1445289319.36,1445289560.72)", "[1445289560.72,1445289802.08)", "[1445289802.08,1445290043.44)", "[1445290043.44,1445290284.80)", "[1445290284.80,1445290526.16)", "[1445290526.16,1445290767.52)", "[1445290767.52,1445291008.88)", "[1445291008.88,1445291250.24)", "[1445291250.24,1445291491.60)", "[1445291491.60,1445291732.96)", "[1445291732.96,1445291974.32)", "[1445291974.32,1445292215.68)", "[1445292215.68,1445292457.04)", "[1445292457.04,1445292698.40)", "[1445292698.40,1445292939.76)", "[1445292939.76,1445293181.12)", "[1445293181.12,1445293422.48)", "[1445293422.48,1445293663.84)", "[1445293663.84,1445293905.20)", "[1445293905.20,1445294146.56)", "[1445294146.56,1445294387.92)", "[1445294387.92,1445294629.28)", "[1445294629.28,1445294870.64)", "[1445294870.64,1445295112.00)", "[1445295112.00,1445295353.36)"]
+				},
+				"min": 1445283044,
+				"walkingCount": 3507,
+				"num-distinct-values": 350,
+				"detail-type": "integer",
+				"std-dev": 1583.8670906050668
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"dest": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 87,
+				"matching-field": "updateType"
+			}, {
+				"confidence": 84,
+				"matching-field": "altChange"
+			}, {
+				"confidence": 81,
+				"matching-field": "timeType"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 4,
+				"walkingSum": 20,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 80,
+				"max-length": 4,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [2, 2, 2, 3, 1, 1, 4, 1, 4],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "C", "E", "G", "J", "R", "S", "W", "Y"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1, 1, 1, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["EGCC", "EGGW", "RJAA", "YSSY"]
+				},
+				"walkingCount": 5,
+				"num-distinct-values": 4,
+				"detail-type": "term",
+				"min-length": 4
+			},
+			"presence": 0.0014257199,
+			"merged-into-schema": false
+		},
+		"gs": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [{
+				"confidence": 98,
+				"matching-field": "gs"
+			}, {
+				"confidence": 85,
+				"matching-field": "speed"
+			}, {
+				"confidence": 81,
+				"matching-field": "squawk"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 384.33919902912623,
+				"walkingSum": 633391,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 640,
+				"walkingSquareSum": 264703589,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 0, 2, 4, 3, 4, 3, 4, 8, 9, 5, 12, 7, 14, 12, 17, 15, 17, 14, 15, 9, 13, 10, 12, 14, 11, 10, 14, 11, 6, 13, 9, 18, 18, 16, 17, 7, 13, 11, 17, 7, 3, 10, 9, 9, 10, 10, 10, 7, 15, 15, 18, 25, 17, 12, 23, 28, 27, 46, 49, 91, 64, 73, 50, 65, 45, 71, 60, 70, 64, 51, 33, 22, 28, 14, 12, 18, 10, 7, 1, 4, 5, 5, 1, 4, 4, 3, 2, 1, 2, 0, 1, 0, 1, 0, 0, 0, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[71.10,76.96)", "[76.96,82.82)", "[82.82,88.68)", "[88.68,94.54)", "[94.54,100.40)", "[100.40,106.26)", "[106.26,112.12)", "[112.12,117.98)", "[117.98,123.84)", "[123.84,129.70)", "[129.70,135.56)", "[135.56,141.42)", "[141.42,147.28)", "[147.28,153.14)", "[153.14,159.00)", "[159.00,164.86)", "[164.86,170.72)", "[170.72,176.58)", "[176.58,182.44)", "[182.44,188.30)", "[188.30,194.16)", "[194.16,200.02)", "[200.02,205.88)", "[205.88,211.74)", "[211.74,217.60)", "[217.60,223.46)", "[223.46,229.32)", "[229.32,235.18)", "[235.18,241.04)", "[241.04,246.90)", "[246.90,252.76)", "[252.76,258.62)", "[258.62,264.48)", "[264.48,270.34)", "[270.34,276.20)", "[276.20,282.06)", "[282.06,287.92)", "[287.92,293.78)", "[293.78,299.64)", "[299.64,305.50)", "[305.50,311.36)", "[311.36,317.22)", "[317.22,323.08)", "[323.08,328.94)", "[328.94,334.80)", "[334.80,340.66)", "[340.66,346.52)", "[346.52,352.38)", "[352.38,358.24)", "[358.24,364.10)", "[364.10,369.96)", "[369.96,375.82)", "[375.82,381.68)", "[381.68,387.54)", "[387.54,393.40)", "[393.40,399.26)", "[399.26,405.12)", "[405.12,410.98)", "[410.98,416.84)", "[416.84,422.70)", "[422.70,428.56)", "[428.56,434.42)", "[434.42,440.28)", "[440.28,446.14)", "[446.14,452.00)", "[452.00,457.86)", "[457.86,463.72)", "[463.72,469.58)", "[469.58,475.44)", "[475.44,481.30)", "[481.30,487.16)", "[487.16,493.02)", "[493.02,498.88)", "[498.88,504.74)", "[504.74,510.60)", "[510.60,516.46)", "[516.46,522.32)", "[522.32,528.18)", "[528.18,534.04)", "[534.04,539.90)", "[539.90,545.76)", "[545.76,551.62)", "[551.62,557.48)", "[557.48,563.34)", "[563.34,569.20)", "[569.20,575.06)", "[575.06,580.92)", "[580.92,586.78)", "[586.78,592.64)", "[592.64,598.50)", "[598.50,604.36)", "[604.36,610.22)", "[610.22,616.08)", "[616.08,621.94)", "[621.94,627.80)", "[627.80,633.66)", "[633.66,639.52)", "[639.52,645.38)"]
+				},
+				"min": 74,
+				"walkingCount": 1648,
+				"num-distinct-values": 406,
+				"detail-type": "integer",
+				"std-dev": 113.59793096595904
+			},
+			"presence": 0.4699173,
+			"merged-into-schema": false
+		},
+		"type": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 97,
+				"matching-field": "type"
+			}, {
+				"confidence": 91,
+				"matching-field": "timeType"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 8,
+				"walkingSum": 28056,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 224448,
+				"max-length": 8,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [7014, 3507, 7014, 3507, 3507, 3507],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["i", "n", "o", "p", "s", "t"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [3507],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["position"]
+				},
+				"walkingCount": 3507,
+				"num-distinct-values": 1,
+				"detail-type": "term",
+				"min-length": 8
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"facility_hash": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 98,
+				"matching-field": "facility_hash"
+			}, {
+				"confidence": 90,
+				"matching-field": "id"
+			}, {
+				"confidence": 90,
+				"matching-field": "aircrafttype"
+			}, {
+				"confidence": 89,
+				"matching-field": "ident"
+			}, {
+				"confidence": 88,
+				"matching-field": "dest"
+			}, {
+				"confidence": 88,
+				"matching-field": "orig"
+			}, {
+				"confidence": 87,
+				"matching-field": "hexid"
+			}, {
+				"confidence": 86,
+				"matching-field": "atcident"
+			}, {
+				"confidence": 85,
+				"matching-field": "status"
+			}, {
+				"confidence": 81,
+				"matching-field": "altChange"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 40,
+				"walkingSum": 140280,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 5611200,
+				"max-length": 40,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [9729, 8338, 11044, 8026, 6608, 9119, 10497, 8670, 8580, 11105, 12248, 6026, 6196, 5995, 5494, 12605],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [6, 30, 36, 17, 1, 47, 17, 25, 17, 2, 11, 65, 5, 430, 19, 1, 1, 26, 1, 27, 99, 50, 1, 1, 6, 19, 1, 2, 2, 1, 2, 3, 5, 24, 59, 4, 13, 2, 1, 3, 2, 25, 2, 1, 7, 4, 3, 8, 34, 25, 13, 1, 3, 29, 17, 6, 2, 3, 4, 2, 1, 2, 4, 32, 2, 60, 1, 13, 3, 5, 7, 2, 1, 4, 70, 2, 2, 1, 88, 26, 1, 2, 2, 33, 4, 1, 2, 8, 7, 44, 77, 1564, 1, 147, 6, 1, 5, 2],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0054f3b68a7b40a52e1c3bf5c5e90009a92dba53", "[00c97000b7ff32b64a1674d09fca588b73cccf30,060d1f4801aadb6855e9e25b63369c405eb00bc6]", "[061b4bf8e7a6028070eff9a3ffdf89ec1a60b08c,09bf129b003aad5bdacc81d4b523c49a9d692830]", "[09dc4134f368906c9f692112b29c463f77c4160a,0ab5c7855b2490ac4188b1ef4fb06da535278d78]", "0bf00cee0f4d2482a325e31e7bbdb1179bdc093c", "[0bf3124db1c345ab86ebcbafc922f89c5c40edf0,1668509a7a025ee51cb81988872f2167907eb21f]", "[16a48edc2a3e7c49058c55ff7d67eced82a500ab,1b9ca7ff27a6e6c436af30f2cb54cea2e4aa3204]", "[1f76eeb64b991e840ebe71022dc7327fabc0f1da,274794dcece939c158ad39bdfc0d7757aaa42630]", "274794dcece939c158ad39bdfc0d7757aaa42630", "28d146771501618b1bb2ad53f57682693a2ad74c", "[2ad624bec6be732388542fa45299864fdc432965,2c8cee0a84b71656ab75d0067aa00eb3fbf3d59d]", "[2cabb50ccffda95d60d6d6ab6690188eb3b2d234,3386fb2c6b33bb530862f2795722831117a08176]", "3386fb2c6b33bb530862f2795722831117a08176", "[35d5a850972ac7108466d681ec1e7d42766b74b5,3d43d28aab43cb736aaf65bd0ed22df81e557681]", "[3dc9745c6aabf01b400db27eb6ebec0c6ba33492,3e86ca42719159f5f765dfcad8b3e02ba05fab94]", "3e86ca42719159f5f765dfcad8b3e02ba05fab94", "3e93704725a144ca4be8a8736491ddfa0c1e3c2a", "[3ea565e6f12cfd70aa53d43a4db9a3181159ab00,413c7f718f0a670a05c971b51896717e99439fd1]", "428bba7bd1dd43141e7cc4739a6a5b71c976d475", "[42a533a29387b1eec9581cbc99f1c5e37fef7834,47f4c8ad7eaa338ffd0dedd97e4cf6259b4db497]", "[48524b363bf37cdb6d71f13c971597d9ba0b351b,5682e65399525496e88b26b7b4daaf0a23b7d2d2]", "[578596f845e45955522d3450f4c577ce5e25ef99,5c3cee959b8c5122219f2ea68669f729648bf7f3]", "5c5b13ee1a0b0b31b351c72242f03264c4e71d55", "5ca3cc617d8e6ff034c4c50997151f2a42050043", "60bf496b5543a737a3318554b6d51bb35c6635bf", "[60c367565468a4986949f577bd674c77dec33fab,638197a6c592e5fdc29aec0118425436e5124dca]", "64b421cfe61b1752a463fd9c74678de0bdf5de9a", "6564d25d8aecff378173e63b7bc8f1510452a1d8", "65b30af7dd40b94eefd90efb3888e7714f025f96", "6614016e64e79824748ce5332fff1cb098fde8ca", "66cb4d201f1bb57cfc044e666c53de71fd60fcf8", "[67d0ff4be31640f2582d11b83ccb29710a690641,684a4a373db1da453117db838d4cfbaef3b839eb]", "[68f8183a1d152e4c09d7a247686735084a4244d6,69ae32f994a20c569e51b4f9363f9c78df51e474]", "[69b94ecece842c177a6ef2845533817712e80964,6aeb0c25b9da2df0401858151366cf1874e0d7d1]", "[6aeb0c25b9da2df0401858151366cf1874e0d7d1,6c4be7cf79b3f3f91a3b2c0c54c97232be55d275]", "[6c4be7cf79b3f3f91a3b2c0c54c97232be55d275,6d478020463c4769974fd61a74e716ea2e635787]", "[6e68aceee4a3ff89c059b9069e5baeac9c8f5d5f,6f3056e8db043a8cee88927b0ae1be5ffc769c19]", "[6f370a2b8c1ab9c89e78910fe0ab2f9e5abc1d4b,6fa158ec39cf5c1881e899736b311452a8b9aa81]", "7098119888681d817b006ddad112c10583f92413", "[70b22185773ead734746dc5067a7030aba98ce23,716f44a6c21aab96df6a56f34b224cdb81ee673e]", "722871d280951858958af27d91e6a34210d5ec3a", "[727abc67551bd4d306c0d75ca46ed8919075c0b6,775094343aa94d31978e87db82c9965b51b83dc0]", "7775675f9508c694cfa16310ce7a973ac2413176", "784686a1b11d956c3c4dc13dcf3de25d891b3e62", "[7af4a2ae867a576b6c03295f4b43e583669d5632,7c3bf8264370efd0f9c31e11089c09b814a6bc2b]", "7c3bf8264370efd0f9c31e11089c09b814a6bc2b", "7cde5931c7faddc1952b50844cb0e7aafffdf387", "7d0a8a37e6c31b82c60b58f2fd77c68fdd969d36", "7da8935eaedb6934d1101364c0184c24d5682215", "[7fa251e99de5037e09b789398373996ebede4738,80ea8ea96452b0090f49d4d0a93ff51ab8b03a96]", "[81dc305e21927da5daf142fc6a51aa4e5eaaaffb,828ab51d40b01d431f5cd20f0ee662ac235f7801]", "828ab51d40b01d431f5cd20f0ee662ac235f7801", "8304a12b63fca6762c4b7bd00e43401a9af74b5b", "[8425464c0a50b7afd88abc7d126e3c521509537a,86303b83cb9d18c377cc4facfebf40f43b88b7fc]", "[879926f140b7aef1fbbd675abb979056253da4ac,8d859b1305fb3a34c219a444f4fc50f86625a9ba]", "[8e3a5a4367caf0ce8190e1381532131b4fcc1523,90d8b0f57bd003eece1380733b2a645ee35d78b9]", "[918fa5ff4747f018d80e56184216253c576cc307,92a02d404d3a1cefe1c0bc3f851c61069ad4e357]", "93213002d85a095d07edb03854cd466f138e2682", "9452dea13f6665a622ec58d33a2a80d3e84173a0", "[94d1bd6bcdcdacab2d19c7b9c78a9230fe0e27d0,958e32ec100eb803d9f3993596b1988c00e0cbce]", "95d1656148d865c2976e80ebe5c4d15e6fbc6933", "96bc7496d6d7a3c3d5580c54888de4d4226d4c6f", "9822695943f6f73cafd0019d436681f7af72bb1e", "[9896bd039d03242abb5bba8f39d527ea387ca989,9f08944310f8f58ed2d2c74508227a6d497a073f]", "9f08944310f8f58ed2d2c74508227a6d497a073f", "[9f286050103323fe88a0520cc9cbe65e77179e6b,b174891b43d3a5a03e259a010c57bdebe1254e0f]", "b2698992255424873fab2f11b817e904ddea6a9e", "[b2b876f8772bf6de63c11dd36c54c60c19367ee2,b7af4d17a339ced88b74293921a6ed024f2ae307]", "b8648a1faeaf258d04d058c6a64f145b52cd7854", "[b8af170fdae2e7da9e72a87586eead91dd7d5e40,b91477a32621412d95f3a3991fadeda20399e77a]", "b93967e9d531a254b5f4c9a121330d62bb898a69", "bdb3e2723b5edb9a386a0d42075f105894ed9e58", "bdf18f1b2a4c71e1fd91cae932d046618103282b", "[be5e238d31760c571a85554e3baeb8aea82f968c,bfef1f4cc50429d4aa81e769b0e6304be8710089]", "[c094f824b1bc7ad8574967e235878684cbbc861a,c54c157ba5b743f9acd40b2ef424fc1f2a394ebe]", "c54fb975c85478b15fb3c80c17ee4fa6ab463b76", "c5b0de318280cc0ddbd990a827605bd6c957ea7b", "c612c05783c3724825e6e5ecdfb77ae14ec9e9d1", "[c64ec38cfe09841aa272e7f4bb669b94d1c4b261,d0dbc14a7770e918384f87359daf998cfa4409d5]", "[d0eb9df17052914fd256f59b8ec86c5bc8bdb138,d469cefe71693782b94e211f53359ac3bdba1fe1]", "d4ffd62d4c5fe6c666403e61cbba7645ce505147", "[d55f29a77df341971010257a948c39b9f3f34bf4,d5ecd1fec8a4602b5559cacb1003e0c1c1d5b102]", "d5ecd1fec8a4602b5559cacb1003e0c1c1d5b102", "[d637df17565ce992deb7ce7ebe78f4daea44b778,d924856358f41c5c977d5b5ecaf497f676e178c5]", "d932f150a344d250c27e51fe010f11d324e6bfee", "da0e0536df7b99641659bd58e7dc6d18f0e426c7", "[da6bae19c97d0315de9e680ae791237a4cee31b5,dab92e38e2bf534cc259f1cc7ef32978823ecc71]", "[dbe976b64b3ca8262ab4e75f61e576de571d3677,de53171b17972a1ad6b46ffff672d36b8fc4945c]", "[df0ed23ff85e9ecd4c8c5a6fadd8a8241a1e3f66,e2a3a775a4a7321a4dc8f433f290fdb65508a9ae]", "[e2f88e51b283c9b844b6cf4926789c6934f79e5b,e5ef94761df937125affbbb4991860baf27c9871]", "[e74d431bde43d209bb4dd6fa593d031027e97d09,f2aa8e0e3bf42ef3a2675ca4852c649ac76c96ea]", "[f531115ab811009716e5ae32da1df8012e679483,f9b7a576d09f5948908e93b29de29d465c2c86b7]", "fa12553222d6b4a5a4211d204671282d4d50ead8", "fa2949d7e18ab7055be2999c08f7d40ab9dc4a72", "[fa4324eb096da5c94edc6a38c40a817552bb46e5,fb1ed36c9b9e2e351443b905651e66722e3778b5]", "fb3e7298505a0b66c086587ce7a915540a8b6d35", "[fb4e60e9998356ac59cb89fd6344d51d1cafe3e2,fee6b7624556c4f28bc67a158ffc96e919cf6d3d]", "fee6b7624556c4f28bc67a158ffc96e919cf6d3d"]
+				},
+				"walkingCount": 3507,
+				"num-distinct-values": 381,
+				"detail-type": "term",
+				"min-length": 40
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"facility_name": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 93,
+				"matching-field": "facility_name"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 14.303678357570574,
+				"walkingSum": 50163,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 812467,
+				"max-length": 26,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [2090, 7, 7, 1007, 1, 2935, 1007, 511, 1013, 1528, 1524, 13, 36, 35, 39, 2, 29, 93, 50, 32, 8, 16, 1056, 169, 2, 16, 79, 24, 8, 4104, 24, 373, 1594, 4737, 8, 1576, 1618, 3847, 90, 1780, 1915, 1245, 896, 800, 48, 2623, 1862, 5607, 138, 57, 1535, 348, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": [" ", "(", ")", "-", ".", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "W", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y"]
+				},
+				"std-dev-length": 5.203352173148238,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1, 1513],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["", "Estimated"]
+				},
+				"walkingCount": 3507,
+				"num-distinct-values": 37,
+				"detail-type": "phrase",
+				"min-length": 0
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"squawk": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "number",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "squawk"
+			}, {
+				"confidence": 87,
+				"matching-field": "speed"
+			}, {
+				"confidence": 86,
+				"matching-field": "gs"
+			}, {
+				"confidence": 80,
+				"matching-field": "heading"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 3365.1363636363635,
+				"walkingSum": 1998891,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 7744,
+				"walkingSquareSum": 9281480901,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [1, 12, 6, 3, 20, 18, 0, 16, 20, 21, 25, 11, 20, 2, 12, 20, 14, 16, 10, 31, 2, 0, 11, 18, 15, 16, 29, 8, 0, 19, 20, 10, 15, 7, 9, 0, 1, 4, 9, 6, 6, 8, 0, 8, 9, 15, 10, 6, 6, 2, 3, 6, 15, 12, 7, 3, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[-56.04,83.22)", "[83.22,222.48)", "[222.48,361.74)", "[361.74,501.00)", "[501.00,640.26)", "[640.26,779.52)", "[779.52,918.78)", "[918.78,1058.04)", "[1058.04,1197.30)", "[1197.30,1336.56)", "[1336.56,1475.82)", "[1475.82,1615.08)", "[1615.08,1754.34)", "[1754.34,1893.60)", "[1893.60,2032.86)", "[2032.86,2172.12)", "[2172.12,2311.38)", "[2311.38,2450.64)", "[2450.64,2589.90)", "[2589.90,2729.16)", "[2729.16,2868.42)", "[2868.42,3007.68)", "[3007.68,3146.94)", "[3146.94,3286.20)", "[3286.20,3425.46)", "[3425.46,3564.72)", "[3564.72,3703.98)", "[3703.98,3843.24)", "[3843.24,3982.50)", "[3982.50,4121.76)", "[4121.76,4261.02)", "[4261.02,4400.28)", "[4400.28,4539.54)", "[4539.54,4678.80)", "[4678.80,4818.06)", "[4818.06,4957.32)", "[4957.32,5096.58)", "[5096.58,5235.84)", "[5235.84,5375.10)", "[5375.10,5514.36)", "[5514.36,5653.62)", "[5653.62,5792.88)", "[5792.88,5932.14)", "[5932.14,6071.40)", "[6071.40,6210.66)", "[6210.66,6349.92)", "[6349.92,6489.18)", "[6489.18,6628.44)", "[6628.44,6767.70)", "[6767.70,6906.96)", "[6906.96,7046.22)", "[7046.22,7185.48)", "[7185.48,7324.74)", "[7324.74,7464.00)", "[7464.00,7603.26)", "[7603.26,7742.52)", "[7742.52,7881.78)"]
+				},
+				"min": 31,
+				"walkingCount": 594,
+				"num-distinct-values": 442,
+				"detail-type": "integer",
+				"std-dev": 2073.9445451492797
+			},
+			"presence": 0.16937554,
+			"merged-into-schema": false
+		},
+		"orig": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 91,
+				"matching-field": "air_ground"
+			}, {
+				"confidence": 81,
+				"matching-field": "timeType"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 4,
+				"walkingSum": 20,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 80,
+				"max-length": 4,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [1, 1, 3, 1, 3, 2, 3, 1, 3, 1, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "G", "H", "K", "L", "M", "N", "O", "P", "U", "X"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1, 1, 2, 1],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["KLAX", "MMUN", "PHNL", "PHOG"]
+				},
+				"walkingCount": 5,
+				"num-distinct-values": 4,
+				"detail-type": "term",
+				"min-length": 4
+			},
+			"presence": 0.0014257199,
+			"merged-into-schema": false
+		},
+		"reg": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "reg"
+			}, {
+				"confidence": 94,
+				"matching-field": "orig"
+			}, {
+				"confidence": 90,
+				"matching-field": "ident"
+			}, {
+				"confidence": 90,
+				"matching-field": "dest"
+			}, {
+				"confidence": 90,
+				"matching-field": "hexid"
+			}, {
+				"confidence": 89,
+				"matching-field": "aircrafttype"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 5.282412060301508,
+				"walkingSum": 5256,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 28020,
+				"max-length": 9,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [77, 116, 103, 109, 96, 92, 150, 122, 121, 111, 213, 121, 117, 65, 378, 95, 375, 180, 83, 94, 332, 87, 90, 429, 302, 111, 57, 69, 62, 85, 85, 260, 45, 74, 48, 302],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+				},
+				"std-dev-length": 0.5068795175203717,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [2, 21, 18, 12, 1, 14, 32, 2, 1, 9, 19, 20, 3, 1, 2, 9, 1, 1, 16, 1, 2, 2, 293, 1, 2, 11, 21, 1, 2, 36, 1, 19, 1, 3, 18, 1, 7, 6, 18, 2, 1, 30, 1, 1, 4, 5, 9, 25, 12, 1, 24, 2, 2, 1, 1, 1, 2, 2, 6, 11, 12, 27, 2, 16, 1, 25, 38, 15, 2, 41, 3, 25, 1, 8, 5],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["3BNBI", "[4RALL,9VSWK]", "[9VTAQ,A6EIU]", "[A6EKQ,A6FDX]", "A6FEC", "[A6LRB,A7BCM]", "[A7BCR,CFIUF]", "[CFIVX,CFKIW]", "CFLEN", "[CFMWU,CGHLV]", "[CGJLZ,DAIFE]", "[DAIGL,EIDEJ]", "[EIDEM,EIDRC]", "EIEAV", "[EIEIA,EIEJJ]", "[EIESP,EIRUF]", "ETANZ", "FGKXM", "[FGLZJ,GDBCK]", "GEUNB", "GEUUP", "GEUUR", "[GEZAF,HL7718]", "HL7721", "HL7739", "[HL7776,HSTUE]", "[HZAQK,MABCJ]", "N101NN", "[N116AN,N117AN]", "[N117SY,N303NV]", "N311FT", "[N315CJ,N407AS]", "N409MC", "[N411YX,N419AS]", "[N41KN,N522TA]", "N525VL", "[N526JL,N538AS]", "[N543UW,N576UW]", "[N576UW,N626NK]", "[N627NK,N62883]", "N62889", "[N629VA,N69806]", "N69816", "N69824", "[N69835,N710SY]", "[N711SY,N73276]", "[N73278,N7731A]", "[N7745A,N8307K]", "[N8308K,N850GT]", "N853VA", "[N854GT,N89317]", "[N895JH,N903JB]", "[N905NN,N906NN]", "N908NN", "N913NN", "N917LJ", "[N917UY,N918NN]", "[N919HP,N91HT]", "[N926UW,N935NN]", "[N938FR,N96UJ]", "[N971UY,P2PXV]", "[P4KDA,PRGIQ]", "[PRGTO,PRGUN]", "[PRGUO,PTMOA]", "PTMSY", "[PTMXC,TFFIP]", "[TFFIU,VHVGJ]", "[VHVJN,VHVQU]", "VHVUC", "[VHVUJ,VHYQS]", "[VNA143,VPBDO]", "[VPBQU,VTJWW]", "VTPPV", "[VTSCF,ZKMVG]", "[ZKOJM,ZSSXU]"]
+				},
+				"walkingCount": 995,
+				"num-distinct-values": 608,
+				"detail-type": "term",
+				"min-length": 4
+			},
+			"presence": 0.2837183,
+			"merged-into-schema": false
+		},
+		"id": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "id"
+			}, {
+				"confidence": 96,
+				"matching-field": "ident"
+			}, {
+				"confidence": 91,
+				"matching-field": "dest"
+			}, {
+				"confidence": 90,
+				"matching-field": "aircrafttype"
+			}, {
+				"confidence": 89,
+				"matching-field": "atcident"
+			}, {
+				"confidence": 85,
+				"matching-field": "facility_hash"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 30.204733390362133,
+				"walkingSum": 105928,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 3239012,
+				"max-length": 35,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [10521, 17724, 9617, 4493, 2350, 9784, 6224, 2742, 2237, 3173, 2862, 1257, 2164, 235, 421, 289, 662, 281, 172, 269, 267, 253, 287, 793, 262, 452, 141, 231, 195, 339, 609, 400, 347, 189, 326, 134, 389, 403, 1038, 1954, 2150, 4755, 123, 1954, 1860, 2810, 930, 81, 930, 1976, 1873],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "c", "d", "e", "f", "h", "i", "l", "n", "o", "r", "s", "u"]
+				},
+				"std-dev-length": 3.355430100071258,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [5, 2, 3, 37, 1, 214, 3, 1, 1, 1, 1, 1, 1, 1, 2, 108, 267, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 96, 18, 4, 3, 3, 153, 5, 65, 1, 5, 1, 8, 1, 550, 534, 92, 10, 232, 16, 5, 13, 16, 4, 12, 9, 2, 7, 12, 62, 289, 84, 119, 3, 9, 2, 172, 5, 61, 1, 1, 2, 156],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[3H532-1445059527-airline-0072,3H821-1445059527-airline-0232]", "[4324-1445278646-adhoc-0,A7ADT-1445292048-adhoc-0]", "[A7AEH-1445290807-adhoc-0,A7BAZ-1445278017-adhoc-0]", "[A7BEA-1445279315-adhoc-0,AAL1799-1445119500-schedule-0001]", "AAL1806-1445120400-schedule-0000", "[AAL1820-1445121000-schedule-0000,AFR191-1445236048-airline-0029:0]", "[AFR225-1445267633-ed-0000:0,AFR246-1445104500-schedule-0000:0]", "AFR254-1445102700-schedule-0000:0", "AFR259-1445258505-airline-0106:0", "AFR276-1445082600-schedule-0001:0", "AFR292-1445082300-schedule-0001:0", "AFR292-1445082300-schedule-0001:2", "AFR293-1445090100-schedule-0000:0", "AFR381-1445269805-ed-0005:0", "[AFR3831-1445274777-ed-0006:0,AFR3849-1445119500-schedule-0000:0]", "[AFR3865-1445277535-ed-0011:0,AMF7120-1445285233-868-0]", "[AMX177-1445117580-schedule-0000,BAW109-1445114100-schedule-0000:2]", "[BAW11-1445108400-schedule-0000:0,BAW11-1445108400-schedule-0000:2]", "BAW12-1445093100-schedule-0000:0", "BAW133-1445117700-schedule-0000:0", "BAW133-1445117700-schedule-0000:2", "BAW138-1445066752-airline-0005", "[BAW138-1445248321-airline-0044:0,BAW142-1445251198-airline-0008:0]", "BAW16-1445094900-schedule-0001:0", "BAW169-1445066800-airline-0050:0", "[BAW179-1445289756-ed-0029:0,BAW181-1445104800-schedule-0000:0]", "[BAW181-1445104800-schedule-0000:2,BAW183-1445108700-schedule-0000:0]", "[BAW183-1445108700-schedule-0000:2,CA7064-1445208061-279-0]", "[CA811-1445292085-101-0,CCA1090-1445145982-airline-0325]", "[CCA1131-1445145982-airline-0017,CCA1573-1445270557-fa-0008]", "[CCA1683-1445270555-fa-0002,CCA430-1445224131-airline-0136]", "[CCA430-1445270710-fa-0003,CCA4407-1445270564-fa-0003]", "[CCA4589-1445270573-fa-0003,CPZ5752-1445120580-schedule-0000]", "[CPZ5814-1445121420-schedule-0000,CQH8520-1445238154-airline-0020]", "[CQH8892-1445238395-airline-0046,DAL1554-1445119200-schedule-0001]", "DAL1581-1445108700-schedule-0001", "[DAL1615-1445121300-schedule-0002,DAL167-1445112300-schedule-0000]", "DAL1680-1445117400-schedule-0000", "[DAL1682-1445120700-schedule-0000,DAL185-1445112900-schedule-0000]", "DAL186-1445088000-schedule-0000", "[DAL1873-1445117400-schedule-0000,FFT800-1445059651-airline-0109]", "[FFT935-1445059651-airline-0379,MSR920-1445113500-schedule-0000]", "[MSR93-1445293498-airline-0015,N4292B-1445294319-adhoc-0]", "[N42YZ-1445286946-345-1,N469BB-1445271559-147-1]", "[N470DC-1445277825-133-0,PVL1909-1445120100-schedule-0001]", "[PVL555-1445280229-841-0,QFA417-1445247163-airline-0081:0]", "[QFA418-1445248965-airline-0113,QFA480-1445247163-airline-0136]", "[QFA480-1445247163-airline-0136:0,QFA608-1445245602-airline-0023]", "[QFA608-1445245602-airline-0023:0,QFA838-1445245381-airline-0008]", "[QFA838-1445245381-airline-0008:0,QFA861-1445249811-airline-0074]", "[QFA861-1445249811-airline-0074:0,QFA983-1445250804-airline-0069]", "[QFA983-1445250804-airline-0069:0,QJE1937-1445247743-airline-0014]", "[QJE1937-1445247743-airline-0014:0,QLK104-1445282268-fds-0020]", "[QLK1466-1445249811-airline-0121,QLK2052-1445251609-airline-0087:0]", "[QLK2222-1445229797-fds-0029,QTR110-1445114400-schedule-0000:0]", "[QTR1132-1445293701-adhoc-0,RLK8079-1445135293-airline-0173:0]", "[RLK8083-1445291970-50-0:0,SWA2514-1445084904-airline-0068]", "[SWA2752-1445085708-airline-0104,TAM3572-1445119440-schedule-0000]", "[TAM3654-1445120280-schedule-0000,THY804-1445271397-ed-0001:0]", "[THY806-1445278378-ed-0023:0,THY872-1445113200-schedule-0000:0]", "[THY878-1445274698-ed-0005:0,TOM743-1445278705-ed-0006:0]", "[TOM95-1445274683-ed-0001:0,TPA722-1445264676-540-0]", "[TSO103-1445103000-schedule-0001,UAL1913-1445059708-airline-0092]", "[UAL1914-1445082310-airline-0096,UAL198-1445112334-airline-0032]", "[UAL1980-1445114160-schedule-0000,UEA2223-1445270570-fa-0005]", "UJC329-1445280493-209-0", "UPS104-1445262139-407-0:0", "[UPS214-1445274853-ed-0000:5,UPS238-1445268113-ed-0001:10]", "[UPS238-1445268113-ed-0001:14,ZKJRA-1445292329-12-0]"]
+				},
+				"walkingCount": 3507,
+				"num-distinct-values": 3208,
+				"detail-type": "term",
+				"min-length": 20
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"lat": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.LatitudeInterpretation",
+				"interpretation": "Coordinate - Latitude",
+				"unknown": false
+			},
+			"main-type": "number",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "waypoints.lat"
+			}, {
+				"confidence": 98,
+				"matching-field": "lat"
+			}, {
+				"confidence": 90,
+				"matching-field": "waypoints.lon"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average": 27.55609113772455,
+				"walkingSum": 96639.21162,
+				"numberDetail": true,
+				"stringDetail": false,
+				"max": 87.78863,
+				"walkingSquareSum": 4980120.707397614,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.NumberBucketList",
+					"data": [2, 0, 0, 0, 0, 2, 0, 1, 5, 6, 10, 18, 35, 39, 37, 30, 27, 39, 30, 21, 37, 20, 19, 11, 14, 18, 18, 15, 4, 11, 17, 11, 8, 12, 15, 19, 28, 23, 23, 20, 30, 36, 42, 37, 57, 64, 82, 80, 101, 74, 79, 126, 113, 199, 154, 142, 198, 210, 175, 133, 107, 131, 149, 58, 42, 54, 34, 32, 37, 24, 13, 15, 12, 7, 2, 0, 0, 3, 2, 1, 2, 1, 0, 3, 1],
+					"region-data": {
+						"latitude-key": "lat",
+						"longitude-key": "lon",
+						"rows": [{
+							"c": [{
+								"v": "United States"
+							}, {
+								"v": 1169
+							}]
+						}, {
+							"c": [{
+								"v": "China"
+							}, {
+								"v": 1169
+							}]
+						}, {
+							"c": [{
+								"v": "Russia"
+							}, {
+								"v": 1169
+							}]
+						}],
+						"cols": [{
+							"label": "Country"
+						}, {
+							"label": "Frequency"
+						}]
+					},
+					"series": "Values",
+					"type": "map",
+					"yaxis": "Frequency",
+					"labels": ["[-59.3020774,-57.5534040)", "[-57.5534040,-55.8047306)", "[-55.8047306,-54.0560572)", "[-54.0560572,-52.3073838)", "[-52.3073838,-50.5587104)", "[-50.5587104,-48.8100370)", "[-48.8100370,-47.0613636)", "[-47.0613636,-45.3126902)", "[-45.3126902,-43.5640168)", "[-43.5640168,-41.8153434)", "[-41.8153434,-40.0666700)", "[-40.0666700,-38.3179966)", "[-38.3179966,-36.5693232)", "[-36.5693232,-34.8206498)", "[-34.8206498,-33.0719764)", "[-33.0719764,-31.3233030)", "[-31.3233030,-29.5746296)", "[-29.5746296,-27.8259562)", "[-27.8259562,-26.0772828)", "[-26.0772828,-24.3286094)", "[-24.3286094,-22.5799360)", "[-22.5799360,-20.8312626)", "[-20.8312626,-19.0825892)", "[-19.0825892,-17.3339158)", "[-17.3339158,-15.5852424)", "[-15.5852424,-13.8365690)", "[-13.8365690,-12.0878956)", "[-12.0878956,-10.3392222)", "[-10.3392222,-8.5905488)", "[-8.5905488,-6.8418754)", "[-6.8418754,-5.0932020)", "[-5.0932020,-3.3445286)", "[-3.3445286,-1.5958552)", "[-1.5958552,0.1528182)", "[0.1528182,1.9014916)", "[1.9014916,3.6501650)", "[3.6501650,5.3988384)", "[5.3988384,7.1475118)", "[7.1475118,8.8961852)", "[8.8961852,10.6448586)", "[10.6448586,12.3935320)", "[12.3935320,14.1422054)", "[14.1422054,15.8908788)", "[15.8908788,17.6395522)", "[17.6395522,19.3882256)", "[19.3882256,21.1368990)", "[21.1368990,22.8855724)", "[22.8855724,24.6342458)", "[24.6342458,26.3829192)", "[26.3829192,28.1315926)", "[28.1315926,29.8802660)", "[29.8802660,31.6289394)", "[31.6289394,33.3776128)", "[33.3776128,35.1262862)", "[35.1262862,36.8749596)", "[36.8749596,38.6236330)", "[38.6236330,40.3723064)", "[40.3723064,42.1209798)", "[42.1209798,43.8696532)", "[43.8696532,45.6183266)", "[45.6183266,47.3670000)", "[47.3670000,49.1156734)", "[49.1156734,50.8643468)", "[50.8643468,52.6130202)", "[52.6130202,54.3616936)", "[54.3616936,56.1103670)", "[56.1103670,57.8590404)", "[57.8590404,59.6077138)", "[59.6077138,61.3563872)", "[61.3563872,63.1050606)", "[63.1050606,64.8537340)", "[64.8537340,66.6024074)", "[66.6024074,68.3510808)", "[68.3510808,70.0997542)", "[70.0997542,71.8484276)", "[71.8484276,73.5971010)", "[73.5971010,75.3457744)", "[75.3457744,77.0944478)", "[77.0944478,78.8431212)", "[78.8431212,80.5917946)", "[80.5917946,82.3404680)", "[82.3404680,84.0891414)", "[84.0891414,85.8378148)", "[85.8378148,87.5864882)", "[87.5864882,89.3351616)"]
+				},
+				"min": -58.51385,
+				"walkingCount": 3507,
+				"num-distinct-values": 3307,
+				"detail-type": "decimal",
+				"std-dev": 25.70434532990855
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		},
+		"hexid": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 99,
+				"matching-field": "hexid"
+			}, {
+				"confidence": 90,
+				"matching-field": "reg"
+			}, {
+				"confidence": 89,
+				"matching-field": "ident"
+			}, {
+				"confidence": 89,
+				"matching-field": "dest"
+			}, {
+				"confidence": 89,
+				"matching-field": "orig"
+			}, {
+				"confidence": 88,
+				"matching-field": "aircrafttype"
+			}, {
+				"confidence": 85,
+				"matching-field": "atcident"
+			}, {
+				"confidence": 83,
+				"matching-field": "facility_hash"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 6,
+				"walkingSum": 6042,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 36252,
+				"max-length": 6,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [988, 198, 207, 207, 634, 210, 573, 326, 356, 476, 525, 233, 347, 457, 180, 125],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [11, 1, 2, 19, 14, 2, 1, 18, 13, 22, 2, 262, 5, 20, 2, 2, 1, 2, 3, 10, 13, 20, 1, 2, 13, 10, 1, 4, 19, 42, 15, 2, 41, 2, 13, 1, 13, 25, 1, 6, 2, 12, 1, 36, 1, 19, 1, 21, 1, 1, 12, 15, 11, 1, 1, 3, 1, 1, 1, 21, 1, 8, 1, 1, 40, 22, 23, 12, 4, 18, 3, 43, 1, 1, 5, 5],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["[00B203,06A093]", "06A098", "[06A099,06A0A7]", "[06A0AF,3440CF]", "[34444F,3C4AD5]", "[3C4B2C,3C4B32]", "3C64C5", "[3C64EC,4005BB]", "[400683,4007F9]", "[400901,406A92]", "406B48", "[406CAB,424945]", "[42498C,4249EA]", "[4249FC,4951E3]", "[4951EC,495290]", "[4B18AE,4B18FC]", "4B1900", "[4B1909,4B8E0A]", "[4BA9A8,4BA9CD]", "[4BAA42,4C01E4]", "[4CA0FC,4CAA2D]", "[4CAA60,71BF18]", "71BF21", "71BF39", "[71BF76,75007F]", "[7501FB,76BD42]", "76CE2A", "[76CEEB,77058C]", "[773644,780B7D]", "[780B7E,7C6B31]", "[7C6BA1,7C6CA4]", "7C6D22", "[7C6D29,7C7BD2]", "[800013,80015D]", "[800373,8007C3]", "800B12", "[800B65,8852A5]", "[88801A,89632F]", "896334", "[896354,8963C4]", "8963E9", "[898055,A0428A]", "A04641", "[A047DB,A32BB7]", "A34B17", "[A3599F,A4C6B3]", "A4CF26", "[A4D2B5,A69206]", "A69D67", "A6A00B", "[A6A06E,A75103]", "[A7668A,A809F5]", "[A81006,A84DCE]", "A8553C", "A85F20", "[A865E3,A86717]", "A86A28", "A86E85", "A8886D", "[A894F2,A95DBA]", "A96FB4", "[A97DB4,AA1A16]", "AA2BA5", "AA2BC2", "[AA4548,AB93A5]", "[ABA800,AC0DD9]", "[AC18FE,AD03EE]", "[AD049A,ADA296]", "[ADCCA0,ADE424]", "[C0172E,C06A39]", "[C07676,C080AE]", "[C0864E,E4906B]", "E490C8", "E4910C", "[E4917E,E80244]", "[E8026A,E80411]"]
+				},
+				"walkingCount": 1007,
+				"num-distinct-values": 617,
+				"detail-type": "term",
+				"min-length": 6
+			},
+			"presence": 0.28714,
+			"merged-into-schema": false
+		},
+		"updateType": {
+			"alias-names": null,
+			"used-in-schema": false,
+			"interpretation": {
+				"@class": "com.deleidos.dp.interpretation.UnknownInterpretation",
+				"interpretation": "Unknown",
+				"unknown": true
+			},
+			"main-type": "string",
+			"matching-fields": [{
+				"confidence": 96,
+				"matching-field": "updateType"
+			}, {
+				"confidence": 91,
+				"matching-field": "status"
+			}, {
+				"confidence": 90,
+				"matching-field": "aircrafttype"
+			}, {
+				"confidence": 90,
+				"matching-field": "facility_hash"
+			}, {
+				"confidence": 88,
+				"matching-field": "atcident"
+			}, {
+				"confidence": 87,
+				"matching-field": "altChange"
+			}, {
+				"confidence": 87,
+				"matching-field": "dest"
+			}, {
+				"confidence": 86,
+				"matching-field": "id"
+			}, {
+				"confidence": 84,
+				"matching-field": "ident"
+			}, {
+				"confidence": 83,
+				"matching-field": "reg"
+			}, {
+				"confidence": 81,
+				"matching-field": "hexid"
+			}],
+			"original-name": null,
+			"detail": {
+				"binaryDetail": false,
+				"average-length": 1,
+				"walkingSum": 3507,
+				"numberDetail": false,
+				"stringDetail": true,
+				"walkingSquareSum": 3507,
+				"max-length": 1,
+				"char-freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.CharacterBucketList",
+					"data": [1007, 5, 2006, 489],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "O", "P", "Z"]
+				},
+				"std-dev-length": 0,
+				"freq-histogram": {
+					"@class": "com.deleidos.dp.histogram.TermBucketList",
+					"data": [1007, 5, 2006, 489],
+					"region-data": null,
+					"series": "Values",
+					"type": "bar",
+					"yaxis": "Frequency",
+					"labels": ["A", "O", "P", "Z"]
+				},
+				"walkingCount": 3507,
+				"num-distinct-values": 4,
+				"detail-type": "term",
+				"min-length": 1
+			},
+			"presence": 1,
+			"merged-into-schema": false
+		}
+	},
+	"dsName": "FlightPositionJson",
+	"dsFileType": "application/json",
+	"data-sample-id": 2,
+	"dsId": "25e7627b-c135-497e-8c09-adc9515732af",
+	"dsLastUpdate": null,
+	"dsDescription": null,
+	"dsFileName": "FlightPositionJson.txt",
+	"dsVersion": null
+}]

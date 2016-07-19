@@ -2,6 +2,7 @@ package com.deleidos.dp.histogram;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.deleidos.dp.accumulator.AbstractProfileAccumulator;
+import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -23,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 
 public class NumberBucketList extends AbstractCoalescingBucketList {
+	public static final int bucketExpansionLimit = 1000000;
 	public static final NumberBucketList EMPTY = new NumberBucketList();
 	private static Logger logger = Logger.getLogger(NumberBucketList.class);
 	private BigDecimal currentColumnWidth = BigDecimal.valueOf(-1);
@@ -32,9 +35,8 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 		bucketList = new LinkedList<NumberBucket>();
 
 		BigDecimal big = new BigDecimal(numBuckets);
-		final BigDecimal width = (max.subtract(min).add(BigDecimal.ONE)).divide(big, AbstractProfileAccumulator.DEFAULT_CONTEXT);
+		final BigDecimal width = (max.subtract(min)).divide(big.subtract(BigDecimal.ONE), AbstractProfileAccumulator.DEFAULT_CONTEXT);
 
-		
 		for(int i = 0; i < numBuckets; i++) {
 			BigDecimal base = min.add(width.multiply(BigDecimal.valueOf(i)));
 			NumberBucket b =  new NumberBucket(base, width.add(base));
@@ -47,75 +49,137 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 		bucketList = new LinkedList<NumberBucket>();
 	}
 
-	@Override
-	public boolean putValue(Object object) {
-		try {
-			int comp = currentColumnWidth.compareTo(BigDecimal.ZERO);
-			if(comp == 1) {
-				NumberBucket first = bucketList.getFirst();
-				NumberBucket last = bucketList.getLast();
-				if(first.belongs(object) == -1) { 
-					NumberBucket bucket = new NumberBucket(first.minBoundary.subtract(currentColumnWidth), first.minBoundary);
-					bucketList.addFirst(bucket);
-					putValue(object);
-					Collections.sort(bucketList);
-					if(bucketList.size() >= getNumBucketsHigh()) {
-						coalesce();
-					}
-					return true;
-				} else if(last.belongs(object) == 1) { 
-					NumberBucket bucket = new NumberBucket(last.maxBoundary, last.maxBoundary.add(currentColumnWidth));
-					bucketList.addLast(bucket);
-					putValue(object);
-					Collections.sort(bucketList);
-					if(bucketList.size() >= getNumBucketsHigh()) {
-						coalesce();
-					}
-					return true;
-				} 
-			} else if(comp == 0) {
-				return true;
-			} else {
-				if(bucketList.size() == 0) {
-					NumberBucket bucket = new NumberBucket(new BigDecimal(object.toString()));
-					bucket.incrementCount();
-					bucketList.addFirst(bucket);
-				} else if(bucketList.size() == 1) {
-					if(bucketList.get(0).belongs(object) == 0) {
-						bucketList.get(0).incrementCount();
-					} else {
-						NumberBucket bucket = new NumberBucket(new BigDecimal(object.toString()));
-						bucket.incrementCount();
-						bucketList.add(bucket);
-						Collections.sort(bucketList);
-					}
-				} else {
-					boolean added = simplePutValue(object);
-					if(!added) {
-						NumberBucket bucket = new NumberBucket(new BigDecimal(object.toString()));
-						bucket.incrementCount();
-						bucketList.add(bucket);
-						Collections.sort(bucketList);
-						if(bucketList.size() >= getNumBucketsLow()) {
-							transformToRange();
-						}
-						return true;
+	private boolean dynamicallyResizeHistogramAndAddValue(BigDecimal value) throws ArithmeticException {
+		NumberBucket first = bucketList.getFirst();
+		NumberBucket last = bucketList.getLast();
+		if(first.belongs(value) < 0) {
+			double numNecessaryBuckets = first.minBoundary.subtract(value)
+					.divide(currentColumnWidth, MetricsCalculationsFacade.DEFAULT_CONTEXT).doubleValue();
+			if(numNecessaryBuckets > bucketExpansionLimit) {
+				throw new ArithmeticException("Magnitude of number too big for dynamic histogram.");
+			}
+			numNecessaryBuckets = Math.ceil(numNecessaryBuckets);
+			int numTotalBuckets = (int)numNecessaryBuckets + bucketList.size();
+			if(numTotalBuckets >= getNumBucketsHigh()) {		
+				int numDoublesNecessary = (int)(Math.log((double)numTotalBuckets/getNumBucketsLow())/Math.log(2)) + 1;
+				BigDecimal doubleCoefficient = BigDecimal.valueOf(Math.pow(2, numDoublesNecessary));
+				BigDecimal newWidth = currentColumnWidth.multiply(doubleCoefficient);
+				BigDecimal tempIncludedMinimum = last.minBoundary.subtract(BigDecimal.valueOf(getNumBucketsLow()-1).multiply(newWidth));		
+				NumberBucketList newNumberBucketList = new NumberBucketList(getNumBucketsLow(), tempIncludedMinimum, last.minBoundary);
+				for(int j = 0; j < bucketList.size(); j++) {
+					NumberBucket bucketToAddTo = newNumberBucketList.getBucketList().get(j/doubleCoefficient.intValue());
+					BigInteger count = bucketList.get(j).count;
+					for(int i = 0; i< count.intValue(); i++) { //possible loss of precision
+						bucketToAddTo.incrementCount();
 					}
 				}
-				return true;
+				currentColumnWidth = newNumberBucketList.getCurrentRange();
+				bucketList = newNumberBucketList.getBucketList();
+				Collections.sort(bucketList);
+				numNecessaryBuckets = first.minBoundary.subtract(value)
+						.divide(currentColumnWidth, MetricsCalculationsFacade.DEFAULT_CONTEXT).doubleValue();
+				numNecessaryBuckets = Math.ceil(numNecessaryBuckets);
 			}
-		} catch (NumberFormatException e) {
-			//log
-			logger.error("Object " + object + " is not able to be parsed as a number.");
-			return false;
-		} catch (Exception e) {
-			logger.error("Object " + object + " cannot be loaded into bucket.");
-			e.printStackTrace();
-			// log
-			return false;
-		}
-		if(simplePutValue(object)) return true;
-		else return false;
+			for(int i = 0; i < numNecessaryBuckets; i++) {
+				BigDecimal newMin = bucketList.getFirst().minBoundary.subtract(currentColumnWidth);
+				NumberBucket nb = new NumberBucket(newMin, newMin.add(currentColumnWidth));
+				bucketList.addFirst(nb);
+			}
+		} else if(last.belongs(value) > 0) { 
+			// determine number of buckets necessary to adjust the histogram to hold the new value
+			double numNecessaryBuckets = value.subtract(last.maxBoundary)
+					.divide(currentColumnWidth, MetricsCalculationsFacade.DEFAULT_CONTEXT).doubleValue();
+			if(numNecessaryBuckets > bucketExpansionLimit) {
+				// if it's too enormous throw the exception 
+				throw new ArithmeticException("Number is too drastic of an outlier for dynamic histogram.");
+			}
+			// because range is exclusive on the upper bound, need to add an additional bucket if the value being added falls exactly on the upper end of a boundary
+			// otherwise, it will be included in the final added bucket, so ceiling the number required
+			numNecessaryBuckets = (numNecessaryBuckets == (int)numNecessaryBuckets) ? numNecessaryBuckets + 1 : Math.ceil(numNecessaryBuckets);
+			int numTotalBuckets = (int)numNecessaryBuckets + bucketList.size();
+			if(numTotalBuckets >= getNumBucketsHigh()) {
+				int numDoublesNecessary = (int)(Math.log((double)numTotalBuckets/getNumBucketsLow())/Math.log(2));
+				BigDecimal doubleCoefficient = BigDecimal.valueOf(Math.pow(2, numDoublesNecessary));
+				BigDecimal newWidth = currentColumnWidth.multiply(doubleCoefficient);
+				BigDecimal tempIncludedMaxValue = first.minBoundary.add(BigDecimal.valueOf(getNumBucketsLow()-1).multiply(newWidth));
+				NumberBucketList newNumberBucketList = new NumberBucketList(getNumBucketsLow(), first.minBoundary, tempIncludedMaxValue);
+				for(int j = 0; j < bucketList.size(); j++) {
+					NumberBucket bucketToAddTo = newNumberBucketList.getBucketList().get(j/doubleCoefficient.intValue());
+					BigInteger count = bucketList.get(j).count;
+					for(int i = 0; i < count.intValue(); i++) { //possible loss of precision
+						bucketToAddTo.incrementCount();
+					}
+				}
+				currentColumnWidth = newNumberBucketList.getCurrentRange();
+				bucketList = newNumberBucketList.getBucketList();
+				Collections.sort(bucketList);
+				// re-asses number of necessary buckets with new histogram
+				numNecessaryBuckets = value.subtract(bucketList.getLast().maxBoundary)
+						.divide(currentColumnWidth, MetricsCalculationsFacade.DEFAULT_CONTEXT).doubleValue();
+				numNecessaryBuckets = (numNecessaryBuckets == (int)numNecessaryBuckets) ? numNecessaryBuckets + 1 : Math.ceil(numNecessaryBuckets);
+			}
+			// create leftover buckets
+			for(int i = 0; i < numNecessaryBuckets; i++) {
+				BigDecimal newMax = bucketList.getLast().maxBoundary.add(currentColumnWidth);
+				NumberBucket nb = new NumberBucket(newMax.subtract(currentColumnWidth), newMax);
+				bucketList.addLast(nb);
+			}
+		} 
+		return binarySearchAdd(value);
+	}
+
+	@Override
+	public boolean putValue(Object object) {
+		boolean successfullyAdded = false;
+		int comp = currentColumnWidth.compareTo(BigDecimal.ZERO);
+		BigDecimal value = new BigDecimal(object.toString());
+		if(comp > 0) {
+			try {
+				successfullyAdded = dynamicallyResizeHistogramAndAddValue(value);
+			} catch (ArithmeticException e) {
+				logger.info(e);
+				return false;
+			}
+		} else if(comp < 0){
+			if(bucketList.size() == 0) {
+				NumberBucket bucket = new NumberBucket(value);
+				bucket.incrementCount();
+				bucketList.addFirst(bucket);
+				successfullyAdded = true;
+			} else if(bucketList.size() == 1) {
+				if(bucketList.get(0).belongs(object) == 0) {
+					bucketList.get(0).incrementCount();
+				} else {
+					NumberBucket bucket = new NumberBucket(value);
+					bucket.incrementCount();
+					bucketList.add(bucket);
+					Collections.sort(bucketList);
+				}
+				successfullyAdded = true;
+			} else {
+				successfullyAdded = binarySearchAdd(object);
+				if(!successfullyAdded) {
+					if(bucketList.size() >= getNumBucketsLow()) {
+						transformToRange();
+						try {
+							successfullyAdded = dynamicallyResizeHistogramAndAddValue(value);
+						} catch (ArithmeticException e) {
+							logger.error(e);
+							return false;
+						}
+					} else {
+						NumberBucket bucket = new NumberBucket(value);
+						bucket.incrementCount();
+						bucketList.add(bucket);
+						Collections.sort(bucketList);
+						successfullyAdded = true;
+					}
+				}
+			}
+		} else {
+			throw new RuntimeException("Unexpected current column width: 0.");
+		}	
+		return successfullyAdded;
 	}
 
 	/**
@@ -123,7 +187,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 	 * be added.
 	 * @param object The object to be added to the histogram
 	 * @return True if the object was added, false if it was not.
-	 */
+
 	public boolean simplePutValue(Object object) {
 		int min = 0;
 		int max = bucketList.size() - 1;
@@ -142,7 +206,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 			half = (max - min)/2 + min;
 		}
 		return false;
-	}
+	}*/
 
 	@JsonIgnore
 	public BigDecimal getCurrentRange() {
@@ -152,13 +216,12 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 	@Override
 	public void transformToRange() {
 		NumberBucketList nbl = new NumberBucketList(bucketList.size(), bucketList.getFirst().minBoundary, bucketList.getLast().minBoundary);
-		nbl.getBucketList().addLast(new NumberBucket(nbl.getBucketList().getLast().maxBoundary, nbl.getBucketList().getLast().maxBoundary.add(nbl.currentColumnWidth)));
 		//nlogn could maybe do better
 		for(int j = 0; j < bucketList.size(); j++) {
 			BigInteger count = bucketList.get(j).count;
 			BigDecimal value = bucketList.get(j).minBoundary;
 			for(int i = 0; i< count.intValue(); i++) { //possible loss of precision
-				nbl.simplePutValue(value);
+				nbl.binarySearchAdd(value);
 			}
 		}
 		currentColumnWidth = nbl.currentColumnWidth;
@@ -167,6 +230,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 
 	@Override
 	public void coalesce() {
+
 		Collections.sort(bucketList);
 		if(currentColumnWidth.compareTo(BigDecimal.ZERO) == -1) {
 			transformToRange();
@@ -179,7 +243,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 				BigInteger count = bucketList.get(j).count;
 				BigDecimal value = bucketList.get(j).minBoundary;
 				for(int i = 0; i< count.intValue(); i++) { //possible loss of precision
-					nbl.simplePutValue(value);
+					nbl.binarySearchAdd(value);
 				}
 			}
 			currentColumnWidth = nbl.currentColumnWidth;
@@ -217,4 +281,5 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 		}
 		return list;
 	}
+	
 }

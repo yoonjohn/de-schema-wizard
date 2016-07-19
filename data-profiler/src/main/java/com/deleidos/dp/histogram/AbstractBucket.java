@@ -1,9 +1,8 @@
 package com.deleidos.dp.histogram;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 
-import org.apache.log4j.Logger;
+import com.deleidos.dp.beans.Histogram;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -14,16 +13,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class AbstractBucket implements Bucket, Comparable<AbstractBucket> {
-	private static Logger logger = Logger.getLogger(AbstractBucket.class);
+	public static final String EMPTY_STRING_INDICATOR = "(Blank Value)";
 	protected BigInteger count;
-	protected String label;
 	
 	protected AbstractBucket() {
 		count = BigInteger.ZERO;
 	}
 	
-	public AbstractBucket(String definition, BigInteger count) {
-		this.label = definition;
+	public AbstractBucket(BigInteger count) {
 		this.count = count;
 	}
 
@@ -35,4 +32,5 @@ public abstract class AbstractBucket implements Bucket, Comparable<AbstractBucke
 	public void incrementCount() {
 		count = count.add(BigInteger.ONE);
 	}
+	
 }

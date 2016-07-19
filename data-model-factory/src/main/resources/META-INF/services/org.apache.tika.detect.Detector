@@ -16,7 +16,3 @@
 com.deleidos.dmf.detector.JSONDetector
 com.deleidos.dmf.detector.CSVDetector
 com.deleidos.dmf.detector.CEFDetector
-com.deleidos.dmf.detector.SigActsDetector
-com.deleidos.dmf.detector.DiplomaticCableDetector
-com.deleidos.dmf.detector.IIRDetector
-com.deleidos.dmf.detector.SPOTDetector

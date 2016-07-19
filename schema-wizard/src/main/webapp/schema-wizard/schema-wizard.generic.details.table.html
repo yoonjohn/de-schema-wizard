@@ -1,0 +1,83 @@
+<style>
+    .tooltip-inner {
+        max-width: 100%;
+        width: 100%;
+    }
+</style>
+<div id="sampleDetailsPanelBody" class="panel-body"
+     style="padding-left: 0px; height: 500px; overflow-y: scroll;">
+    <table id="data-sources-table" class="table drag-drop header-fixed">
+        <tbody ng-repeat="(field, profile) in currentSample.dsProfile track by $index">
+            <tr ng-style="$index % 2 === 0 && {'background-color': '#ffffff'} ||
+                          $index % 2 === 1 && {'background-color': '#f9f9f9'}">
+                <!-- repeat the style on the cell and the span to get the same effect anywhere in the cell -->
+                <td style="width: 19%; margin: 2px; padding: 0px;"
+                    ng-style="profile['shown-in-details'] == true && {'background-color': 'gold', 'cursor': 'pointer'} ||
+                              profile['shown-in-details'] == false && profile['main-type'] == 'string' && profile['detail']['detail-type'] == 'phrase' && {'background-color': 'transparent', 'cursor': 'not-allowed'} ||
+                              profile['shown-in-details'] == false && {'background-color': 'transparent', 'cursor': 'pointer'}"
+                    ng-click="showInDetails(currentSample, field)">
+                    <span class="btn-property"
+                          uib-tooltip="{{field}}"
+                          tooltip-placement="right"
+                          ng-style="profile['shown-in-details'] == true && {'background-color': 'gold', 'cursor': 'pointer'} ||
+                              profile['shown-in-details'] == false && profile['main-type'] == 'string' && profile['detail']['detail-type'] == 'phrase' && {'background-color': 'transparent', 'cursor': 'not-allowed'} ||
+                              profile['shown-in-details'] == false && {'background-color': 'transparent', 'cursor': 'pointer'}">
+                        <b>{{profile["display-name"]}}</b>
+                        <button style="border: none; background-color: transparent;" uib-dropdown-toggle
+                                ng-click="isCollapsed = !isCollapsed;" onclick="this.blur();"
+                                ng-init="isCollapsed = true; currentSample.viz = 'hbc'"
+                                ng-hide="detailsRow == 'false' || profile['main-type'] == 'string' && profile['detail']['detail-type'] == 'phrase'">
+                            <span ng-show="isCollapsed" class="caret"></span>
+                            <span ng-show="!isCollapsed" class="inverted-caret"></span>
+                        </button>
+                    </span>
+                </td>
+                <td style="width: 7%; text-align: center;">
+                    {{profile["main-type"]}}
+                </td>
+                <td style="width: 7%; text-align: center;">
+                    {{profile["detail"]["detail-type"]}}
+                </td>
+                <td style="width: 9%; text-align: right;">
+                    {{profile["detail"]["min"]}}
+                    {{profile["detail"]["min-length"]}}
+                </td>
+                <td style="width: 9%; text-align: right;">
+                    {{profile["detail"]["max"]}}
+                    {{profile["detail"]["max-length"]}}
+                    {{profile["detail"]["length"]}}
+                </td>
+                <td style="width: 9%; text-align: right;">
+                    {{profile["detail"]["average"] | number:2}}
+                    {{profile["detail"]["average-length"] | number:2}}
+                </td>
+                <td style="width: 9%; text-align: right;">
+                    {{profile["detail"]["std-dev"] | number:2}}
+                    {{profile["detail"]["std-dev-length"] | number:2}}
+                </td>
+                <td style="width: 7%; text-align: right;">
+                    {{profile["detail"]["num-distinct-values"]}}
+                </td>
+                <td style="width: 10%;  text-align: center;">
+                    {{profile["presence"]}}
+                </td>
+                <td style="width: 14%; text-align: left;">
+                    <span ng-repeat="interpretation in profile.interpretations">
+                        {{interpretation.interpretation}}{{$last ? '' : ', '}}
+                    </span>
+                </td>
+            </tr>
+            <span ng-hide="isCollapsed || detailsRow == 'false'"
+                  style="line-height: 0px;"
+                  ng-style="$index % 2 === 0 && {'background-color': '#ffffff'} ||
+                            $index % 2 === 1 && {'background-color': '#f9f9f9'}">
+                <td></td>
+                <td colspan="9">
+                    <div uib-collapse="isCollapsed">
+                        <ng-include src="'schema-wizard/schema-wizard.visualizations.html'"></ng-include>
+                    </div>
+                </td>
+            </span>
+        </tbody>
+    </table>
+</div>

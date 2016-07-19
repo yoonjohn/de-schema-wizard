@@ -43,9 +43,9 @@ public class ProgressState {
 	public static ProgressState schemaProgress = new ProgressState(0,100,"Merging sample into schema.");
 	public static ProgressState geocodingStage = new ProgressState(50,100,"Mapping geographical data.");
 	public static ProgressState complete = new ProgressState(100, Integer.MAX_VALUE, "Analysis complete.");
+	public static ProgressState matching = new ProgressState(100, Integer.MAX_VALUE, "Performing matching analysis.");
 	public static ProgressState lock = new ProgressState(0, 0, "Parsing embedded documents.");
 	public static ProgressState unlock = new ProgressState(0, 0, "Embedded document parsing completed.");
-	
 
 	public int getStartValue() {
 		return startValue;

@@ -1,0 +1,62 @@
+<div style="margin: 6px; width: 100%;">
+    <h4 style="margin: 2px 0px;">Schema Wizard: Save Step</h4>
+    <div class="panel-primary"
+         style="width: 604px; margin: 0 auto; margin-top: -25px; margin-bottom: 2px; padding: 1px;">
+        <img style="border: none;" src="assets/img/wizard-save.png"/>
+    </div>
+    <div class="panel-primary container" style="float: left; width:99%; margin: 0 auto; padding:6px;">
+        <div style="margin: 0 auto;">
+            <div style="width: 900px; margin-top: 20px;">
+                <form novalidate class="simple-form" name="saveSchema">
+                    <fieldset>
+                        <label for="sName" style="width:400px;">Schema Name:</label>
+                        <input name="sName" type="text"
+                               style="width: 400px;"
+                               ng-model="currentSchema.sName"
+                               value="{{currentSchema.sName}}"
+                               placeholder="Required"
+                               required/>
+                        <br><br>
+                    </fieldset>
+                    <fieldset>
+                        <label for="sDescription" style="width:400px; float: left;">Schema Description:</label>
+                        <textarea name="sDescription" type="text"
+                                  style="width: 400px; height: 100px;margin-left: 4px;"
+                                  ng-model="currentSchema.sDescription"
+                                  value="{{currentSchema.sDescription}}"
+                                  placeholder="Required"
+                                  required></textarea>
+                        <br><br>
+                    </fieldset>
+                    <fieldset>
+                        <label for="sVersion" style="width:400px;">Schema Version:</label>
+                        <input id="sVersion" name="sVersion" type="text"
+                               style="width: 400px;"
+                               ng-model="currentSchema.sVersion"
+                               value="{{currentSchema.sVersion}}"/>
+                        <br><br>
+                    </fieldset>
+                    <fieldset ng-repeat="ds in currentSchema.sDataSamples track by $index">
+                        <label for="{{dsField$index}}" style="width:400px;">
+                            Data Sample Name ({{ds.dsFileName}}):</label>
+                        <input name="{{dsField$index}}" type="text"
+                               style="width: 400px;"
+                               ng-model="currentSchema.sDataSamples[$index].dsName"
+                               value="{{ds.dsName}}"/>
+                        <br><br>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <br>
+        <button class="btn btn-primary" style="float: right; margin-left: 4px;"
+                ng-click="navigateTo('/startup')">
+            Cancel
+        </button>
+        <button class="btn btn-primary" style="float: right; margin-left: 4px;"
+                ng-click="wizardStateControl('wizard-complete')"
+                ng-disabled="saveSchema.$invalid">
+            Save
+        </button>
+    </div>
+</div>

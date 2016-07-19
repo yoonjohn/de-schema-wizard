@@ -2,8 +2,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>data-model-factory</groupId>
+	<artifactId>data-model-factory</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Schema Wizard Data Model Factory</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.version>4.2.4.RELEASE</spring.version>
+		<jetty.version>9.2.9.v20150224</jetty.version>
+		<jersey.version>2.21</jersey.version>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -12,16 +19,6 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<excludes>
-						<exclude>
-							com/deleidos/dmf/parser/ZIPTikaParser.java
-						</exclude>
-					</excludes>
-					<testExcludes>
-						<testExclude>
-							com/deleidos/dmf/parser/ZIPTikaParserTest.java
-						</testExclude>
-					</testExcludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -51,69 +48,140 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.19</version>
-				<configuration>
-					<testSourceDirectory>src/integration-test/java</testSourceDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.10</version>
-				<executions>
-					<execution>
-						<id>add-test-source</id>
-						<phase>generate-test-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/integration-test/java</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>advanced-analytics-releases</id>
-			<name>libs-release</name>
-			<url>http://ec2-54-205-98-55.compute-1.amazonaws.com/artifactory/libs-release</url>
-		</repository>
-		<repository>
-			<snapshots />
-			<id>advanced-analytics-snapshots</id>
-			<name>libs-snapshot</name>
-			<url>http://ec2-54-205-98-55.compute-1.amazonaws.com/artifactory/libs-snapshot</url>
-		</repository>
-	</repositories>
+	<profiles>
+		<profile>
+			<id>integration-tests-unix</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.19</version>
+						<configuration>
+							<testSourceDirectory>src/integration-test/java</testSourceDirectory>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.10</version>
+						<executions>
+							<execution>
+								<id>add-test-source</id>
+								<phase>generate-test-sources</phase>
+								<goals>
+									<goal>add-test-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>src/integration-test/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- Intentionally duplicated code block to follow overall project format. -->
+		<profile>
+			<id>integration-tests-windows</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.19</version>
+						<configuration>
+							<testSourceDirectory>src/integration-test/java</testSourceDirectory>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.10</version>
+						<executions>
+							<execution>
+								<id>add-test-source</id>
+								<phase>generate-test-sources</phase>
+								<goals>
+									<goal>add-test-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>src/integration-test/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jenkins slave</id>
+			<activation>
+				<os>
+					<family>Unix</family>
+				</os>
+			</activation>
+			<dependencies>
+				<!-- JNetPcap - not present in Maven central, need to clean and install 
+					third-party project -->
+				<dependency>
+					<groupId>org.jnetpcap</groupId>
+					<artifactId>jnetpcap</artifactId>
+					<version>1.3.0</version>
+					<classifier>ubuntu</classifier>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>developer workstation</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<dependencies>
+				<!-- JNetPcap - not present in Maven central, need to clean and install 
+					third-party project -->
+				<dependency>
+					<groupId>org.jnetpcap</groupId>
+					<artifactId>jnetpcap</artifactId>
+					<version>1.3.0</version>
+					<classifier>win-64</classifier>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 
 	<dependencies>
-		<!-- <dependency> <groupId>jnetpcap</groupId> <artifactId>jnetpcap</artifactId> 
-			<version>1.3.0</version> </dependency> -->
 		<dependency>
-			<artifactId>analytics-data-service</artifactId>
 			<groupId>com.deleidos.analytics</groupId>
-			<version>1.0.0-SNAPSHOT</version>
-			
+			<artifactId>analytics-common</artifactId>
+			<version>sw-3.0.0-beta1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
@@ -124,12 +192,11 @@
 					<groupId>org.slf4j</groupId>
 				</exclusion>
 			</exclusions>
-			
 		</dependency>
 		<dependency>
 			<artifactId>analytics-websocket-server</artifactId>
 			<groupId>com.deleidos.analytics</groupId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>sw-3.0.0-beta1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
@@ -142,7 +209,16 @@
 			<artifactId>google-collections</artifactId>
 			<version>1.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.websocket</groupId>
+			<artifactId>websocket-server</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -189,8 +265,6 @@
 			<artifactId>h2</artifactId>
 			<version>1.0</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.deleidos</groupId> <artifactId>translator-simple-configurable</artifactId> 
-			<version>2.1.2-SNAPSHOT</version> </dependency> -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -218,5 +292,4 @@
 		</dependency>
 
 	</dependencies>
-	<artifactId>data-model-factory</artifactId>
 </project>

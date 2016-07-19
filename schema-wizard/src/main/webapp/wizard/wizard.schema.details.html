@@ -1,0 +1,58 @@
+<fieldset ng-show="item['main-type'] == 'string'">
+    <label for="main-type" style="width:200px;">Main Type:</label>
+    <span name="main-type">{{item["main-type"]}}</span><br>
+    <label for="detail-type" style="width:200px;">Detail Type:</label>
+    <span name="detail-type">{{item["detail"]["detail-type"]}}</span><br>
+    <label for="min" style="width:200px;">Minimum Length:</label>
+    <span name="min">{{item["detail"]["min-length"] | number:2}}</span><br>
+    <label for="max" style="width:200px;">Maximum Length:</label>
+    <span name="max">{{item["detail"]["max-length"] | number:2}}</span><br>
+    <label for="average" style="width:200px;">Average Length:</label>
+    <span name="average">{{item["detail"]["average-length"] | number:2}}</span><br>
+    <label for="std-dev" style="width:200px;">Standard Deviation Length:</label>
+    <span name="std-dev">{{item["detail"]["std-dev-length"] | number:2}}</span><br>
+    <label for="num-distinct-values" style="width:200px;">Number of Distinct Values:</label>
+    <span name="num-distinct-values">{{item["detail"]["num-distinct-values"]}}</span><br>
+    <label for="presence" style="width:200px;">Presence:</label>
+    <span name="presence">{{item["presence"]}}</span><br>
+    <label for="interpretation" style="width:200px;">Interpretation:</label>
+    <span name="interpretation">{{item["interpretation"]["interpretation"]}}</span>
+</fieldset>
+
+<fieldset ng-show="item['main-type'] == 'number'">
+    <label for="main-type" style="width:200px;">Main Type:</label>
+    <span name="main-type">{{item["main-type"]}}</span><br>
+    <label for="detail-type" style="width:200px;">Detail Type:</label>
+    <span name="detail-type">{{item["detail"]["detail-type"]}}</span><br>
+    <label for="min" style="width:200px;">Minimum:</label>
+    <span name="min">{{item["detail"]["min"] | number:2}}</span><br>
+    <label for="max" style="width:200px;">Maximum:</label>
+    <span name="max">{{item["detail"]["max"] | number:2}}</span><br>
+    <label for="average" style="width:200px;">Average:</label>
+    <span name="average">{{item["detail"]["average"] | number:2}}</span><br>
+    <label for="std-dev" style="width:200px;">Standard Deviation:</label>
+    <span name="std-dev">{{item["detail"]["std-dev"] | number:2}}</span><br>
+    <label for="num-distinct-values" style="width:200px;">Number of Distinct Values:</label>
+    <span name="num-distinct-values">{{item["detail"]["num-distinct-values"]}}</span><br>
+    <label for="presence" style="width:200px;">Presence:</label>
+    <span name="presence">{{item["presence"]}}</span><br>
+    <label for="interpretation" style="width:200px;">Interpretation:</label>
+    <span name="interpretation">{{item["interpretation"]["interpretation"]}}</span>
+</fieldset>
+
+<fieldset ng-show="item['main-type'] == 'binary'">
+    <label for="main-type" style="width:200px;">Main Type:</label>
+    <span name="main-type">{{item["main-type"]}}</span><br>
+    <label for="detail-type" style="width:200px;">Detail Type:</label>
+    <span name="detail-type">{{item["detail"]["detail-type"]}}</span><br>
+    <label for="min" style="width:200px;">Length:</label>
+    <span name="min">{{item["detail"]["length"] | number:2}}</span><br>
+    <label for="max" style="width:200px;">Hash:</label>
+    <span name="max">{{item["detail"]["hash"]}}</span><br>
+    <label for="std-dev" style="width:200px;">Entropy:</label>
+    <span name="std-dev">{{item["detail"]["entropy"]}}</span><br>
+    <label for="presence" style="width:200px;">Presence:</label>
+    <span name="presence">{{item["presence"]}}</span><br>
+    <label for="interpretation" style="width:200px;">Interpretation:</label>
+    <span name="interpretation">{{item["interpretation"]["interpretation"]}}</span>
+</fieldset>

@@ -3,6 +3,7 @@ package com.deleidos.dp.histogram;
 import java.math.BigInteger;
 
 public class TermBucket extends AbstractBucket { 
+	private static final int TEMP_DEFAULT_TERM_BUCKET_CUTOFF = 12;
 	String lowerBound;
 	String upperBound = null;
 
@@ -13,14 +14,10 @@ public class TermBucket extends AbstractBucket {
 	}
 	
 	public TermBucket(String label, BigInteger count) {
-		super(label, count);
-		String[] splits = label.split(",", 2);
-		if(splits.length > 1) {
-			lowerBound = splits[0].substring(1);
-			upperBound = splits[1].substring(0, splits[1].length()-1);
-		} else {
-			lowerBound = splits[0];
-		}
+		super(count);
+		String[] labels = parseLabels(label);
+		this.lowerBound = labels[0];
+		this.upperBound = labels[1];
 	}
 	
 	public TermBucket(String term) {
@@ -50,9 +47,38 @@ public class TermBucket extends AbstractBucket {
 			}
 		}
 	}
-
-	@Override
-	public String getLabel() {
+	
+	public static String[] parseLabels(String rawLabel) {
+		String[] labels = new String[2];
+		String[] splits = rawLabel.split(",", 2);
+		if(splits.length > 1) {
+			labels[0] = splits[0].substring(1);
+			labels[1] = splits[1].substring(0, splits[1].length()-1);
+		} else {
+			labels[0] = splits[0];
+		}
+		return labels;
+	}
+	
+	private static String trimLabel(String label, int cutoff) {
+		if(label.length() > cutoff) {
+			return label.substring(0, cutoff) + "...";
+		}
+		return label;
+	}
+	
+	public static String trimRawLabel(String rawLabel, int cutoff) {
+		String[] labels = parseLabels(rawLabel);
+		if(labels[1] == null) {
+			return trimLabel(labels[0], cutoff);
+		} else if(labels[0] == labels[1]){
+			return trimLabel(labels[0], cutoff); 
+		} else {
+			return "["+ trimLabel(labels[0], cutoff) + "," + trimLabel(labels[1], cutoff) + "]";
+		}
+	}
+	
+	private static String generateRawLabel(String lowerBound, String upperBound) {
 		if(upperBound == null) {
 			return lowerBound;
 		} else if(lowerBound == upperBound){
@@ -60,6 +86,11 @@ public class TermBucket extends AbstractBucket {
 		} else {
 			return "["+ lowerBound + "," + upperBound + "]";
 		}
+	}
+
+	@Override
+	public String getLabel() {
+		return generateRawLabel(lowerBound, upperBound);
 	}
 
 	@Override

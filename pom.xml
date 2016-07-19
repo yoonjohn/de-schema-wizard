@@ -9,11 +9,10 @@
 	<description>Contains build order for Schema Wizard</description>
 	<modules>
 		<module>h2-database</module>
+		<module>interpretation-engine-mongodb</module>
+		<module>interpretation-engine</module>
 		<module>data-profiler</module>
 		<module>data-model-factory</module>
 		<module>schema-wizard</module>
-		<module>interpretation-engine</module>
-		<module>interpretation-engine-webapp</module>
-		<module>schema-wizard-container-deployer</module>
 	</modules>
 </project>

@@ -19,6 +19,19 @@ CREATE TABLE IF NOT EXISTS type_mapping
        FOREIGN KEY (detail_type_id) REFERENCES detail_type(detail_type_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS interpretation
+(
+       interpretation_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+       i_name varchar(255),
+       i_id varchar(36)
+);
+
+CREATE TABLE IF NOT EXISTS guid_list
+(
+       guid varchar(36) NOT NULL UNIQUE,
+       
+);
+
 CREATE TABLE IF NOT EXISTS data_sample
 (
        data_sample_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -29,7 +42,9 @@ CREATE TABLE IF NOT EXISTS data_sample
        ds_version varchar(255),
        ds_last_update timestamp,
        ds_description varchar(1023),
-       ds_extracted_content_dir varchar(255)
+       ds_extracted_content_dir varchar(255),
+       ds_num_records int,
+       ds_file_size int
 );
 
 CREATE TABLE IF NOT EXISTS schema_model
@@ -39,7 +54,9 @@ CREATE TABLE IF NOT EXISTS schema_model
        s_name varchar(255),
        s_version varchar(255),
        s_lastUpdate timestamp,
-       s_description varchar(1023)
+       s_description varchar(1023),
+       s_sum_sample_records int,
+       s_domain_name varchar(255)
 );
 
 CREATE TABLE IF NOT EXISTS schema_data_samples_mapping
@@ -48,18 +65,6 @@ CREATE TABLE IF NOT EXISTS schema_data_samples_mapping
        data_sample_id INTEGER,
        FOREIGN KEY (schema_model_id) REFERENCES schema_model(schema_model_id) ON DELETE CASCADE,
        FOREIGN KEY (data_sample_id) REFERENCES data_sample(data_sample_id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS interpretation
-(
-       interpretation_id INTEGER AUTO_INCREMENT PRIMARY KEY,
-       i_name varchar(255)
-);
-
-CREATE TABLE IF NOT EXISTS guid_list
-(
-       guid varchar(36) NOT NULL UNIQUE,
-       
 );
 
 CREATE TABLE IF NOT EXISTS histogram
@@ -76,7 +81,8 @@ CREATE TABLE IF NOT EXISTS bucket
        bucket_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
        histogram_id INTEGER NOT NULL,
        b_order INTEGER NOT NULL,
-       b_definition varchar(255),
+       b_short_definition varchar(50),
+       b_long_definition varchar(255),
        b_count varchar(255),
        FOREIGN KEY (histogram_id) REFERENCES histogram(histogram_id) ON DELETE CASCADE
 );
@@ -87,11 +93,12 @@ CREATE TABLE IF NOT EXISTS schema_field
        schema_field_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
        field_name varchar(255) NOT NULL,
        field_order varchar(255),
-       num_distinct INTEGER,
+       num_distinct varchar(255),
        count varchar(255),
        walking_square_sum varchar(255),
        walking_sum varchar(255),
        presence float,
+       display_name varchar(255),
        
        /* Foreign Keys */
        schema_model_id INTEGER NOT NULL,
@@ -135,11 +142,12 @@ CREATE TABLE IF NOT EXISTS data_sample_field
        data_sample_field_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
        field_name varchar(255) NOT NULL,
        field_order varchar(255),
-       num_distinct INTEGER,
+       num_distinct varchar(255),
        count varchar(255),
        walking_square_sum varchar(255),
        walking_sum varchar(255),
        presence float,
+       display_name varchar(255),
        
        /* Foreign Keys */
        data_sample_id INTEGER NOT NULL,

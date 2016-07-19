@@ -1,0 +1,116 @@
+<div class="panel panel-info" style="width: 100%; padding: 0px;">
+    <div id="{{'details' + panelIndex + '-title'}}" class="panel-heading" style="width: 100%; padding: 6px;">
+        <h3 class="panel-title">
+            Details {{panelIndex}}
+                            <span ng-show="detailModelsPanel[0]">
+                            - {{detailModelsPanel[0]["dsName"]}}
+                            - {{detailModelsPanel[0]["property-name"]}}<span
+                                    ng-show="detailModelsPanel[0]['confidence']">:{{detailModelsPanel[0]["confidence"]}}</span>
+                            </span>
+        </h3>
+    </div>
+    <div id="{{'wizardDetails' + panelIndex + 'PanelBody'}}"
+         class="panel-body" style="width: 100%; margin-left: -1px; padding: 0px; nowrap: nowrap;">
+        <div class="row" style="margin: 0px; padding: 0px; width: 100%; overflow-y: auto;">
+            <div class="col-xs-12 well" style="margin-bottom: 6px; padding: 3px;"
+                 ng-show="item"
+                 ng-repeat="item in detailModelsPanel">
+                <ng-include src="'wizard/wizard.schema.details.html'"></ng-include>
+            </div>
+        </div>
+        <div class="row" style="margin: 0px; padding: 0px; width: 100%; overflow-y: auto;">
+            <div class="col-xs-12 well"
+                 style="height: 24px; margin-bottom: 6px; padding: 1px; padding-left: 0px;"
+                 ng-show="detailModelsPanel.length > 0">
+                <div class="viz-select"
+                     style="margin-left: 6px; line-height: 10px;">
+                    <form name="{{'panel' + panelIndex + 'VizSelect'}}">
+                        <label for="{{'hbcBtn' + panelIndex}}" style="font-size: 8pt; margin-right: 1px;">Horizontal Bar Chart</label>
+                        <input id="{{'hbcBtn' + panelIndex}}" type="radio" style="margin-right: 10px;" value="hbc"
+                               ng-model="detailModelsPanel[0].viz"
+                               onclick="this.blur();">
+                        <label for="{{'vbcBtn' + panelIndex}}" style="font-size: 8pt; margin-right: 1px;">Vertical Bar Chart</label>
+                        <input id="{{'vbcBtn' + panelIndex}}" type="radio" style="margin-right: 10px;" value="vbc"
+                               ng-model="detailModelsPanel[0].viz"
+                               onclick="this.blur();">
+                        <label for="{{'gphBtn' + panelIndex}}" style="font-size: 8pt; margin-right: 1px;">Graph</label>
+                        <input id="{{'gphBtn' + panelIndex}}" type="radio" style="margin-right: 10px;" value="gph"
+                               ng-model="detailModelsPanel[0].viz"
+                               onclick="this.blur();">
+                        <label ng-show="detailModelsPanel[0].detail['freq-histogram']['region-data']"
+                               for="{{'mapBtn' + panelIndex}}" style="font-size: 8pt; margin-right: 1px;">Map</label>
+                        <input id="{{'mapBtn' + panelIndex}}" type="radio" style="margin-right: 20px;" value="map"
+                               ng-show="detailModelsPanel[0].detail['freq-histogram']['region-data']"
+                               ng-model="detailModelsPanel[0].viz"
+                               onclick="this.blur();">
+                        <!-- save but not used to conserve screen real estate
+                        <label ng-show="detailModelsPanel[0].viz == 'hbc'">
+                            Values vs. Frequency
+                        </label>
+                        <label style="font-size: 8pt;"
+                               ng-show="detailModelsPanel[0].viz == 'vbc' ||
+                                        detailModelsPanel[0].viz == 'gph'">
+                            Frequency vs. Values
+                        </label>
+                        -->
+                    </form>
+                </div>
+            </div>
+            <div id="{{'wizardDetails' + panelIndex + 'CanvasBody'}}"
+                 style="margin-bottom: 6px; padding: 3px; padding-left: 0px;">
+                <div id="{{'wizardDetails' + panelIndex + 'HbcCanvas'}}" class="col-xs-12 well"
+                     style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                            overflow-y: auto;"
+                     ng-show="detailModelsPanel.length > 0 &&
+                              detailModelsPanel[0].viz == 'hbc'">
+                    <canvas id="{{'panel' + panelIndex + 'base'}}" class="chart-base" height="440px"
+                            ng-show="detailModelsPanel[0].viz == 'hbc'"
+                            chart-type="'horizontalbar'"
+                            chart-labels="detailModelsPanel[0].detail['freq-histogram'].labels"
+                            chart-data="[detailModelsPanel[0].detail['freq-histogram'].data]"
+                            chart-legend="false"
+                            chart-colours="['#0080C0']"
+                            chart-legend="false"/>
+                </div>
+                <div id="{{'wizardDetails' + panelIndex + 'VbcCanvas'}}" class="col-xs-12 well"
+                     style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                            overflow-y: auto;"
+                     ng-show="detailModelsPanel.length > 0 &&
+                              detailModelsPanel[0].viz == 'vbc'">
+                    <canvas id="{{'panel' + panelIndex + 'bar'}}" class="chart-bar" height="229px"
+                            ng-show="detailModelsPanel[0].viz == 'vbc'"
+                            chart-series="[detailModelsPanel[0].detail['freq-histogram'].series]"
+                            chart-labels="detailModelsPanel[0].detail['freq-histogram'].labels"
+                            chart-data="[detailModelsPanel[0].detail['freq-histogram'].data]"
+                            chart-colours="['#0080C0']"
+                            chart-legend="false"/>
+                </div>
+                <div id="{{'wizardDetails' + panelIndex + 'GphCanvas'}}" class="col-xs-12 well"
+                     style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                            overflow-y: auto;"
+                     ng-show="detailModelsPanel.length > 0 &&
+                              detailModelsPanel[0].viz == 'gph'">
+                    <canvas id="{{'panel' + panelIndex + 'line'}}" class="chart-line"  height="229px"
+                            ng-show="detailModelsPanel[0].viz == 'gph'"
+                            chart-series="[detailModelsPanel[0].detail['freq-histogram'].series]"
+                            chart-labels="detailModelsPanel[0].detail['freq-histogram'].labels"
+                            chart-data="[detailModelsPanel[0].detail['freq-histogram'].data]"
+                            chart-colours="['#208040']"
+                            chart-legend="false"/>
+                </div>
+                <div id="{{'wizardDetails' + panelIndex + 'MapCanvas'}}" class="col-xs-12 well"
+                     style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                            overflow-y: auto;"
+                     ng-show="detailModelsPanel.length > 0 &&
+                              detailModelsPanel[0].viz == 'map'">
+                    <div id="{{'panel' + panelIndex + 'map'}}"  height="300px"
+                         ng-controller="mapCtrl"
+                         ng-show="detailModelsPanel[0].viz == 'map'"
+                         google-chart
+                         chart="createMap(612, 300, ['#00FF00'], detailModelsPanel[0].detail['freq-histogram']['region-data'])"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

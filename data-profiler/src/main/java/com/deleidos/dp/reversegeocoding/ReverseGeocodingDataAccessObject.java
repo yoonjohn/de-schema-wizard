@@ -17,12 +17,13 @@ import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.deleidos.dp.reversegeocoding.ReverseGeocoder.ReverseGeocodingWorker;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-public class ReverseGeocodingDataAccessObject {
+public class ReverseGeocodingDataAccessObject implements ReverseGeocodingWorker{
 	private static final Logger logger = Logger.getLogger(ReverseGeocodingDataAccessObject.class);
 	public static final String mongoPropertiesFile = "mongo-server.properties";
 	private static ReverseGeocodingDataAccessObject mongoConnection = null;
@@ -34,24 +35,6 @@ public class ReverseGeocodingDataAccessObject {
 
 	protected ReverseGeocodingDataAccessObject() {
 		isLive = false;
-	}
-
-	public static void main(String[] args) throws IOException {
-		InputStream is = new FileInputStream("C:\\Users\\leegc\\Desktop\\convertedcountries.json");
-		int n= 0;
-		StringBuilder sb = new StringBuilder();
-		while((n = is.read()) > -1) {
-			sb.append((char)n);
-		}
-		JSONObject j = new JSONObject(sb.toString());
-		JSONArray jarr = j.getJSONArray("features");
-		FileWriter fw = new FileWriter("C:\\Users\\leegc\\Desktop\\convertedcountries-output.json");
-		for(int i =0 ; i < jarr.length(); i++) {
-			fw.write(jarr.getJSONObject(i).toString());
-			fw.write("\n");
-		}
-		fw.close();
-		is.close();
 	}
 
 	private void initProperties() {
@@ -107,7 +90,7 @@ public class ReverseGeocodingDataAccessObject {
 	public static ReverseGeocodingDataAccessObject getInstance() {
 		if(mongoConnection == null) {
 			mongoConnection = new ReverseGeocodingDataAccessObject();
-			mongoConnection.initProperties();
+			//mongoConnection.initProperties();
 		}
 		return mongoConnection;
 	}
@@ -179,6 +162,7 @@ public class ReverseGeocodingDataAccessObject {
 		return radians;
 	}
 
+	@Override
 	public List<String> getCountryCodesFromCoordinateList(List<Double[]> coordinates) {
 		List<String> countryCodes = new ArrayList<String>();
 		for(Double[] coordinate : coordinates) {

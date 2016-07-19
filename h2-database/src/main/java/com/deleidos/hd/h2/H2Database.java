@@ -1,8 +1,6 @@
 package com.deleidos.hd.h2;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,32 +8,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
-
-/*
- * TODO break out test functionality into different class
- * when you instantiate H2Database, add a shutdown hook that calls a stop and purge
- * 
- * Runtime.getRuntime().addShutdownHook(new Thread() {
-				public void run() {
-					logger.info("Server shutting down.");
-					server.stop();
-					h2.purge();
-				}
-			});
- * 
- * you will have to remove the shutdown hook in startServer() method
- * and add it to the main
- * 
- * rename: init() -> determineStartupProperties()
- * rename: startup() -> initializeH2Schema()
- */
 
 /**
  * Data access object to persist and retrieve schemas, samples, and metrics from
@@ -46,91 +26,53 @@ import org.h2.tools.Server;
  *
  */
 public class H2Database {
-	// split out starting vs. initializing functions
-	// make things private where possible
-	// public constructor - not a singleton anymore
-	protected static Server server;
 	public static Logger logger = Logger.getLogger(H2Database.class);
-	private static final String DB_DRIVER = "org.h2.Driver";
-	private static String h2InitFile = null;
+	public static final String DB_DRIVER = "org.h2.Driver";
 	private JdbcConnectionPool connectionPool;
-	protected static String DB_TCP_CONNECTION = "tcp://localhost:9123";
-	protected String DB_DIR;
-	protected String DB_NAME;
-	protected String DB_PORT;
-	protected String DB_HOST;
-	protected String DB_USER;
-	protected String DB_PASSWORD;
 	protected Connection dbConnection = null;
+	protected Server server;
 	public int emptyHistogramId = 1;
 	public int unknownInterpretationId = 1;
+	private Map<String, String> failedAnalysisMapping;
+	public static final String UNDETERMINED_ERROR_GUID = "failed-analysis-general-001";
+	public static final String UNDETERMINED_ERROR_MESSAGE = "There was an error while processing the sample.";
+	public static final String UNDETECTABLE_SAMPLE_GUID = "failed-analysis-undetectable-002";
+	public static final String UNDETECTABLE_SAMPLE_MESSAGE = "The sample file type could not be determined.";
+	public static final String UNSUPPORTED_PARSER_GUID = "failed-analysis-unsupported-003";
+	public static final String UNSUPPORTED_PARSER_MESSAGE = "The sample file type is not supported.";
+	public static final String DATA_ERROR_GUID = "failed-analysis-no-data-004";
+	public static final String DATA_ERROR_MESSAGE = "The sample analysis could not be completed due to a database error.";
+	public static final String IO_ERROR_GUID = "failed-analysis-io-err-005";
+	public static final String IO_ERROR_MESSAGE = "The sample analysis could not be completed due to a file error.";
 	private static volatile boolean shutdownFlag = false;
 	public static boolean debug = false;
-
-	protected H2Database() {
-
+	private H2Config config;
+	
+	public H2Database() throws IOException {
+		this(new H2Config().load());
 	}
 
-	/**
-	 * *** FOR TESTING PURPOSES ONLY ***
-	 * 
-	 * This is a constructor for unit testing. It only initializes the
-	 * parameters.
-	 * 
-	 * @param test
-	 *            This parameter is superficial
-	 * 
-	 *            public H2Database(boolean test) { logger.info(
-	 *            "Initializing test server variables."); initTestServer();
-	 *            logger.info("Purging test database."); purge(); }
-	 */
-
-	public void scanForConnectionStringVariables() {
-		h2InitFile = (System.getenv("H2_INIT_PROPERTIES") != null) ? System.getenv("H2_INIT_PROPERTIES") : null;
-
-		if (h2InitFile == null) {
-			DB_TCP_CONNECTION = (System.getenv("H2_DB_PORT") != null) ? System.getenv("H2_DB_PORT")
-					: "tcp://localhost:9123";
-			DB_DIR = (System.getenv("H2_DB_DIR") != null) ? System.getenv("H2_DB_DIR") : "~/h2";
-			DB_NAME = (System.getenv("H2_DB_NAME") != null) ? System.getenv("H2_DB_NAME") : "data";
-			DB_USER = (System.getenv("H2_DB_USER") != null) ? System.getenv("H2_DB_USER") : "sa";
-			DB_USER = (System.getenv("H2_DB_PASSWORD") != null) ? System.getenv("H2_DB_PASSWORD") : "";
-		} else {
-
-			InputStream initStream;
-			initStream = H2Database.class.getResourceAsStream("/h2-init.properties");
-			Properties h2Properties = new Properties();
-			String DB_HOST = null;
-			String DB_PORT = null;
-			try {
-				h2Properties.load(initStream);
-
-				DB_HOST = h2Properties.getProperty("h2.DB_HOST");
-				DB_DIR = h2Properties.getProperty("h2.DB_DIR");
-				DB_NAME = h2Properties.getProperty("h2.DB_NAME");
-				DB_USER = h2Properties.getProperty("h2.DB_USER");
-				DB_PORT = h2Properties.getProperty("h2.DB_PORT");
-				DB_PASSWORD = h2Properties.getProperty("h2.DB_PASSWORD");
-				DB_TCP_CONNECTION = "tcp://" + DB_HOST + ":" + DB_PORT;
-			} catch (IOException e) {
-				logger.error("H2 Init file not found in path.  Using defaults.");
-				DB_HOST = "localhost";
-				DB_DIR = "~/h2";
-				DB_NAME = "data";
-				DB_USER = "sa";
-				DB_PORT = "9123";
-				DB_PASSWORD = "";
-				DB_TCP_CONNECTION = "tcp://" + DB_HOST + ":" + DB_PORT;
-			}
-
-		}
+	public Map<String, String> getFailedAnalysisMapping() {
+		return failedAnalysisMapping;
 	}
 
-	public void initializeConnection() {
-		String DB_CONNECTION = "jdbc:h2:" + DB_TCP_CONNECTION + "/" + DB_DIR + File.separator + DB_NAME;
-		logger.info("Connecting with " + DB_CONNECTION);
-		
-		dbConnection = initDBConnection(DB_CONNECTION);
+	public void setFailedAnalysisMapping(Map<String, String> failedAnalysisMapping) {
+		this.failedAnalysisMapping = failedAnalysisMapping;
+	}
+
+	protected H2Database(H2Config config) {
+		this.config = config;
+		this.failedAnalysisMapping = initFailedAnalysisMapping();
+	}
+	
+	private Map<String, String> initFailedAnalysisMapping() {
+		Map<String, String> failedAnalysisMap = new HashMap<String, String>();
+		failedAnalysisMap.put(UNDETECTABLE_SAMPLE_GUID, UNDETECTABLE_SAMPLE_MESSAGE);
+		failedAnalysisMap.put(UNDETERMINED_ERROR_GUID, UNDETERMINED_ERROR_MESSAGE);
+		failedAnalysisMap.put(DATA_ERROR_GUID, DATA_ERROR_MESSAGE);
+		failedAnalysisMap.put(UNSUPPORTED_PARSER_GUID, UNSUPPORTED_PARSER_MESSAGE);
+		failedAnalysisMap.put(IO_ERROR_GUID, IO_ERROR_MESSAGE);
+		return failedAnalysisMap;
 	}
 
 	/**
@@ -140,32 +82,25 @@ public class H2Database {
 	 *            Command line arguments for H2.
 	 * @throws IOException
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		try {
-
-			if (System.getenv("LOCAL_DEBUG") != null && System.getenv("LOCAL_DEBUG").equals("true")) {
-				H2Database.debug = true;
-			}
-
-			H2Database h2 = new H2Database();
-			h2.scanForConnectionStringVariables();
-			h2.startServer(args);
+			H2Config config = new H2Config().load();
+			H2Database h2 = new H2Database(config);
+			h2.startServer();
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				public void run() {
 					logger.info("Server shutting down.");
-					server.stop();
+					h2.getServer().stop();
 				}
 			});
 			h2.runSchemaWizardStartupScript();
-
-			if (H2Database.debug) {
-				Server.startWebServer(h2.getDBConnection());
-			}
-
 			h2.join();
 		} catch (SQLException e) {
 			logger.error(e);
-			logger.error(e.getMessage());
+		} catch (ClassNotFoundException e) {
+			logger.error(e);
+		} catch (InterruptedException e) {
+			logger.error(e);
 		}
 	}
 
@@ -179,7 +114,7 @@ public class H2Database {
 		while (true) {
 			long currentTime = System.currentTimeMillis();
 			if ((currentTime - t1) > 360000 && t1 != currentTime) {
-				System.out.println("Server running at " + server.getURL());
+				logger.info("Server running at " + server.getURL());
 				t1 = currentTime;
 			}
 			if (shutdownFlag) {
@@ -193,7 +128,12 @@ public class H2Database {
 				e.printStackTrace();
 			}
 		}
-		logger.info("Server thread ended.");
+		logger.info("Server loop ending.");
+	}
+	
+	public H2Database connect() throws ClassNotFoundException, SQLException {
+		dbConnection = initConnection(config);
+		return this;
 	}
 
 	/**
@@ -204,63 +144,34 @@ public class H2Database {
 	 * @param args
 	 *            Arguments to start the server. These should match the
 	 *            properties file. TODO if empty, use properties file
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws InterruptedException 
 	 */
-	public void startServer(String[] args) {
-		try {
-			logger.info("Starting up H2 server.");
-			for (int i = 0; i < args.length; i++) {
-				if (args[i].equals("-tcpPort") && System.getenv("H2_DB_PORT") != null) {
-					setDB_PORT(System.getenv("H2_DB_PORT"));
-					args[i + 1] = getDB_PORT();
-					break;
-				}
-			}
-			server = Server.createTcpServer(args);
-			logger.info("Server started at " + server.getURL());
-			server.setOut(System.out);
-			server.start();
-			try {
-				Thread.sleep(1000);
-				initializeConnection();
-				if (getDBConnection() != null) {
-					logger.info("Successfully established connection to server.");
-				} else {
-					logger.warn("H2 server not found... Trying again.");
-					Thread.sleep(5000);
-					initializeConnection();
-					if (getDBConnection() != null) {
-						logger.info("H2 connection established.");
-					} else {
-						logger.error("H2 connection not made.  Terminating application.");
-						throw new IOException("H2 server not successfully initialized.");
-					}
-				}
-				logger.info("Database initialized.");
-			} catch (InterruptedException e) {
-				logger.error(e);
-				e.printStackTrace();
-			}
-		} catch (IOException e) {
-			logger.error(e);
-			e.printStackTrace();
-		} catch (SQLException e) {
-			logger.error("Error running startup script for H2.");
-			e.printStackTrace();
+	public H2Database startServer() throws ClassNotFoundException, SQLException, InterruptedException {
+		logger.info("Starting up H2 server.");
+		String[] args = new String[3];
+		args[0] = "-tcpAllowOthers";
+		args[1] = "-tcpPort";
+		args[2] = config.getPortNum();
+		server = Server.createTcpServer(args);
+		logger.info("Server started at " + server.getURL());
+		server.setOut(System.out);
+		server.start();
+		Thread.sleep(1000);
+		dbConnection = initConnection(config);
+		if(!dbConnection.isValid(5)) {
+			throw new SQLException("Connection could not be made with H2.");
+		} else {
+			logger.info("H2 connection established.");
 		}
+		return this;
 	}
 
 	private enum DATA_TYPE {
 		STRING, NUMBER, BINARY, OBJECT, ARRAY, NULL;
 		public int getIndex() {
 			return ordinal();
-		}
-
-		public static DATA_TYPE getTypeByIndex(int index) {
-			return DATA_TYPE.values()[index];
-		}
-
-		public void incrementCount(int[] typeTracker) {
-			typeTracker[ordinal()]++;
 		}
 
 		@Override
@@ -272,13 +183,6 @@ public class H2Database {
 
 	private enum DETAIL_TYPE {
 		INTEGER, DECIMAL, EXPONENT, DATE_TIME, BOOLEAN, TERM, PHRASE, IMAGE, VIDEO_FRAME, AUDIO_SEGMENT;
-		public void incrementCount(int[] detailTypeTracker) {
-			detailTypeTracker[ordinal()]++;
-		}
-
-		public static DETAIL_TYPE getTypeByIndex(int index) {
-			return DETAIL_TYPE.values()[index];
-		}
 
 		public DATA_TYPE getMainType() {
 			switch (this) {
@@ -402,10 +306,9 @@ public class H2Database {
 			} else {
 				logger.info("Interpretations exists.");
 			}
+			
+			logger.info("Database initialized.");
 		} catch (IOException e) {
-			logger.error(e);
-			e.printStackTrace();
-		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
 		}
@@ -416,11 +319,7 @@ public class H2Database {
 	 * database must be closed before calling this method.
 	 */
 	public void purge() {
-		DeleteDbFiles.execute(DB_DIR, DB_NAME, true);
-	}
-
-	public Connection getDBConnection() {
-		return dbConnection;
+		DeleteDbFiles.execute(config.getDir(), config.getName(), false);
 	}
 
 	/**
@@ -429,46 +328,34 @@ public class H2Database {
 	 * @param connectionString
 	 *            The string to connect with.
 	 * @return The connection.
-	 */ 
-	private Connection initDBConnection(String connectionString) {
-		/*connectionPool = JdbcConnectionPool.create(connectionString, DB_USER, DB_PASSWORD);
+	 * @throws ClassNotFoundException 
+	 * @throws SQLException 
+	 */
+	public static Connection initConnection(H2Config config) throws ClassNotFoundException, SQLException {
+		String connString = "jdbc:h2:" + config.getTcpConnectionString() + config.getDir() + "/" + config.getName();
+		logger.info("Connecting with " + connString);
 		try {
-			dbConnection = connectionPool.getConnection();
-		} catch (SQLException e) {
-			logger.error("Failed to retrieve connection.");
-			e.printStackTrace();
-		}*/
-		try {
+			Class.forName(config.getDriver());
+		} catch (Exception e) {
+			logger.error(e);
 			Class.forName(DB_DRIVER);
-		} catch (ClassNotFoundException e) {
-			logger.error(e.getMessage());
 		}
-		try {
-			dbConnection = DriverManager.getConnection(connectionString);
-			return dbConnection;
-		} catch (SQLException e) {
-			logger.error(e.getMessage());
-			logger.error("H2 database must be running!");
-		}
+		Connection dbConnection = DriverManager.getConnection(connString);
 		return dbConnection;
 	}
 
 	/**
 	 * Close the connection.
+	 * @throws SQLException 
 	 */
-	public void closeConnection() {
-		try {
-			dbConnection.close();
-		} catch (SQLException e) {
-			logger.warn("H2 connection not successfully closed.");
-			logger.warn(e);
-		}
+	public void closeConnection() throws SQLException {
+		dbConnection.close();
 	}
 
 	/**
 	 * Stop the server and properly terminate its thread.
 	 */
-	public static void stopServer() {
+	public void stopServer() {
 		if (server != null) {
 			server.stop();
 			logger.info("Shutting down server.");
@@ -489,20 +376,6 @@ public class H2Database {
 		return emptyHistogramId;
 	}
 
-	public String getH2InitFile() {
-		return h2InitFile;
-	}
-
-	/**
-	 * Set the file that the static H2 server will use to initialize.
-	 * 
-	 * @param h2InitFile
-	 *            The path to the file.
-	 */
-	public void setH2InitFile(String h2InitFile) {
-		H2Database.h2InitFile = h2InitFile;
-	}
-
 	public void setEmptyHistogramId(int emptyHistogramId) {
 		this.emptyHistogramId = emptyHistogramId;
 	}
@@ -515,77 +388,7 @@ public class H2Database {
 		this.unknownInterpretationId = unknownInterpretationId;
 	}
 
-	public String getDB_DIR() {
-		return DB_DIR;
-	}
-
-	public void setDB_DIR(String dB_DIR) {
-		DB_DIR = dB_DIR;
-	}
-
-	public String getDB_NAME() {
-		return DB_NAME;
-	}
-
-	public void setDB_NAME(String dB_NAME) {
-		DB_NAME = dB_NAME;
-	}
-
-	public String getDB_PORT() {
-		String[] splits = DB_TCP_CONNECTION.split(":");
-		return splits[splits.length - 1];
-	}
-
-	public void setDB_PORT(String dB_PORT) {
-		String[] splits = DB_TCP_CONNECTION.split(":");
-		splits[splits.length - 1] = dB_PORT;
-		String together = "";
-		for (String split : splits) {
-			together += split + ":";
-		}
-		together = together.substring(0, together.length() - 1);
-		DB_TCP_CONNECTION = together;
-	}
-
-	public String getDB_HOST() {
-		String[] splits = DB_TCP_CONNECTION.split(":");
-		return splits[1];
-	}
-
-	public void setDB_HOST(String dB_HOST) {
-		String[] splits = DB_TCP_CONNECTION.split(":");
-		splits[1] = dB_HOST;
-		String together = "";
-		for (String split : splits) {
-			together += split + ":";
-		}
-		together = together.substring(0, together.length() - 1);
-		DB_TCP_CONNECTION = together;
-	}
-
-	public String getDB_USER() {
-		return DB_USER;
-	}
-
-	public void setDB_USER(String dB_USER) {
-		DB_USER = dB_USER;
-	}
-
-	public String getDB_PASSWORD() {
-		return DB_PASSWORD;
-	}
-
-	public void setDB_PASSWORD(String dB_PASSWORD) {
-		DB_PASSWORD = dB_PASSWORD;
-	}
-
-	public String getDbDriver() {
-		return DB_DRIVER;
-	}
-
-	public String getTcpConnection() {
-		return "tcp://" + getDB_HOST() + ":" + getDB_PORT();
-	}
+	
 
 	/**
 	 * Return the generated key from a statement (H2 only allows a maximum of
@@ -624,5 +427,13 @@ public class H2Database {
 
 	public void setDbConnection(Connection dbConnection) {
 		this.dbConnection = dbConnection;
+	}
+
+	public Server getServer() {
+		return server;
+	}
+
+	public void setServer(Server server) {
+		this.server = server;
 	}
 }

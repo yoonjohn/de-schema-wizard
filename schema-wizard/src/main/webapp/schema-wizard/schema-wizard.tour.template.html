@@ -1,0 +1,23 @@
+<div style="z-index: 999;"><!--
+    --><div class="popover-content tour-step-content other"
+            ng-bind-html="tourStep.trustedContent"></div><!--
+         --><div class="popover-navigation tour-step-navigation"><!--
+        --><button class="btn btn-xs" style="margin-right: 4px; float: right; margin-bottom: 2px;"
+                   data-role="end"
+                   ng-click="tour.end()">End tour</button><!--
+         --><div class="btn-group" style="float: right;"><!--
+        --><!--TODO: How does pause/resume work?
+        --><!--<button class="btn btn-xs" style="margin-right: 4px; float: right; margin-bottom: 2px;"
+                    data-role="pause-resume"
+                    data-pause-text="Pause"
+                    data-resume-text="Resume"
+                    ng-click="tour.pause()">Pause</button>--><!--
+        --><button class="btn btn-xs" style="margin-right: 4px; float: right; margin-bottom: 2px;"
+                   ng-if="tourStep.isNext"
+                   ng-click="tour.next()">Next &raquo;</button><!--
+        --><button class="btn btn-xs" style="margin-right: 4px; float: right; margin-bottom: 2px;"
+                   ng-if="tourStep.isPrev"
+                   ng-click="tour.prev()">&laquo; Prev</button><!--
+    --></div><!--
+    --></div><!--
+--></div>

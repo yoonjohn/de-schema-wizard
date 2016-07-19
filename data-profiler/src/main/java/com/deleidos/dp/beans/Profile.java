@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.deleidos.dp.enums.MainType;
-import com.deleidos.dp.interpretation.AbstractJavaInterpretation;
+import com.deleidos.dp.interpretation.builtin.AbstractBuiltinInterpretation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,13 +17,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Profile {
 	protected float presence;
 	private String originalName;
-	private String mainType;
+	private MainType mainType;
 	private Interpretation interpretation;
+	private List<Interpretation> interpretations;
 	private Detail detail;
 	private List<AliasNameDetails> aliasNames;
 	private List<MatchingField> matchingFields;
+	private List<Object> exampleValues;
 	private boolean usedInSchema = false;
 	private boolean mergedInto = false;
+	private String displayName;
 
 	@JsonProperty("original-name")
 	public String getOriginalName() {
@@ -59,25 +62,23 @@ public class Profile {
 		matchingFields = new ArrayList<MatchingField>();
 	}
 
+	@JsonProperty("main-type")
 	public void setMainType(String mainType) {
-		this.mainType = mainType;
-	}
-
-	public void setInterpretation(Interpretation interpretation) {
-		this.interpretation = interpretation;
+		this.mainType = MainType.fromString(mainType);
 	}
 
 	public void setDetail(Detail detail) {
 		this.detail = detail;
 	}
-
-	@JsonProperty("main-type")
-	public String getMainType() {
+	
+	@JsonIgnore
+	public MainType getMainTypeClass() {
 		return mainType;
 	}
 
-	public Interpretation getInterpretation() {
-		return interpretation;
+	@JsonProperty("main-type")
+	public String getMainType() {
+		return mainType.toString();
 	}
 
 	public Detail getDetail() {
@@ -113,7 +114,7 @@ public class Profile {
 	}
 	
 	public static MainType getProfileDataType(Profile profile) {
-		return MainType.fromString(profile.mainType);
+		return profile.mainType;
 	}
 	
 	public static NumberDetail getNumberDetail(Profile profile) {
@@ -138,5 +139,48 @@ public class Profile {
 		} else {
 			return null;
 		}
+	}
+
+	public List<Object> getExampleValues() {
+		return exampleValues;
+	}
+
+	public void setExampleValues(List<Object> exampleValues) {
+		this.exampleValues = exampleValues;
+	}
+
+	public List<Interpretation> getInterpretations() {
+		return interpretations;
+	}
+
+	public void setInterpretations(List<Interpretation> interpretations) {
+		this.interpretations = interpretations;
+		if(this.interpretations != null && !this.interpretations.isEmpty()) {
+			this.interpretation = this.interpretations.get(0);
+		} else {
+			this.interpretation = Interpretation.UNKNOWN;
+		}
+	}
+
+	public void setInterpretation(Interpretation interpretation) {
+		this.interpretation = interpretation;
+		if(interpretations == null) {
+			interpretations = new ArrayList<Interpretation>();
+			interpretations.add(interpretation);
+		}
+	}
+	
+	public Interpretation getInterpretation() {
+		return this.interpretation;
+	}
+
+	@JsonProperty("display-name")
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	@JsonProperty("display-name")
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 }

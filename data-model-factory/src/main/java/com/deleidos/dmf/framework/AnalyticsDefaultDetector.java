@@ -18,6 +18,7 @@ import org.apache.tika.mime.MediaTypeRegistry;
 import org.apache.tika.mime.MimeTypes;
 import org.apache.tika.parser.pkg.PackageParser;
 
+import com.deleidos.dmf.parser.JNetPcapTikaParser;
 import com.deleidos.dmf.progressbar.ProgressBar;
 import com.deleidos.dmf.progressbar.ProgressState;
 import com.deleidos.dmf.web.SchemaWizardWebSocketUtility;
@@ -150,6 +151,9 @@ public class AnalyticsDefaultDetector extends DefaultDetector {
 		bodyContentBlackList = new HashSet<MediaType>();
 		PackageParser packageParser = new PackageParser();
 		bodyContentBlackList.addAll(packageParser.getSupportedTypes(null));
+		bodyContentBlackList.add(JNetPcapTikaParser.CONTENT_TYPE);
+		bodyContentBlackList.add(MediaType.TEXT_PLAIN);
+		bodyContentBlackList.add(MediaType.OCTET_STREAM);
 		packageParser = null;
 	}
 	

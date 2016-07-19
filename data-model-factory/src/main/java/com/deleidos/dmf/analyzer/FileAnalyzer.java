@@ -9,16 +9,17 @@ import org.json.JSONObject;
 import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
 import com.deleidos.dmf.exception.AnalyticsUndetectableTypeException;
 import com.deleidos.dmf.exception.AnalyticsUnsupportedParserException;
-import com.deleidos.dmf.framework.TikaSampleProfilableParameters;
-import com.deleidos.dmf.framework.TikaSchemaProfilableParameters;
+import com.deleidos.dmf.exception.AnalyzerException;
+import com.deleidos.dmf.framework.TikaSampleAnalyzerParameters;
+import com.deleidos.dmf.framework.TikaSchemaAnalyzerParameters;
+import com.deleidos.dp.exceptions.DataAccessException;
 
 /**
  * 
- * Performs various services on files to determine their type, format and
- * parsing functions.
+ * Performs various services on files to determine their type, format and parsing functions.
  *
  */
-public interface FileAnalyzer extends Analyzer<TikaSampleProfilableParameters, TikaSchemaProfilableParameters> {
+public interface FileAnalyzer extends Analyzer<TikaSampleAnalyzerParameters, TikaSchemaAnalyzerParameters> {
 
 	/**
 	 * Give a source with all necessary parameters for progress bar and web socket functionality.
@@ -33,44 +34,28 @@ public interface FileAnalyzer extends Analyzer<TikaSampleProfilableParameters, T
 	 * @throws AnalyticsUndetectableTypeException thrown if the source's type cannot be determined
 	 * @throws AnalyticsUnsupportedParserException thrown if the type is determined, 
 	 * 	but there is not an analytics parser that can handle this type  
+	 * @throws AnalyzerException if there is an unspecified error while analyzing the sample
+	 * @throws DataAccessException if a required service (H2 or IE) could not provide necessary data
 	 */
-	public String giveSource(String sampleFilePath, String domainName, String tolerance,
+	public String analyzeSample(String sampleFilePath, String domainName, String tolerance,
 			String sessionId, int sampleNumber, int totalNumberSamples) 
-			throws IOException, AnalyticsUndetectableTypeException, AnalyticsUnsupportedParserException;
-	
-	/**
-	 * Retrieve source analysis for a single sample.
-	 * @param guid The guid of the sample.
-	 * @return A JSON Object that 
-	 */
-	public JSONObject retrieveSourceAnalysis(String guid);
-	
-	/**
-	 * Retrieve the analysis of a group of samples.
-	 * @param sampleGuids The list of sample guids that should be analyzed.
-	 * @return A JSON representation of the automatically detected (but not finalized) schema.  Includes "merged-into" and "used-in-schema" flags.
-	 */
-	public JSONArray retrieveSourceAnalysis(String[] sampleGuids);
+			throws IOException, AnalyzerException, DataAccessException;
 	
 	/**
 	 * Retrieve the proposed schema object based on the source analysis objects.  
 	 * Run schema analysis pass on data samples.
 	 * Session ID required for progress bar.
+	 * @param existingSchemaGuid the existing schema guid with which to merged the source analysis
+	 * @param domainName the name of the domain to attempt to use
 	 * @param editedSourceAnalysis the array of sample object with user defined merges
 	 * @param sessionId the session id used to generate the array
 	 * @return The JSON representation of the proposed schema.
-	 * @throws AnalyticsTikaProfilingException exception thrown if there is an error profiling the schema
+	 * @throws AnalyzerException exception thrown if there is an unspecified error analyzing the schema
+	 * @throws DataAccessException thrown if the backend has an error accessing necessary data
 	 */
-	public JSONObject retrieveSchemaAnalysis(JSONArray editedSourceAnalysis, String sessionId) throws AnalyticsTikaProfilingException;
-	
-	/**
-	 * Method to process a schema JSON Object and load it into the backend database.
-	 * @param schemaJson The JSON representation of the schema that the user has finalized.
-	 * @return The guid of the schema.
-	 */
-	public String giveSchema(JSONObject schemaJson);
-	
-	public static String generateUUID() {
-		return UUID.randomUUID().toString();
-	}
+	public JSONObject analyzeSchema(String existingSchemaGuid, String domainName, JSONArray editedSourceAnalysis, String sessionId) 
+			throws IOException, AnalyzerException, DataAccessException;
+
+	public JSONObject analyzeSchema(JSONObject schemaAndSampleList, String domainName, String sessionId) throws IOException, AnalyzerException, DataAccessException;
+		
 }

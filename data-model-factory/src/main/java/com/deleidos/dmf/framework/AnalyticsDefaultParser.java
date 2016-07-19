@@ -24,6 +24,8 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.pdf.PDFParserConfig;
 import org.apache.tika.sax.SecureContentHandler;
+import org.jnetpcap.packet.JRegistry;
+import org.jnetpcap.packet.RegistryHeaderErrors;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -35,14 +37,18 @@ import com.deleidos.dmf.exception.AnalyticsUndetectableTypeException;
 import com.deleidos.dmf.exception.AnalyticsUnsupportedParserException;
 import com.deleidos.dmf.framework.AnalyticsEmbeddedDocumentExtractor.ExtractedContent;
 import com.deleidos.dmf.handler.AnalyticsProgressTrackingContentHandler;
+import com.deleidos.dmf.parser.JNetPcapTikaParser;
+import com.deleidos.dmf.parser.pcap.ext.Wireless80211;
+import com.deleidos.dmf.parser.pcap.ext.Wireless80211RadioTap;
 import com.deleidos.dmf.progressbar.ProgressBar;
 import com.deleidos.dmf.progressbar.ProgressState;
 import com.deleidos.dmf.web.SchemaWizardWebSocketUtility;
 import com.deleidos.dmf.exception.AnalyzerException;
+import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.profiler.AbstractReverseGeocodingProfiler;
 import com.deleidos.dp.profiler.api.Profiler;
 
-public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<TikaSampleProfilableParameters, TikaSchemaProfilableParameters> {
+public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<TikaSampleAnalyzerParameters, TikaSchemaAnalyzerParameters> {
 	/**
 	 * 
 	 */
@@ -54,6 +60,19 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 
 	public AnalyticsDefaultParser(AnalyticsDefaultDetector detector, TikaProfilerParameters parameters) {
 		this.detector = detector;
+
+		try {
+			Class.forName("org.jnetpcap.packet.JRegistry", false, this.getClass().getClassLoader());
+			try {
+				JRegistry.register(Wireless80211RadioTap.class);
+				JRegistry.register(Wireless80211.class);
+			} catch (RegistryHeaderErrors e) {
+				logger.error(e);
+				logger.error("Could not add JNetPcapTikaParser.  Parser will not be available.");
+			}
+		} catch (ClassNotFoundException e) {
+			logger.error("Could not find JnetPcap classes.  Not adding JnetPcapTikaParser to available parsers.");
+		}
 
 		PDFParserConfig pc = new PDFParserConfig();
 		pc.setExtractInlineImages(true);
@@ -113,9 +132,9 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 			logger.error("Runtime exception from " + e.getParser() + " parser for type " + e.getParser().getSupportedTypes(context) +".", e);
 		} catch (AnalyticsInitializationRuntimeException e) {
 			logger.error("Initialization exception while attempting to parse.", e);
-		} catch (AnalyticsUndetectableTypeException | AnalyticsUnsupportedParserException | AnalyzerException e) {
+		} catch (AnalyzerException | DataAccessException e) {
 			logger.error(e);
-			throw new TikaException("Wrapping analytics exception in Tika Exception.", e);
+			throw new TikaException("Tika Exception wrapping Analytics Exception: " + e.getMessage(), e);
 		} finally {
 			tmp.dispose();
 		}
@@ -170,12 +189,12 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 		if(p instanceof TikaProfilableParser) {
 			return (TikaProfilableParser) p;
 		} else {
-			throw new AnalyticsUnsupportedParserException("No supported tika parser found for " + metadata.get(Metadata.CONTENT_TYPE) + ".");
+			throw new AnalyticsUnsupportedParserException("No supported analytics parser found for " + metadata.get(Metadata.CONTENT_TYPE) + ".");
 		}
 	}
 
 	private void analyticsParse(TikaInputStream tis, ContentHandler analyticsHandler, Metadata metadata, TikaProfilerParameters analyticsParams,
-			boolean reverseGeocodingPass) throws SAXException, TikaException, IOException, AnalyzerException {
+			boolean reverseGeocodingPass) throws SAXException, TikaException, IOException, AnalyzerException, DataAccessException {
 		//sync the input stream with the profiler parameters (want to make this cleaner)
 
 		if(!reverseGeocodingPass) {
@@ -204,11 +223,11 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 
 			TikaInputStream bodyStream = extractProfilableContent(parser, tis, analyticsHandler, metadata, analyticsParams);
 			// get body contents as a new stream (in memory for now, need catch exception after certain size and write to file)
-		
-			
+
+
 			analyticsParams.getProgress().updateCurrentSampleNumerator(ProgressState.sampleParsingStage.getStartValue()+5);
 			SchemaWizardWebSocketUtility.getInstance().updateProgress(analyticsParams.getProgress(), analyticsParams.getSessionId());
-		
+
 			int i = 0;
 			if(shouldExtractBodyContent) {
 				// set remaining split to extract content size + 1 (for body content)
@@ -216,7 +235,7 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 					analyticsParams.getProgress().setCurrentStateSplits(extractor.getExtractedContents().size()+1);
 					i = 1;
 				}
-				
+
 				Metadata bodyMetadata = new Metadata();
 				TikaProfilerParameters reinitializedParams = extractor.initializeTikaProfilingParameters(bodyStream, analyticsHandler, bodyMetadata);
 				analyticsDetect(bodyStream, analyticsHandler, bodyMetadata, reinitializedParams, true);
@@ -226,6 +245,8 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 					// profile the body content
 				} else {
 					logger.error("Body content could not be profiled.");
+					throw new AnalyticsUnsupportedParserException("Format detected as " +
+							analyticsParams.getMetadata().get(Metadata.CONTENT_TYPE) + " cannot be parsed.");
 				}
 			} else {
 				if(!reverseGeocodingPass) {
@@ -233,22 +254,23 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 				}
 			}
 
-			// embedded documents are already parse out and written to disk (from AnalyticsEmbeddedDocumentParser())
+			// embedded documents are already written to disk (from AnalyticsEmbeddedDocumentParser())
 			// doing all of these before profiling them allows us to gauge progress
-			// writing them to disk means we don't have to re-parser for reverse geocoding or schema passes
+			// writing them to disk means we don't have to re-parse for reverse geocoding or schema passes
 			// examples: files from a zip, images from a pdf, etc. 
 			// embedded document extraction must unfortunately be parser dependent, but that's what Tika is fo
-			// loop through extracted embbed documents (stream and metadata held in AnalyticsEmbeddedDocumentExtractor) 
+			// loop through extracted embedded documents (stream and metadata held in AnalyticsEmbeddedDocumentExtractor) 
 			// profile them, but they may have plain text body content as well (which is not extracted to disk)
 			// so we need to use the same method as the base file)
+			// example zip contains pdf which contains parseable text
 
 			logger.info("Using content from " +extractor.getParentParameters().getExtractedContentDir()+ ".  Profiling extracted contents.");
-			
-			
+
+
 			for(ExtractedContent extractedContent : extractor.getExtractedContents()) {
 
 				embeddedDocumentBodyContentParse(extractedContent, analyticsHandler);
-				
+
 				if(!reverseGeocodingPass) {
 					analyticsParams.getProgress().setCurrentStateSplitIndex(i);
 					analyticsParams.getProgress().updateCurrentSampleNumerator(ProgressState.sampleParsingStage.getEndValue());
@@ -261,7 +283,7 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 
 	}
 
-	private void embeddedDocumentBodyContentParse(ExtractedContent extractedContent, ContentHandler analyticsHandler) throws AnalyticsUndetectableTypeException, IOException, SAXException, TikaException, AnalyzerException {
+	private void embeddedDocumentBodyContentParse(ExtractedContent extractedContent, ContentHandler analyticsHandler) throws IOException, SAXException, TikaException, AnalyzerException, DataAccessException {
 		FileInputStream fis = new FileInputStream(extractedContent.getExtractedFile());
 		TemporaryResources tmp = new TemporaryResources();
 		TikaInputStream extractedTis = TikaInputStream.get(fis, tmp);
@@ -271,6 +293,8 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 			TikaProfilerParameters extractedContentParams = extractor.initializeTikaProfilingParameters(extractedTis, analyticsHandler, extractedContent.getMetadata());
 
 			Metadata extractedMetadata = extractedContent.getMetadata();
+			//extractedMetadata.set(Metadata.RESOURCE_NAME_KEY, extractedContent.getExtractedFile().getAbsolutePath());
+			
 			Parser extractedContentParser = getParser(extractedMetadata, extractedContentParams);
 			if(extractedContentParser instanceof TikaProfilableParser) {
 				profilableParse((TikaProfilableParser)extractedContentParser, extractedContentParams);
@@ -293,8 +317,10 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 						profilableParse((TikaProfilableParser)embeddedDocumentBodyParser, reinitializedEmbeddedDocumentParams);
 						// profile the body content
 					} else {
-						logger.error("Body content could not be profiled for embedded document.");
+						throw new AnalyticsUnsupportedParserException("Body content could not be profiled for embedded document.");
 					}
+				} else {
+					throw new AnalyticsUnsupportedParserException("Body content is not set to be extracted for embedded document.");
 				}
 				// handle embedded documents with a plain text body
 			}
@@ -306,11 +332,11 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 		}
 	}
 
-	private void profilableParse(TikaProfilableParser profilableParser, TikaProfilerParameters analyticsParams) throws AnalyzerException {
-		if(analyticsParams instanceof TikaSampleProfilableParameters) {
-			profilableParser.sampleAnalysis((TikaSampleProfilableParameters)analyticsParams);
-		} else if(analyticsParams instanceof TikaSchemaProfilableParameters) {
-			profilableParser.schemaAnalysis((TikaSchemaProfilableParameters)analyticsParams);
+	private void profilableParse(TikaProfilableParser profilableParser, TikaProfilerParameters analyticsParams) throws IOException, AnalyzerException, DataAccessException {
+		if(analyticsParams instanceof TikaSampleAnalyzerParameters) {
+			profilableParser.runSampleAnalysis((TikaSampleAnalyzerParameters)analyticsParams);
+		} else if(analyticsParams instanceof TikaSchemaAnalyzerParameters) {
+			profilableParser.runSchemaAnalysis((TikaSchemaAnalyzerParameters)analyticsParams);
 		} else {
 			throw new AnalyticsTikaProfilingException("Parameters not an instance of sample or schema profilable parameters.");
 		}
@@ -326,7 +352,7 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 		InputStream bodyInputStream;
 		AnalyticsProgressTrackingContentHandler bch = new AnalyticsProgressTrackingContentHandler((INTERNAL_BUFFER_MAX_LENGTH));
 		try {
-			logger.info("Extracting body content of " + metadata.get(Metadata.CONTENT_TYPE) + " file.");
+			logger.info("Extracting content of " + metadata.get(Metadata.CONTENT_TYPE) + " file.");
 			// simple body content extraction when body fits into a string buffer 
 
 			SecureContentHandler sch = (bch != null) ? new SecureContentHandler(bch, stream) : null;
@@ -378,8 +404,8 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 	}
 
 	@Override
-	public TikaSampleProfilableParameters sampleAnalysis(TikaSampleProfilableParameters sampleProfilableParams)
-			throws AnalyzerException {
+	public TikaSampleAnalyzerParameters runSampleAnalysis(TikaSampleAnalyzerParameters sampleProfilableParams)
+			throws IOException, AnalyzerException {
 		try {
 			if(sampleProfilableParams.isReverseGeocodingPass()) {
 				extractor.setAreContentsExtracted(true);
@@ -392,16 +418,24 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 			sampleProfilableParams.setMediaType(sampleProfilableParams.getMetadata().get(Metadata.CONTENT_TYPE));
 			sampleProfilableParams.getProgress().setCurrentState(ProgressState.geocodingStage);
 			SchemaWizardWebSocketUtility.getInstance().updateProgress(sampleProfilableParams.getProgress(), sampleProfilableParams.getSessionId());
-			return (TikaSampleProfilableParameters) extractor.getParentParameters();
-		} catch (AnalyticsInitializationRuntimeException | AnalyticsParsingRuntimeException | IOException | SAXException
-				| TikaException e) {
-			throw new AnalyticsTikaProfilingException(e);
+			if(sampleProfilableParams.getProfilerBean().getDsProfile().isEmpty()) {
+				throw new AnalyticsUnsupportedParserException("Parsing finished without an exception, but no keys were extracted.");
+			}
+			return (TikaSampleAnalyzerParameters) sampleProfilableParams;
+		} catch (SAXException | TikaException e) {
+			if(e.getCause() instanceof AnalyticsUndetectableTypeException) {
+				throw (AnalyticsUndetectableTypeException) e.getCause();
+			} else if(e.getCause() instanceof AnalyticsUnsupportedParserException) {
+				throw (AnalyticsUnsupportedParserException) e.getCause();
+			} else {
+				throw new AnalyticsTikaProfilingException(e);
+			}
 		}
 	}
 
 	@Override
-	public TikaSchemaProfilableParameters schemaAnalysis(TikaSchemaProfilableParameters schemaProfilableParams)
-			throws AnalyzerException {
+	public TikaSchemaAnalyzerParameters runSchemaAnalysis(TikaSchemaAnalyzerParameters schemaProfilableParams)
+			throws IOException, AnalyzerException {
 		try {
 			schemaProfilableParams.set(EmbeddedDocumentExtractor.class, extractor);
 			schemaProfilableParams.set(File.class, schemaProfilableParams.get(File.class));
@@ -414,15 +448,12 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 				logger.error("Contents expected to be on disk were not found.  Attempting to re-extract contents from original file.");
 				logger.error(e);
 				extractor.setAreContentsExtracted(false);
-			} catch (Exception e) {
-				throw e;
 			}
 			parse(schemaProfilableParams.getStream(), schemaProfilableParams.getHandler(), schemaProfilableParams.getMetadata(), schemaProfilableParams);
 			schemaProfilableParams.getProgress().setCurrentState(ProgressState.complete);
 			SchemaWizardWebSocketUtility.getInstance().updateProgress(schemaProfilableParams.getProgress(), schemaProfilableParams.getSessionId());
-			return (TikaSchemaProfilableParameters) extractor.getParentParameters();
-		} catch (AnalyticsInitializationRuntimeException | AnalyticsParsingRuntimeException | IOException | SAXException
-				| TikaException e) {
+			return (TikaSchemaAnalyzerParameters) extractor.getParentParameters();
+		} catch (SAXException | TikaException e) {
 			throw new AnalyticsTikaProfilingException(e);
 		}
 	}

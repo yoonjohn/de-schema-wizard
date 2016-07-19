@@ -1,0 +1,57 @@
+<div class="modal-header">
+    Export Schema
+</div>
+<div class="modal-body-button button-area" style="margin: 0 auto;"
+     ng-controller="exportController">
+
+    <a class="btn btn-primary btn-graphic-plus-text"
+       ng-href="{{ fileUrl }}" download="{{txt}}"
+       ng-click="cancel()">
+        <img src="assets/img/blankDocument-32x32.png">
+        Export as Text (*.txt)
+    </a>
+
+    <a class="btn btn-primary btn-graphic-plus-text"
+       ng-href="{{ fileUrl }}" download="{{json}}"
+       ng-click="cancel()">
+        <img src="assets/img/jsonDocument-32x32.png">
+        Export as JSON (*.json)
+    </a>
+
+    <a class="btn btn-primary btn-graphic-plus-text"
+       ng-href="{{ fileUrlWiz }}" download="{{vizWizDataObject}}"
+       ng-click="cancel()">
+        <img src="assets/img/digitalEdge.png">
+        VizWizard Object (*.json)
+    </a>
+
+    <a class="btn btn-primary btn-graphic-plus-text"
+       ng-click="zipExtract(); cancel()">
+        <img src="assets/img/zipDocument-32x32.png">
+        Export as Zip (*.zip)
+    </a>
+
+    <a class="btn btn-primary btn-graphic-plus-text"
+       ng-href="{{ fileUrl }}" download="{{doc}}"
+       ng-click="cancel()">
+        <img src="assets/img/wordDocument-32x32.png">
+        Export as Document (*.doc)
+    </a>
+
+    <a class="btn btn-primary btn-graphic-plus-text"
+       ng-click="zipExtractDigitalEdge(); cancel()">
+        <img src="assets/img/writeToDatabase-32x32.png">
+        DigitalEdge Object (*.json)
+    </a>
+
+    <a class="btn btn-primary btn-graphic-plus-text"
+       ng-href="{{fileUrlIngest}}" download="{{ingestDataObject}}"
+       ng-click="cancel()">
+        <img src="assets/img/ingest-data-export-32x32.png">
+        Ingest Object (*.json)
+    </a>
+
+</div>
+<div class="modal-footer btn-group-xs">
+    <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+</div>

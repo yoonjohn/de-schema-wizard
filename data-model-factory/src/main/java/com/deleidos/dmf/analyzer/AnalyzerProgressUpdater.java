@@ -3,7 +3,7 @@ package com.deleidos.dmf.analyzer;
 import com.deleidos.dp.profiler.api.ProfilingProgressUpdateListener;
 
 public interface AnalyzerProgressUpdater extends ProfilingProgressUpdateListener {
-
+	// TODO come back to this, could be cleaner
 	/**
 	 * Initialize the progress based on the parameters.  This method will be called before any updateProgress(parameters) calls are made.
 	 * @param parameters the parameters with fields that may help an implementation of this interface determine progress intervals.

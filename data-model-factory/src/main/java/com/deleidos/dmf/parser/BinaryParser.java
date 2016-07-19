@@ -38,7 +38,7 @@ public class BinaryParser extends AbstractAnalyticsParser {
 
 	@Override
 	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata,
-			TikaProfilerParameters context) {
+			TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		String enableBinary;
 		if((enableBinary = System.getenv(ENABLE_BINARY_PARSING)) != null) {
 			binaryParsingEnabled = ("true".equals(enableBinary) || "1".equals(enableBinary)) ? true : false; 
@@ -79,7 +79,7 @@ public class BinaryParser extends AbstractAnalyticsParser {
 	}
 
 	@Override
-	public void postParse(ContentHandler handler, Metadata metadata, TikaProfilerParameters context) {
+	public void postParse(ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		super.postParse(handler, metadata, context);
 		if(binaryParsingEnabled) {
 			Profiler profiler = context.get(Profiler.class);

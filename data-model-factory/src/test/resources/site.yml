@@ -1,0 +1,11 @@
+---
+# Use to configure a Centos7 Instance for DE Appliance Distribution
+# If running outside of AWS, change the value of appliance_user_facing_fqdn to be the FQDN of the appliance
+
+- hosts: all
+  vars:
+    rtws_home: /usr/local/rtws
+    appliance_user_facing_fqdn: logs-appliance.auba.auba.aws-dev.deleidos.com
+            
+  roles:
+  - { role: install, tags: install}

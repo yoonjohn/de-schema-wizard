@@ -1,12 +1,13 @@
 package com.deleidos.dp.profiler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import com.deleidos.dp.accumulator.AbstractProfileAccumulator;
 import com.deleidos.dp.accumulator.BinaryProfileAccumulator;
@@ -14,15 +15,15 @@ import com.deleidos.dp.accumulator.NumberProfileAccumulator;
 import com.deleidos.dp.accumulator.StringProfileAccumulator;
 import com.deleidos.dp.beans.AliasNameDetails;
 import com.deleidos.dp.beans.DataSample;
-import com.deleidos.dp.beans.RegionData;
 import com.deleidos.dp.beans.DataSampleMetaData;
+import com.deleidos.dp.beans.Histogram;
 import com.deleidos.dp.beans.Interpretation;
 import com.deleidos.dp.beans.Profile;
+import com.deleidos.dp.beans.RegionData;
 import com.deleidos.dp.beans.Schema;
-import com.deleidos.dp.domain.JavaDomain;
+import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.deleidos.dp.enums.GroupingBehavior;
-import com.deleidos.dp.interpretation.AbstractJavaInterpretation;
-import com.deleidos.dp.interpretation.JavaUnknownInterpretation;
+import com.deleidos.dp.exceptions.MainTypeException;
 import com.deleidos.dp.profiler.api.Profiler;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
 import com.deleidos.dp.profiler.api.ProfilingProgressUpdateListener;
@@ -32,15 +33,17 @@ public class SchemaProfiler implements Profiler {
 	private Logger logger = Logger.getLogger(SchemaProfiler.class);
 	protected SchemaReverseGeocodingProfiler geocodingProfiler;
 	private ProfilingProgressUpdateListener progressUpdateListener;
-	
+
 	protected Map<String, AbstractProfileAccumulator> fieldMapping;
+	private Map<String, Profile> userCreatedFields;
 	private Map<String, List<AliasNameDetails>> aliasMapping;
 	private List<DataSampleMetaData> dataSampleMetaDataList;
-	
+
 	private Map<String, String> currentSampleMergedFieldsMapping;
 	private List<String> currentSkipKeyList;
 	private DataSample currentDataSample;
-
+	private Schema existingSchema = null;
+	
 	private int recordsParsed;
 
 	public SchemaProfiler() {
@@ -52,94 +55,139 @@ public class SchemaProfiler implements Profiler {
 	}
 
 	@Override
-	public int load(ProfilerRecord record) {
+	public void load(ProfilerRecord record) {
 		Map<String, List<Object>> normalizedRecord = record.normalizeRecord(groupingBehavior);
 		for(String key : normalizedRecord.keySet()) {
 			if(normalizedRecord.get(key) == null) {
 				continue;
 			}
 			String accumulatorKey = key;
-
+					
 			if(currentSkipKeyList.contains(accumulatorKey)) {
 				// key should be skipped because it was neither merged nor used in schema
 				continue;
 			} else {
+
 				String mergedAccumulatorKey;
 				if(currentSampleMergedFieldsMapping.containsKey(accumulatorKey)) {
 					mergedAccumulatorKey = currentSampleMergedFieldsMapping.get(accumulatorKey);
 				} else {
 					mergedAccumulatorKey = accumulatorKey;
 				}
+				
+				if(!currentDataSample.getDsProfile().containsKey(mergedAccumulatorKey)) {
+					currentSkipKeyList.add(mergedAccumulatorKey);
+					continue;
+				}
 
 				AbstractProfileAccumulator accumulator;
 				List<Object> values = normalizedRecord.get(key);
-
 				if(!fieldMapping.containsKey(mergedAccumulatorKey)) {
+
+					Profile currentProfile = currentDataSample.getDsProfile().get(mergedAccumulatorKey);
+
+					switch(currentProfile.getMainType()) {
+					case "number": {
+						accumulator = new NumberProfileAccumulator(mergedAccumulatorKey);
+						break;
+					} 
+					case "string": {
+						accumulator = new StringProfileAccumulator(mergedAccumulatorKey);
+						break;
+					}
+					case "binary": {
+						accumulator = new BinaryProfileAccumulator(mergedAccumulatorKey);
+						break;
+					}
+					default: {
+						logger.error("Not detected as number, string, or binary in Schema Profiler!  Warning: the instantiation of accumulators"
+								+ " in Schema Profiler use direct string equivalence to determine the appropriate accumulator.  Main type is " + currentProfile.getMainType());
+						return;
+					}
+					}
 					Object nonNullValue = null;
 					int nonNullIndex = 0;
 					while(nonNullIndex < values.size()) {
 						if(values.get(nonNullIndex) != null) {
-							break;
+							nonNullValue = values.get(nonNullIndex);
+							try {
+								nonNullValue = accumulator.getState().getMainTypeClass().createAppropriateObject(nonNullValue);
+								accumulator.initFirstValue(nonNullValue);
+								break;
+							} catch (MainTypeException e) {
+								logger.warn("Value "+nonNullValue.toString()+" could not be "
+										+ "successful converted to " + accumulator.getState().getMainType() +".", e);
+							}
 						}
 						nonNullIndex++;
 					}
 
-					if(nonNullIndex >= values.size()) {
-						// this particular record only had null values, skip it without instantiating its accumulator
+					if(nonNullValue == null) {
+						// could not pull a useful value out of this record, skip it
+						accumulator = null;
 						continue;
-					} else {
-						nonNullValue = values.get(nonNullIndex);
 					}
 
-					Profile currentProfile = currentDataSample.getDsProfile().get(mergedAccumulatorKey);
-
-					if(currentProfile.getMainType().equals("number")) {
-						accumulator = new NumberProfileAccumulator(mergedAccumulatorKey);
-					} else if(currentProfile.getMainType().equals("string")) {
-						accumulator = new StringProfileAccumulator(mergedAccumulatorKey);
-					} else if(currentProfile.getMainType().equals("binary")) {
-						accumulator = new BinaryProfileAccumulator(mergedAccumulatorKey);
-					} else {
-						logger.error("Not detected as number, string, or binary in Schema Profiler!  Warning: the instantiation of accumulators"
-								+ " in Schema Profiler use direct string equivalence to determine the appropriate accumulator.  Main type is " + currentProfile.getMainType());
-						return -1;
-					}
-
-					accumulator.initFirstValue(nonNullValue);
 					if(accumulator instanceof BinaryProfileAccumulator) {
 						((BinaryProfileAccumulator)accumulator)
 							.setMediaType(Profile.getBinaryDetail(currentProfile).getMimeType());
 					}
 
-					//accumulator.setDomain("transportation");
-					//AbstractInterpretation interpretation = AbstractInterpretation.getInterpretationByName(currentProfile.getInterpretation().getInterpretationName());
 					Interpretation interpretation = currentProfile.getInterpretation();
 					if(!Interpretation.isUnknown(interpretation)) {
-						logger.info("Interpretting field: " + mergedAccumulatorKey + " as " + interpretation.getInterpretation());
+						logger.info("Interpretting field: " + mergedAccumulatorKey + " as " + interpretation.getiName());
 					}
 					accumulator.getState().setInterpretation(interpretation);
-					
+					accumulator.getState().setInterpretations(Arrays.asList(interpretation));
+
 					for(int i = 0; i < values.size(); i++) {
-						if(i == nonNullIndex) {
-							// skip the non null value that was used to initialized the list, and add all others (even nulls)
-							continue;
+						try {
+							if(i == nonNullIndex) {
+								// skip the non null value that was used to initialized the list, and add all others (even nulls)
+								continue;
+							}
+							Object value = accumulator.getState().getMainTypeClass().createAppropriateObject(values.get(i));
+							accumulator.accumulate(value, false);
+						} catch (MainTypeException e) {
+							logger.warn(e.getMessage());
 						}
-						accumulator.accumulate(values.get(i), false);
 					}
 
 					fieldMapping.put(mergedAccumulatorKey, accumulator);
 				} else {
 					accumulator = fieldMapping.get(mergedAccumulatorKey);
 					if(!values.isEmpty()) {
+						boolean accumulatePresence = true;
 						if(accumulator.getDetail() != null) {
-							accumulator.accumulate(values.get(0), true);
-							for(int i = 1; i < values.size(); i++) {
-								accumulator.accumulate(values.get(i), false);
+							for(int i = 0; i < values.size(); i++) {
+								try {
+									Object value = accumulator.getState().getMainTypeClass().createAppropriateObject(values.get(i));
+									accumulator.accumulate(value, accumulatePresence);
+									accumulatePresence = false;
+								} catch (MainTypeException e) {
+									logger.warn(e.getMessage());
+									accumulatePresence = true;
+								}
 							}
 						} else {
-							accumulator.initFirstValue(values.get(0));
-							for(int i = 1; i < values.size(); i++) {
-								accumulator.accumulate(values.get(i), false);
+							int i = 0;
+							for(; i < values.size(); i++) {
+								try {
+									Object value = accumulator.getState().getMainTypeClass().createAppropriateObject(values.get(i));
+									accumulator.initFirstValue(value);
+									accumulatePresence = false;
+									break;
+								} catch (MainTypeException e) {
+									logger.warn("Error initializing accumulator.  " + e.getMessage());
+								}
+							}
+							for(; i < values.size(); i++) {
+								try {
+									Object value = accumulator.getState().getMainTypeClass().createAppropriateObject(values.get(i));
+									accumulator.accumulate(value, accumulatePresence);
+								} catch (MainTypeException e) {
+									logger.warn(e.getMessage());
+								}
 							}
 						}
 					} 
@@ -150,11 +198,45 @@ public class SchemaProfiler implements Profiler {
 		if(progressUpdateListener != null) {
 			progressUpdateListener.handleProgressUpdate(record.recordProgressWeight());
 		}
-		return recordsParsed;
+		return;
 	}
 
 	public List<DataSampleMetaData> getDataSampleMetaDataList() {
 		return dataSampleMetaDataList;
+	}
+
+	public void initExistingSchema(Schema existingSchema) {
+		if(existingSchema != null) {
+			logger.info("Existing schema detected.  Using existing fields as seed values.");
+			for(String existingField : existingSchema.getsProfile().keySet()) {
+				existingSchema.getsProfile().get(existingField).setUsedInSchema(true);
+				aliasMapping.put(existingField, existingSchema.getsProfile().get(existingField).getAliasNames());
+			}
+			this.recordsParsed = existingSchema.getRecordsParsedCount();
+
+			userCreatedFields = new HashMap<String, Profile>();
+			initializeWithProfile(existingSchema.getsProfile(), true);
+
+			outputCurrentSampleMergedfieldsMapping(existingSchema.getsName(), currentSampleMergedFieldsMapping);
+
+			Map<String, Profile> adjustedProfileWithMergedKeys = copyProfileWithMergedKeyValues(existingSchema.getsProfile());
+			geocodingProfiler.initializeWithMap(adjustedProfileWithMergedKeys);
+
+			if(existingSchema.getsProfile().keySet().isEmpty()) {
+				logger.warn("Empty existing schema pass.  Defaulting to no existing schema behavior.");
+				this.existingSchema = null;
+			} else {
+				this.existingSchema = existingSchema;
+			}
+			if(existingSchema.getsDataSamples().isEmpty()) {
+				logger.warn("Empty samples list in existing schema object.");
+			} else {
+				dataSampleMetaDataList = existingSchema.getsDataSamples();
+				for(DataSampleMetaData dsmd : dataSampleMetaDataList) {
+					logger.info("Existing schema contains sample: " + dsmd.getDsName() + ".");
+				}
+			}
+		}
 	}
 
 	public void setCurrentDataSample(DataSample dataSample) {
@@ -172,21 +254,40 @@ public class SchemaProfiler implements Profiler {
 		dsmd.setDsName(dataSample.getDsName());
 		dsmd.setDsVersion(dataSample.getDsVersion());
 		dsmd.setDsLastUpdate(dsmd.getDsLastUpdate());
-		dataSampleMetaDataList.add(dsmd);
+		boolean containsGuid = false;
+		if(existingSchema != null) {
+			for(DataSampleMetaData d : existingSchema.getsDataSamples()) {
+				if(d.getDsGuid().equals(dsmd.getDsGuid())) {
+					containsGuid = true;
+					break;
+				}
+			}
+		}
+		if(!containsGuid) {
+			dataSampleMetaDataList.add(dsmd);
+		}
 
 		logger.info("Profiling sample with GUID " + currentDataSample.getDsGuid());
 
+		initializeWithProfile(currentDataSample.getDsProfile(), false);
+		outputCurrentSampleMergedfieldsMapping(dataSample.getDsName(), currentSampleMergedFieldsMapping);
+
+		Map<String, Profile> adjustedProfileWithMergedKeys = copyProfileWithMergedKeyValues(dataSample.getDsProfile()); //region data set here
+		geocodingProfiler.initializeWithMap(adjustedProfileWithMergedKeys);
+	}
+
+	private void initializeWithProfile(Map<String, Profile> profileMap, boolean isExistingSchema) {
 		currentSampleMergedFieldsMapping = new HashMap<String, String>();
 		currentSkipKeyList = new ArrayList<String>();
-		for(String key : dataSample.getDsProfile().keySet()) {
+		for(String key : profileMap.keySet()) {
 			String fieldNameInSample = String.copyValueOf(key.toCharArray());
 			String mergedAccumulatorKey = null;
-			Profile profile = dataSample.getDsProfile().get(key);
+			Profile profile = profileMap.get(key);
 			if(profile.isMergedInto()) {
 				//in sProfile mapping, key is schema field name
 				//in profile object, original name is name from sample
 				mergedAccumulatorKey = key;
-				fieldNameInSample = (dataSample.getDsProfile().get(key).getOriginalName() != null) ? dataSample.getDsProfile().get(key).getOriginalName() : key;
+				fieldNameInSample = (profileMap.get(key).getOriginalName() != null) ? profileMap.get(key).getOriginalName() : key;
 				if(currentSkipKeyList.contains(fieldNameInSample)) {
 					currentSkipKeyList.remove(fieldNameInSample);
 				}
@@ -204,23 +305,39 @@ public class SchemaProfiler implements Profiler {
 
 			currentSampleMergedFieldsMapping.put(fieldNameInSample, mergedAccumulatorKey);
 
-			AliasNameDetails aliasNameDetails = new AliasNameDetails();
-			aliasNameDetails.setAliasName(fieldNameInSample);
-			aliasNameDetails.setDsGuid(currentDataSample.getDsGuid());
-			List<AliasNameDetails> aliasList;
-			if(aliasMapping.containsKey(mergedAccumulatorKey)) {
-				aliasList = aliasMapping.get(mergedAccumulatorKey);
+			if(!isExistingSchema) {
+				AliasNameDetails aliasNameDetails = new AliasNameDetails();
+				aliasNameDetails.setAliasName(fieldNameInSample);
+				aliasNameDetails.setDsGuid(currentDataSample.getDsGuid());
+				List<AliasNameDetails> aliasList;
+				if(aliasMapping.containsKey(mergedAccumulatorKey)) {
+					aliasList = aliasMapping.get(mergedAccumulatorKey);
+				} else {
+					aliasList = new ArrayList<AliasNameDetails>();
+				}
+				aliasList.add(aliasNameDetails);
+				aliasMapping.put(mergedAccumulatorKey, aliasList);
 			} else {
-				aliasList = new ArrayList<AliasNameDetails>();
+				AbstractProfileAccumulator accumulator;
+				if(profile.getMainType().equals("number")) {
+					accumulator = new NumberProfileAccumulator(mergedAccumulatorKey);
+				} else if(profile.getMainType().equals("string")) {
+					accumulator = new StringProfileAccumulator(mergedAccumulatorKey);
+				} else if(profile.getMainType().equals("binary")) {
+					accumulator = new BinaryProfileAccumulator(mergedAccumulatorKey);
+				} else {
+					logger.error("Not detected as number, string, or binary in Schema Profiler!  Warning: the instantiation of accumulators"
+							+ " in Schema Profiler use direct string equivalence to determine the appropriate accumulator.  Main type is " + profile.getMainType());
+					continue;
+				}
+				if(profile.getAliasNames() == null || profile.getAliasNames().isEmpty()) {
+					userCreatedFields.put(mergedAccumulatorKey, profile);
+				} else {
+					accumulator.initializeFromExistingProfile(profile);
+					fieldMapping.put(mergedAccumulatorKey, accumulator);
+				}
 			}
-			aliasList.add(aliasNameDetails);
-			aliasMapping.put(mergedAccumulatorKey, aliasList);
-
 		}
-		outputCurrentSampleMergedfieldsMapping();
-
-		Map<String, Profile> adjustedProfileWithMergedKeys = copyProfileWithMergedKeyValues(dataSample.getDsProfile()); //region data set here
-		geocodingProfiler.initializeWithMap(adjustedProfileWithMergedKeys);
 	}
 
 	private Map<String, Profile> copyProfileWithMergedKeyValues(Map<String, Profile> dsProfile) {
@@ -241,8 +358,9 @@ public class SchemaProfiler implements Profiler {
 					}
 				}
 				Profile profile = copyOfProfile.get(merged);
-				if(profile.getDetail().getBucketListIfApplicable() != null) {
-					RegionData regionData = profile.getDetail().getBucketListIfApplicable().getRegionData();
+				Optional<Histogram> optionalHistogram = profile.getDetail().getHistogramOptional();
+				if(optionalHistogram.isPresent()) {
+					RegionData regionData = optionalHistogram.get().getRegionData();
 					if(regionData == null) {
 						logger.warn("Region data detected as null when expected to be present.");
 						continue;
@@ -266,18 +384,17 @@ public class SchemaProfiler implements Profiler {
 
 					Profile partnerProfile = copyOfProfile.get(mergedPartnerKey);
 					if(partnerProfile == null) {
-						//TODO define logic for invalid coordinate merges
 						logger.error("Partial coordinate merge detected.  Rolling back merge.");
-						profile.getDetail().setRegionDataIfApplicable(null);
+						profile.getDetail().getHistogramOptional().ifPresent(x->x.setRegionData(null));
 						profile.setInterpretation(Interpretation.UNKNOWN);
 						copyOfProfile.put(merged, profile);
 						continue;
 					}
 
-					profile.getDetail().setRegionDataIfApplicable(regionData);
+					profile.getDetail().getHistogramOptional().ifPresent(x->x.setRegionData(regionData));
 					copyOfProfile.put(merged, profile);
 
-					partnerProfile.getDetail().setRegionDataIfApplicable(regionData);
+					partnerProfile.getDetail().getHistogramOptional().ifPresent(x->x.setRegionData(regionData));
 					copyOfProfile.put(mergedPartnerKey, partnerProfile);
 				}
 			}
@@ -285,13 +402,13 @@ public class SchemaProfiler implements Profiler {
 		return copyOfProfile;
 	}
 
-	private void outputCurrentSampleMergedfieldsMapping() {
-		logger.info("Sample "+currentDataSample.getDsGuid()+" merged fields mapping: ");
-		for(String key : currentSampleMergedFieldsMapping.keySet()) {
-			if(key.equals(currentSampleMergedFieldsMapping.get(key))) {
-				logger.info("Accumulating metrics for schema field \"" + currentSampleMergedFieldsMapping.get(key) + "\".");
+	private void outputCurrentSampleMergedfieldsMapping(String name, Map<String, String> currentMergeMapping) {
+		logger.info(name+" merged fields mapping: ");
+		for(String key : currentMergeMapping.keySet()) {
+			if(key.equals(currentMergeMapping.get(key))) {
+				logger.info("Accumulating metrics for schema field \"" + currentMergeMapping.get(key) + "\".");
 			} else {
-				logger.info("Accumulating metrics for schema field \"" + currentSampleMergedFieldsMapping.get(key) 
+				logger.info("Accumulating metrics for schema field \"" + currentMergeMapping.get(key) 
 				+ "\" (original name - \"" + key + "\").");
 			}
 		}
@@ -299,18 +416,33 @@ public class SchemaProfiler implements Profiler {
 
 	@Override
 	public Schema asBean() {
-		Schema schema = new Schema();
+		Schema schema = (existingSchema == null) ? new Schema() : existingSchema;
 		Map<String, Profile> sProfile = new HashMap<String, Profile>();
-		fieldMapping.forEach((key, accumulator) -> {
+		for(String key: fieldMapping.keySet()) {
+			AbstractProfileAccumulator accumulator = fieldMapping.get(key);
 			accumulator.finish();
 			Profile profile = accumulator.getState();
 			profile.setPresence(((float)accumulator.getPresenceCount())/((float)recordsParsed));
 			if(aliasMapping.containsKey(key)) {
 				profile.setAliasNames(aliasMapping.get(key));
 			}
+			if(existingSchema != null && existingSchema.getsProfile().containsKey(key)) {
+				Integer existingNumDistinct = MetricsCalculationsFacade.stripNumDistinctValuesChars(
+						existingSchema.getsProfile().get(key).getDetail().getNumDistinctValues());
+				Integer newNumDistinct = MetricsCalculationsFacade.stripNumDistinctValuesChars(
+						profile.getDetail().getNumDistinctValues());
+				int m = Math.max(existingNumDistinct, newNumDistinct);
+				String numDistinctValues = String.valueOf(m); 
+				profile.getDetail().setNumDistinctValues(">=" + numDistinctValues);
+			}
 			sProfile.put(key, profile);
-		});
+		};
+		if(userCreatedFields != null) {
+			sProfile.putAll(userCreatedFields);
+		}
+		sProfile = DisplayNameHelper.determineDisplayNames(sProfile);
 		schema.setsProfile(sProfile);
+		schema.setRecordsParsedCount(recordsParsed);
 		geocodingProfiler.setBean(schema);
 		Schema schemaWithGeoData = geocodingProfiler.asBean();
 		return schemaWithGeoData;

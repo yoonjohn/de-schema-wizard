@@ -16,6 +16,7 @@ import com.deleidos.dp.beans.DataSampleMetaData;
 import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.Schema;
 import com.deleidos.dp.beans.SchemaMetaData;
+import com.deleidos.dp.exceptions.DataAccessException;
 
 /**
  * Data Access Object meant to communicate solely with schema tables in the
@@ -31,7 +32,7 @@ public class H2SchemaDataAccessObject {
 	private Connection dbConnection;
 
 	/**************************** DATABASE QUERIES ****************************/
-	private final String ADD_SCHEMA_MODEL = "INSERT INTO schema_model VALUES (NULL, ?, ?, ?, ?, ?);";
+	private final String ADD_SCHEMA_MODEL = "INSERT INTO schema_model VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
 	private final String ADD_SCHEMA_DATA_SAMPLES_MAPPING = "INSERT INTO schema_data_samples_mapping VALUES (?, ?);";
 	private final String GET_SCHEMA_META_DATA_LIST = "SELECT * FROM schema_model "
 			+ " INNER JOIN schema_data_samples_mapping ON (schema_model.schema_model_id = schema_data_samples_mapping.schema_model_id)"
@@ -41,6 +42,8 @@ public class H2SchemaDataAccessObject {
 			+ " INNER JOIN schema_data_samples_mapping ON (schema_data_samples_mapping.schema_model_id = schema_model.schema_model_id)"
 			+ " INNER JOIN data_sample ON (data_sample.data_sample_id = schema_data_samples_mapping.data_sample_id)"
 			+ " WHERE schema_model.s_guid = ?;";
+	private final String UPDATE_DATA_SAMPLE_NAME_BY_GUID = "UPDATE data_sample SET ds_name = ? WHERE ds_guid = ?;";
+	
 	/*
 	 * private final String GET_SCHEMA_BY_GUID = "SELECT * FROM schema_model" +
 	 * " INNER JOIN schema_data_samples_mapping ON (schema_model.schema_model_id = schema_data_samples_mapping.schema_model_id)"
@@ -72,9 +75,9 @@ public class H2SchemaDataAccessObject {
 	 * @param schemaGuid
 	 *            the desired schema guid
 	 * @return a list of schema guids associated with the given schema
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public List<String> getSampleGuidsFromSchemaGuid(String schemaGuid) {
+	public List<String> getSampleGuidsFromSchemaGuid(String schemaGuid) throws DataAccessException {
 		List<String> dataSampleGuids = new ArrayList<String>();
 		PreparedStatement getMappingsStatement = null;
 
@@ -88,15 +91,17 @@ public class H2SchemaDataAccessObject {
 				dataSampleGuids.add(sampleGuid);
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (getMappingsStatement != null)
 					getMappingsStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return dataSampleGuids;
@@ -107,26 +112,28 @@ public class H2SchemaDataAccessObject {
 	 * 
 	 * @param schemaBean
 	 * @return
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public int addSchema(Schema schemaBean) {
-
+	public int addSchema(Schema schemaBean) throws DataAccessException {
 		try {
 			dbConnection.setAutoCommit(false);
-		} catch (SQLException e1) {
-			logger.error("Failed to set auto commit to false.");
-			e1.printStackTrace();
+		} catch (SQLException e) {
+			logger.error("Error setting autocommit to false.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error setting H2 autocommit to false.");
 		}
 		int generatedId = -1;
 		try {
 			generatedId = addSchemaAndMapping(schemaBean.getSchemaModelId(), schemaBean.getsGuid(),
 					schemaBean.getsName(), schemaBean.getsVersion(), schemaBean.getsLastUpdate(),
-					schemaBean.getsDescription(), schemaBean.getsProfile(), schemaBean.getsDataSamples());
+					schemaBean.getsDescription(), schemaBean.getRecordsParsedCount(), schemaBean.getsDomainName(),
+					schemaBean.getsProfile(), schemaBean.getsDataSamples());
 			dbConnection.commit();
 			dbConnection.setAutoCommit(true);
 		} catch (SQLException e) {
-			logger.error("SQL Error adding schema.");
+			logger.error("Error executing H2 query.");
 			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		}
 		return generatedId;
 	}
@@ -135,10 +142,9 @@ public class H2SchemaDataAccessObject {
 	 * Returns all schema meta data
 	 * 
 	 * @return A list of SchemaMetaData beans
-	 * @throws SQLException
-	 *             Handled in H2DataAccessObject
+	 * @throws DataAccessException
 	 */
-	public List<SchemaMetaData> getAllSchemaMetaData() {
+	public List<SchemaMetaData> getAllSchemaMetaData() throws DataAccessException {
 		List<SchemaMetaData> schemaList = new ArrayList<SchemaMetaData>();
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
@@ -153,22 +159,25 @@ public class H2SchemaDataAccessObject {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return schemaList;
@@ -180,11 +189,10 @@ public class H2SchemaDataAccessObject {
 	 * @param guid
 	 *            GUID of the schema
 	 * @return Schema bean or if the schema does not exist, returns null
+	 * @throws DataAccessException
 	 * 
-	 * @throws SQLException
-	 *             Handled in H2DataAccessObject
 	 */
-	public Schema getSchemaByGuid(String guid) {
+	public Schema getSchemaByGuid(String guid) throws DataAccessException {
 		Schema schema = null;
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
@@ -197,27 +205,32 @@ public class H2SchemaDataAccessObject {
 
 			if (rs.next()) {
 				schema = populateSchema(rs);
-			} else {
+			} else if (guid != null) {
 				logger.warn("No schema found with guid " + guid + ".");
+			} else {
+				logger.warn("Null guid pass to get schema call.");
 			}
 
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return schema;
@@ -227,10 +240,9 @@ public class H2SchemaDataAccessObject {
 	 * Returns all schema meta data
 	 * 
 	 * @return A list of SchemaMetaData beans
-	 * @throws SQLException
-	 *             Handled in H2DataAccessObject
+	 * @throws DataAccessException
 	 */
-	public SchemaMetaData getSchemaMetaDataByGuid(String guid) {
+	public SchemaMetaData getSchemaMetaDataByGuid(String guid) throws DataAccessException {
 		SchemaMetaData schemaMetaData = null;
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
@@ -245,22 +257,25 @@ public class H2SchemaDataAccessObject {
 				schemaMetaData = populateSchemaMetaData(rs);
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return schemaMetaData;
@@ -271,9 +286,9 @@ public class H2SchemaDataAccessObject {
 	 * 
 	 * @param guid
 	 * @return
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public Map<String, Profile> getSchemaFieldByGuid(String guid) {
+	public Map<String, Profile> getSchemaFieldByGuid(String guid) throws DataAccessException {
 		return h2.getH2Metrics().getFieldMappingBySchemaGuid(guid);
 	}
 
@@ -281,9 +296,9 @@ public class H2SchemaDataAccessObject {
 	 * Delete a schema from the database by its guid
 	 * 
 	 * @param guid
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public void deleteSchemaFromDeletionQueue(String guid) {
+	public void deleteSchemaFromDeletionQueue(String guid) throws DataAccessException {
 		PreparedStatement ppst = null;
 
 		try {
@@ -291,20 +306,22 @@ public class H2SchemaDataAccessObject {
 			ppst.setString(1, guid);
 			ppst.execute();
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 	}
 
-	public void deleteSchemaByGuid(String guid) {
+	public void deleteSchemaByGuid(String guid) throws DataAccessException {
 		PreparedStatement ppst = null;
 
 		try {
@@ -312,15 +329,17 @@ public class H2SchemaDataAccessObject {
 			ppst.setString(1, guid);
 			ppst.execute();
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 	}
@@ -332,35 +351,38 @@ public class H2SchemaDataAccessObject {
 	 * @param rs
 	 *            ResultSet from SQL query
 	 * @return SchemaMetaData bean
+	 * @throws DataAccessException
 	 * 
-	 * @throws SQLException
-	 *             Handled in H2DataAccessObject
 	 */
-	private SchemaMetaData populateSchemaMetaData(ResultSet rs) throws SQLException {
+	private SchemaMetaData populateSchemaMetaData(ResultSet rs) throws DataAccessException {
 		SchemaMetaData schemaMetaData = new SchemaMetaData();
 		List<String> dataSampleGuids = new ArrayList<String>();
+		try {
+			String schemaGuid = rs.getString("s_guid");
 
-		String schemaGuid = rs.getString("s_guid");
+			schemaMetaData.setSchemaModelId(rs.getInt("schema_model_id"));
+			schemaMetaData.setsGuid(schemaGuid);
+			schemaMetaData.setsName(rs.getString("s_name"));
+			schemaMetaData.setsVersion(rs.getString("s_version"));
+			schemaMetaData.setsLastUpdate(rs.getTimestamp("s_lastupdate"));
+			schemaMetaData.setsDescription(rs.getString("s_description"));
 
-		schemaMetaData.setSchemaModelId(rs.getInt("schema_model_id"));
-		schemaMetaData.setsGuid(schemaGuid);
-		schemaMetaData.setsName(rs.getString("s_name"));
-		schemaMetaData.setsVersion(rs.getString("s_version"));
-		schemaMetaData.setsLastUpdate(rs.getTimestamp("s_lastupdate"));
-		schemaMetaData.setsDescription(rs.getString("s_description"));
+			do {
+				if (!rs.getString("s_guid").equals(schemaGuid)) {
+					rs.previous();
+					schemaMetaData.setsDataSamples(dataSampleGuids);
+					return schemaMetaData;
+				}
+				dataSampleGuids.add(rs.getString("ds_guid"));
+			} while (rs.next());
 
-		do {
-			if (!rs.getString("s_guid").equals(schemaGuid)) {
-				rs.previous();
-				schemaMetaData.setsDataSamples(dataSampleGuids);
-				return schemaMetaData;
-			}
-			dataSampleGuids.add(rs.getString("ds_guid"));
-		} while (rs.next());
+			schemaMetaData.setsDataSamples(dataSampleGuids);
 
-		schemaMetaData.setsDataSamples(dataSampleGuids);
-
-		return schemaMetaData;
+			return schemaMetaData;
+		} catch (SQLException e) {
+			logger.error("Error reading the result set of an H2 call.");
+			throw new DataAccessException("SQLException: Error reading the result set of an H2 prepared statement.");
+		}
 	}
 
 	/**
@@ -369,41 +391,48 @@ public class H2SchemaDataAccessObject {
 	 * @param rs
 	 *            ResultSet from the database call
 	 * @return A built SchemaMetaData bean
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	private Schema populateSchema(ResultSet rs) throws SQLException {
+	private Schema populateSchema(ResultSet rs) throws DataAccessException {
 		Schema schema = new Schema();
 		List<DataSampleMetaData> dataSampleMetaData = new ArrayList<DataSampleMetaData>();
 
-		String guid = rs.getString("s_guid");
-		schema.setsGuid(guid);
-		schema.setsName(rs.getString("s_name"));
-		schema.setsVersion(rs.getString("s_version"));
-		schema.setsLastUpdate(rs.getTimestamp("s_lastupdate"));
-		schema.setsDescription(rs.getString("s_description"));
-		schema.setSchemaModelId(rs.getInt("schema_model_id"));
+		try {
+			String guid = rs.getString("s_guid");
+			schema.setsGuid(guid);
+			schema.setsName(rs.getString("s_name"));
+			schema.setsVersion(rs.getString("s_version"));
+			schema.setsLastUpdate(rs.getTimestamp("s_lastupdate"));
+			schema.setsDescription(rs.getString("s_description"));
+			schema.setSchemaModelId(rs.getInt("schema_model_id"));
+			schema.setRecordsParsedCount(rs.getInt("s_sum_sample_records"));
+			schema.setsDomainName(rs.getString("s_domain_name"));
 
-		Map<String, Profile> profileMap = h2.getH2Metrics().getFieldMappingBySchemaGuid(guid);
-		schema.setsProfile(profileMap);
+			Map<String, Profile> profileMap = h2.getH2Metrics().getFieldMappingBySchemaGuid(guid);
+			schema.setsProfile(profileMap);
 
-		do {
-			String currentResultSetSchemaGuid = rs.getString("s_guid");
-			DataSampleMetaData dsmd = populateDsMetaData(rs);
-			if(dsmd != null && currentResultSetSchemaGuid.equals(guid)) {
-				dataSampleMetaData.add(dsmd);
-			} else {
-				if(!currentResultSetSchemaGuid.equals(guid)) {
-					rs.previous();
+			do {
+				String currentResultSetSchemaGuid = rs.getString("s_guid");
+				DataSampleMetaData dsmd = populateDsMetaData(rs);
+				if (dsmd != null && currentResultSetSchemaGuid.equals(guid)) {
+					dataSampleMetaData.add(dsmd);
 				} else {
-					logger.error("Data Sample Metadata not present for schema " + guid + ".");
+					if (!currentResultSetSchemaGuid.equals(guid)) {
+						rs.previous();
+					} else {
+						logger.error("Data Sample Metadata not present for schema " + guid + ".");
+					}
+					break;
 				}
-				break;
-			}
-		} while(rs.next());
-		
-		schema.setsDataSamples(dataSampleMetaData);
+			} while (rs.next());
 
-		return schema;
+			schema.setsDataSamples(dataSampleMetaData);
+
+			return schema;
+		} catch (SQLException e) {
+			logger.error("Error reading the result set of an H2 call.");
+			throw new DataAccessException("SQLException: Error reading the result set of an H2 prepared statement.");
+		}
 	}
 
 	/**
@@ -412,24 +441,29 @@ public class H2SchemaDataAccessObject {
 	 * @param rs
 	 *            Result set from PreparedStatement
 	 * @return DataSampleMetaData bean
-	 * @throws SQLException
+	 * @throws DataAccessException 
 	 */
-	private DataSampleMetaData populateDsMetaData(ResultSet rs) throws SQLException {
+	private DataSampleMetaData populateDsMetaData(ResultSet rs) throws DataAccessException {
 		DataSampleMetaData dsMetaData = new DataSampleMetaData();
-		
-		if(rs.getInt("data_sample_id") == 0) {
-			return null;
-		}
-		dsMetaData.setDataSampleId(rs.getInt("data_sample_id"));
-		dsMetaData.setDsGuid(rs.getString("ds_guid"));
-		dsMetaData.setDsName(rs.getString("ds_name"));
-		dsMetaData.setDsFileName(rs.getString("ds_file_name"));
-		dsMetaData.setDsFileType(rs.getString("ds_file_type"));
-		dsMetaData.setDsVersion(rs.getString("ds_version"));
-		dsMetaData.setDsLastUpdate(rs.getTimestamp("ds_last_update"));
-		dsMetaData.setDsDescription(rs.getString("ds_description"));
 
-		return dsMetaData;
+		try {
+			if (rs.getInt("data_sample_id") == 0) {
+				return null;
+			}
+			dsMetaData.setDataSampleId(rs.getInt("data_sample_id"));
+			dsMetaData.setDsGuid(rs.getString("ds_guid"));
+			dsMetaData.setDsName(rs.getString("ds_name"));
+			dsMetaData.setDsFileName(rs.getString("ds_file_name"));
+			dsMetaData.setDsFileType(rs.getString("ds_file_type"));
+			dsMetaData.setDsVersion(rs.getString("ds_version"));
+			dsMetaData.setDsLastUpdate(rs.getTimestamp("ds_last_update"));
+			dsMetaData.setDsDescription(rs.getString("ds_description"));
+
+			return dsMetaData;
+		} catch (SQLException e) {
+			logger.error("Error reading the result set of an H2 call.");
+			throw new DataAccessException("SQLException: Error reading the result set of an H2 prepared statement.");
+		}
 	}
 
 	/**
@@ -445,43 +479,61 @@ public class H2SchemaDataAccessObject {
 	 * 
 	 * @return The key generated from executing the statement
 	 * 
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 	private int addSchemaAndMapping(int schemaModelId, String guid, String name, String version, Timestamp lastUpdate,
-			String description, Map<String, Profile> profiles, List<DataSampleMetaData> dataSamples)
-					throws SQLException {
+			String description, int sumOfSampleRecords, String domainName, Map<String, Profile> profiles,
+			List<DataSampleMetaData> dataSamples) throws DataAccessException {
 
 		PreparedStatement addSchemaStatement;
 
-		addSchemaStatement = dbConnection.prepareStatement(ADD_SCHEMA_MODEL);
-		addSchemaStatement.setString(1, guid);
-		addSchemaStatement.setString(2, name);
-		addSchemaStatement.setString(3, version);
-		addSchemaStatement.setTimestamp(4, lastUpdate);
-		addSchemaStatement.setString(5, description);
-		addSchemaStatement.execute();
-		int schemaModelGeneratedId = h2.getGeneratedKey(addSchemaStatement);
-		addSchemaStatement.close();
+		try {
+			addSchemaStatement = dbConnection.prepareStatement(ADD_SCHEMA_MODEL);
+			addSchemaStatement.setString(1, guid);
+			addSchemaStatement.setString(2, name);
+			addSchemaStatement.setString(3, version);
+			addSchemaStatement.setTimestamp(4, lastUpdate);
+			addSchemaStatement.setString(5, description);
+			addSchemaStatement.setInt(6, sumOfSampleRecords);
+			addSchemaStatement.setString(7, domainName);
+			addSchemaStatement.execute();
+			int schemaModelGeneratedId = h2.getGeneratedKey(addSchemaStatement);
+			addSchemaStatement.close();
 
-		for (String fieldName : profiles.keySet()) {
-			Profile profile = profiles.get(fieldName);
-			h2.getH2Metrics().addSchemaField(schemaModelGeneratedId, fieldName, profile);
+			for (String fieldName : profiles.keySet()) {
+				Profile profile = profiles.get(fieldName);
+				h2.getH2Metrics().addSchemaField(schemaModelGeneratedId, fieldName, profile);
+			}
+
+			if (dataSamples.size() == 0) {
+				logger.warn("No data samples in schema object.");
+			}
+			for (DataSampleMetaData ds : dataSamples) {
+				PreparedStatement addSchemaDataSamplesMappingStatement;
+				int dataSampleId = ds.getDataSampleId();
+
+				addSchemaDataSamplesMappingStatement = dbConnection.prepareStatement(ADD_SCHEMA_DATA_SAMPLES_MAPPING);
+				addSchemaDataSamplesMappingStatement.setInt(1, schemaModelGeneratedId);
+				addSchemaDataSamplesMappingStatement.setInt(2, dataSampleId);
+				addSchemaDataSamplesMappingStatement.execute();
+				addSchemaDataSamplesMappingStatement.close();
+				
+				
+				PreparedStatement updateDataSampleName;
+				String dataSampleGuid = ds.getDsGuid();
+				String dataSampleName = ds.getDsName();
+				
+				updateDataSampleName = dbConnection.prepareStatement(UPDATE_DATA_SAMPLE_NAME_BY_GUID);
+				updateDataSampleName.setString(1, dataSampleName);
+				updateDataSampleName.setString(2, dataSampleGuid);
+				updateDataSampleName.execute();
+				updateDataSampleName.close();
+			}
+
+			return schemaModelGeneratedId;
+		} catch (SQLException e) {
+			logger.error("Error reading the result set of an H2 call.");
+			throw new DataAccessException("SQLException: Error reading the result set of an H2 prepared statement.");
 		}
-
-		if (dataSamples.size() == 0) {
-			logger.warn("No data samples in schema object.");
-		}
-		for (DataSampleMetaData ds : dataSamples) {
-			PreparedStatement addSchemaDataSamplesMappingStatement;
-			int dataSampleId = ds.getDataSampleId();
-
-			addSchemaDataSamplesMappingStatement = dbConnection.prepareStatement(ADD_SCHEMA_DATA_SAMPLES_MAPPING);
-			addSchemaDataSamplesMappingStatement.setInt(1, schemaModelGeneratedId);
-			addSchemaDataSamplesMappingStatement.setInt(2, dataSampleId);
-			addSchemaDataSamplesMappingStatement.execute();
-			addSchemaDataSamplesMappingStatement.close();
-		}
-
-		return schemaModelGeneratedId;
 	}
 }

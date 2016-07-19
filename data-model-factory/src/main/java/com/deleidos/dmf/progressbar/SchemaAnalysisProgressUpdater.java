@@ -6,7 +6,7 @@ import com.deleidos.dmf.analyzer.AnalyzerParameters;
 import com.deleidos.dmf.analyzer.AnalyzerProgressUpdater;
 import com.deleidos.dmf.exception.AnalyticsInitializationRuntimeException;
 import com.deleidos.dmf.framework.AbstractAnalyticsParser;
-import com.deleidos.dmf.framework.TikaSchemaProfilableParameters;
+import com.deleidos.dmf.framework.TikaSchemaAnalyzerParameters;
 import com.deleidos.dmf.web.SchemaWizardWebSocketUtility;
 import com.deleidos.dp.profiler.SchemaProfiler;
 import com.deleidos.dp.profiler.api.Profiler;
@@ -14,22 +14,22 @@ import com.deleidos.dp.profiler.api.Profiler;
 public class SchemaAnalysisProgressUpdater implements AnalyzerProgressUpdater {
 	private static final Logger logger = Logger.getLogger(SchemaAnalysisProgressUpdater.class);
 	private boolean sendUpdatesToProgressBar;
-	private TikaSchemaProfilableParameters params;
+	private TikaSchemaAnalyzerParameters params;
 	private SchemaProfiler profiler;
 
 	@Override
 	public void init(AnalyzerParameters parameters) {
-		if(!(parameters instanceof TikaSchemaProfilableParameters)) {
+		if(!(parameters instanceof TikaSchemaAnalyzerParameters)) {
 			throw new AnalyticsInitializationRuntimeException("Parameters not an instance of Schema Parameters.");
 		} else {
 			try {
-				params = (TikaSchemaProfilableParameters) parameters;
+				params = (TikaSchemaAnalyzerParameters) parameters;
 				profiler = (SchemaProfiler) params.get(Profiler.class);
+				sendUpdatesToProgressBar = true;
 			} catch (Exception e) {
 				sendUpdatesToProgressBar = false;
 				logger.error("Disabling detailed progress updates.", e);
 			}
-			sendUpdatesToProgressBar = true;
 		}
 	}
 

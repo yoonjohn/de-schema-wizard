@@ -1,136 +1,64 @@
 package com.deleidos.dp.histogram;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONObject;
-
-import com.deleidos.dp.beans.RegionData;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.deleidos.dp.beans.Histogram;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class AbstractBucketList implements BucketList {
-	private List<AbstractBucket> bucketList = null;
-	private String type = "bar";
-	private String series = "Values";
-	private String yaxis = "Frequency";
-	private List<String> labels;
-	private List<Integer> data;
-	private RegionData regionData = null;
-
-	@JsonProperty("region-data")
-	public RegionData getRegionData() {
-		return regionData;
-	}
-
-	@JsonProperty("region-data")
-	public void setRegionData(RegionData regionData) {
-		this.regionData = regionData;
-	}
-
-	public AbstractBucketList() { }
-
-	@JsonIgnore
+	public static final int STRING_BUCKET_LENGTH_CUTOFF = 15;
+	public static final int NUMBER_BUCKET_LENGTH_CUTOFF = 6;
 	public abstract List<AbstractBucket> getOrderedBuckets();
-
-	/*public JSONArray asJSONArray() {
-		List<AbstractBucket> bucketList = getOrderedBuckets();
-		JSONArray jArr = new JSONArray();
-		JSONObject obj = new JSONObject();
-		JSONArray labels = new JSONArray();
-		JSONArray data = new JSONArray();
-		obj.put("type", "bar");
-		obj.put("series", "Values");
-		obj.put("yaxis", "Frequency");
-		for(int i = 0; i < bucketList.size(); i++) {
-			AbstractBucket a = bucketList.get(i);
-			labels.put(a.getLabel());
-			data.put(a.getCount().intValue());
+	
+	
+	public Histogram asBean() {
+		Histogram histogram = new Histogram();
+		List<String> longLabels =  new ArrayList<String>();
+		List<String> labels = new ArrayList<String>();
+		List<Integer> data = new ArrayList<Integer>();
+		
+		for(AbstractBucket bucket : getOrderedBuckets()) {
+			String label = bucket.getLabel();
+			if(bucket instanceof NumberBucket) {
+				labels.add(NumberBucket.trimRawLabel(label, NUMBER_BUCKET_LENGTH_CUTOFF));
+			} else if(bucket instanceof TermBucket) {
+				labels.add(TermBucket.trimRawLabel(label, STRING_BUCKET_LENGTH_CUTOFF));
+			} else {
+				labels.add("".equals(bucket.getLabel()) ? AbstractBucket.EMPTY_STRING_INDICATOR : bucket.getLabel());
+			}
+			longLabels.add("".equals(label) ? AbstractBucket.EMPTY_STRING_INDICATOR : label);
+			data.add(bucket.getCount().intValue());
 		}
-		obj.put("labels", labels);
-		obj.put("data", data);
-		jArr.put(obj);
-		return jArr;
+		
+		histogram.setLabels(labels);
+		histogram.setLongLabels(longLabels);
+		histogram.setData(data);
+		return histogram;
 	}
-
-	public JSONObject asJSONObject() {
-		List<AbstractBucket> bucketList = getOrderedBuckets();
-		JSONObject obj = new JSONObject();
-		JSONArray labels = new JSONArray();
-		JSONArray data = new JSONArray();
-		obj.put("type", "bar");
-		obj.put("series", "Values");
-		obj.put("yaxis", "Frequency");
+	
+	/*public static AbstractBucketList finish(AbstractBucketList unfinishedHistogram) {
+		List<AbstractBucket> bucketList = unfinishedHistogram.getOrderedBuckets();
+		List<String> longLabels =  new ArrayList<String>();
+		List<String> labels = new ArrayList<String>();
+		List<Integer> data = new ArrayList<Integer>();
 		for(int i = 0; i < bucketList.size(); i++) {
 			AbstractBucket a = bucketList.get(i);
-			labels.put(a.getLabel());
-			data.put(a.getCount().intValue());
+			if(a instanceof NumberBucket) {
+				NumberBucket numberBucket = (NumberBucket) a;
+				labels.add(NumberBucket.trimLabelLength(numberBucket.getLabel(), TEMP_DEFAULT_BUCKET_DISPLAY_CUTOFF));
+			} else {
+				labels.add("".equals(a.getLabel()) ? AbstractBucket.EMPTY_STRING_INDICATOR : a.getLabel());
+			}
+			longLabels.add("".equals(a.getLabel()) ? AbstractBucket.EMPTY_STRING_INDICATOR : a.getLabel());
+			data.add(a.getCount().intValue());
 		}
-		obj.put("labels", labels);
-		obj.put("data", data);
-		return obj;
+		unfinishedHistogram.setLabels(labels);
+		unfinishedHistogram.setLongLabels(longLabels);
+		unfinishedHistogram.setData(data);
+		return unfinishedHistogram;
 	}*/
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getSeries() {
-		return series;
-	}
-
-	public void setSeries(String series) {
-		this.series = series;
-	}
-
-	public String getYaxis() {
-		return yaxis;
-	}
-
-	public void setYaxis(String yaxis) {
-		this.yaxis = yaxis;
-	}
-
-	public List<String> getLabels() {
-		if(labels != null) {
-			return labels;
-		} else {
-			bucketList = getOrderedBuckets();
-			labels = new ArrayList<String>();
-			for(int i = 0; i < bucketList.size(); i++) {
-				AbstractBucket a = bucketList.get(i);
-				labels.add(a.getLabel());
-			}
-			return labels;
-		}
-	}
-
-	public void setLabels(List<String> labels) {
-		this.labels = labels;
-	}
-
-	public List<Integer> getData() {
-		if(data != null) {
-			return data;
-		}else {
-			bucketList = getOrderedBuckets();
-			data = new ArrayList<Integer>();
-			for(int i = 0; i < bucketList.size(); i++) {
-				AbstractBucket a = bucketList.get(i);
-				data.add(a.getCount().intValue());
-			}
-			return data;
-		}
-	}
-
-	public void setData(List<Integer> data) {
-		this.data = data;
-	}
 
 }

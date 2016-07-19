@@ -13,15 +13,21 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             // bower:js
+            'src/main/webapp/bower_components/jquery/dist/jquery.js',
             'src/main/webapp/bower_components/angular/angular.js',
             'src/main/webapp/bower_components/angular-animate/angular-animate.js',
             'src/main/webapp/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+            'src/main/webapp/bower_components/angular-cookies/angular-cookies.js',
             'src/main/webapp/bower_components/Chart.js/Chart.js',
             'src/main/webapp/bower_components/angular-chart.js/dist/angular-chart.js',
             'src/main/webapp/bower_components/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js',
             'src/main/webapp/bower_components/angular-resource/angular-resource.js',
             'src/main/webapp/bower_components/angular-route/angular-route.js',
             'src/main/webapp/bower_components/angular-sanitize/angular-sanitize.js',
+            'src/main/webapp/bower_components/ngSmoothScroll/lib/angular-smooth-scroll.js',
+            'src/main/webapp/bower_components/ez-ng/dist/ez-ng.js',
+            'src/main/webapp/bower_components/angular-hotkeys/build/hotkeys.js',
+            'src/main/webapp/bower_components/angular-ui-tour/dist/angular-ui-tour.js',
             'src/main/webapp/bower_components/ng-csv/build/ng-csv.min.js',
             'src/main/webapp/bower_components/angular-websocket/angular-websocket.min.js',
             'src/main/webapp/bower_components/angular-mocks/angular-mocks.js',

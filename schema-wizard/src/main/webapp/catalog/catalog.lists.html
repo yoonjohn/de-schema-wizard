@@ -1,0 +1,91 @@
+<div id="logoPage">
+    <div id="logoDialog">
+        <span style="float: right; margin-top: 160px; margin-right: 20px;">
+            Version {{version}}
+        </span>
+    </div>
+</div>
+<div id="catalogPage" style="margin: 2px 6px; display: none;">
+    <h3>Catalog of Schemas, Data Samples, and Domains</h3>
+
+    <section class="tab" style="position: absolute; top: 88px; right: 12px; bottom: 12px; left: 12px;"
+             ng-controller="tabCtrl as panel">
+        <!-- --------------------- Tab Controls --------------------------------- -->
+        <div style="height: 29px;">
+            <ul class="tab-headers">
+                <li ng-class="{active:panel.isSelected(1) }">
+                    <a href onclick="blur();" ng-click="panel.selectTab(1)"
+                       tour-step
+                       tour-step-belongs-to="catalog"
+                       tour-step-title= {{mainTour.schemaMain.title}}
+                       tour-step-content={{mainTour.schemaMain.message}}
+                       tour-step-order="10"
+                       tour-step-placement="right"
+                       tour-step-orphan="false"
+                       tour-step-backdrop="false">
+                    Schemas</a>
+                </li>
+                <li ng-class="{active:panel.isSelected(2)  }">
+                    <a href onclick="blur();" ng-click="panel.selectTab(2)"
+                       tour-step
+                       tour-step-belongs-to="catalog"
+                       tour-step-title={{mainTour.dataSampleMain.title}}
+                       tour-step-content={{mainTour.dataSampleMain.message}}
+                       tour-step-order="20"
+                       tour-step-placement="right"
+                       tour-step-orphan="false"
+                       tour-step-backdrop="false">
+                    Data Samples</a>
+                </li>
+                <li ng-class="{active:panel.isSelected(3)}">
+                    <a href onclick="blur();" ng-click="panel.selectTab(3)"
+                       tour-step
+                       tour-step-belongs-to="catalog"
+                       tour-step-title={{mainTour.domainsMain.title}}
+                       tour-step-content={{mainTour.domainsMain.message}}
+                       tour-step-order="30"
+                       tour-step-placement="right"
+                       tour-step-orphan="false"
+                       tour-step-backdrop="false">
+                    Domains</a>
+                </li>
+            </ul>
+        </div>
+        <!-- --------------------- Tabbed Panels -------------------------------- -->
+        <div id="catalogPanel" class="panel-primary">
+            <!-- --------------------- Schemas Tab -------------------------- -->
+            <div ng-show="panel.isSelected(1)" class="container tab-panel">
+                <p>Click on a schema name to open it.</p>
+                <div class="panel-primary container" style="width: 99%; padding: 0px;">
+                    <div id="schemaPanel" class="container">
+                        <div class="row">
+                            <ng-include src="'catalog/catalog.schemas.list.html'"></ng-include>
+                        </div><br>
+                    </div>
+                </div>
+            </div>
+            <!-- --------------------- Data Samples Tab ------------------------- -->
+            <div ng-show="panel.isSelected(2)" class="container tab-panel">
+                <p>Click on a data sample name to open it.</p>
+                <div class="panel-primary container" style="width: 99%; padding: 0px;">
+                    <div id="samplePanel" class="container">
+                        <div class="row">
+                            <ng-include src="'catalog/catalog.samples.list.html'"></ng-include>
+                        </div><br>
+                    </div>
+                </div>
+            </div>
+            <!-- --------------------- Domains Tab -------------------------- -->
+            <div ng-show="panel.isSelected(3)" class="container tab-panel">
+                <p>Click on a domain name to open it.</p>
+                <div class="panel-primary container" style="width: 99%; padding: 0px;">
+                    <div id="domainPanel" class="container">
+                        <div class="row">
+                            <ng-include src="'catalog/catalog.domains.list.html'"></ng-include>
+                        </div><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

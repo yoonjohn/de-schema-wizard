@@ -51,29 +51,6 @@ public abstract class AbstractMarkSupportedAnalyticsDetector extends AnalyticsDe
 	}
 
 	/**
-	 * Get the marks that represent a range of data in the file that matches the given detector type.
-	 * As of 1/19, waiting for possible future implementation
-	 * @return int[0] start mark, int[1] end mark
-	 */
-	public int[] getValidBoundaries() {
-		return new int[] {validStartMark, validEndMark};
-	}
-
-	/**
-	 * Implement this method to set the mark that starts valid formatting within the file.
-	 */
-	public void setValidStartMark(int startMark) {
-		validStartMark = startMark;
-	}
-
-	/**
-	 * Implement this method to set the mark that ends valid formatting within this file.
-	 */
-	public void setValidEndMark(int endMark) {
-		validEndMark = endMark;
-	}
-
-	/**
 	 * Main override method for any new detectors.  Call getTikaInputStream() within this method to obtain the working input stream.
 	 * This is a protective layer to simplify the Apache Tika framework.
 	 * @param metadata Any metadata you want to include or update with the class

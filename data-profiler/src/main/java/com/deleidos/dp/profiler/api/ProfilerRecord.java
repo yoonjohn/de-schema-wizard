@@ -20,6 +20,10 @@ public interface ProfilerRecord {
 	 */
 	public Map<String, List<Object>> normalizeRecord(GroupingBehavior groupingBehavior);
 	
+	default Map<String, List<Object>> normalizeRecord() {
+		return normalizeRecord(GroupingBehavior.GROUP_ARRAY_VALUES);
+	}
+	
 	default int recordProgressWeight() {
 		return 1;
 	}

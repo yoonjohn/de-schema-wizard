@@ -1,36 +1,44 @@
 package com.deleidos.dp.interpretation;
 
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
 
-import com.deleidos.dp.beans.Domain;
-import com.deleidos.dp.beans.Profile;
+import org.apache.log4j.Logger;
 
-public class InterpretationEngineFacade implements InterpretationEngine {
+import com.deleidos.dp.exceptions.DataAccessException;
+import com.deleidos.dp.interpretation.builtin.BuiltinInterpretationEngine;
+
+public class InterpretationEngineFacade {
+	private static final String IE_ADDR_KEY = "SW_IE_PORT";
+	private static final String DEFAULT_IE_ADDR = "http://localhost:5000";
+	private static final Logger logger = Logger.getLogger(InterpretationEngineFacade.class);
 	private static InterpretationEngine interpretationEngine = null;
-	
-	public static InterpretationEngine getInstance(InterpretationEngine engine) {
-		if(interpretationEngine == null) {
-			interpretationEngine = engine;
-		}
-		return interpretationEngine;
-	}
-	
-	public static InterpretationEngine getInstance() {
-		if(interpretationEngine == null) {
-			interpretationEngine = new JavaInterpretationEngine(); // java based, for now
+
+	public static InterpretationEngine setInstance(IEConfig config) throws DataAccessException {
+		if(config.useBuiltin()) {
+			interpretationEngine = new BuiltinInterpretationEngine(config.isFakeGeocode());
+			logger.info("Using built-in interpretation engine.");
+		} else {
+			interpretationEngine = new HttpInterpretationEngine(config);
 		}
 		return interpretationEngine;
 	}
 
-	@Override
-	public List<Domain> getAvailableDomains() {
-		return interpretationEngine.getAvailableDomains();
-	}
-
-	@Override
-	public Map<String, Profile> interpret(Domain domain, Map<String, Profile> profileMap) {
-		return interpretationEngine.interpret(domain, profileMap);
+	public static InterpretationEngine getInstance() throws DataAccessException {
+		if(interpretationEngine == null) {
+			try {
+				IEConfig config = new IEConfig().load();
+				if(config.useBuiltin()) {
+					interpretationEngine = new BuiltinInterpretationEngine(false);
+				} else {
+					interpretationEngine = new HttpInterpretationEngine(config);
+				}
+			} catch(IOException e) {
+				logger.error(e);
+				logger.error("Configuration files not found.");
+				interpretationEngine = new BuiltinInterpretationEngine(false);
+			}
+		}
+		return interpretationEngine;
 	}
 
 }

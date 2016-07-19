@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.beans.DataSampleMetaData;
 import com.deleidos.dp.beans.Profile;
+import com.deleidos.dp.exceptions.DataAccessException;
 
 /**
  * Data Access Object meant to communicate solely with sample data in the H2
@@ -30,7 +31,7 @@ public class H2SampleDataAccessObject {
 	private static final Logger logger = H2DataAccessObject.logger;
 	private H2DataAccessObject h2;
 	private Connection dbConnection;
-	private final String ADD_DATA_SAMPLE = "INSERT INTO data_sample VALUES (NULL, ?, ?, ?, ?, ? ,? ,?, ?);";
+	private final String ADD_DATA_SAMPLE = "INSERT INTO data_sample VALUES (NULL, ?, ?, ?, ?, ? ,? ,?, ?, ?, ?);";
 	private final String QUERY_SAMPLE_NAMES = "SELECT ds_name, ds_file_type FROM data_sample ORDER BY ds_name ASC";
 	private final String QUERY_SAMPLE_IDS_BY_NAME = "SELECT data_sample_id FROM data_sample WHERE ds_name = ?";
 	private final String QUERY_SAMPLE_IDS_BY_GUID = "SELECT data_sample_id FROM data_sample WHERE ds_guid = ?";
@@ -49,7 +50,7 @@ public class H2SampleDataAccessObject {
 		dbConnection = h2.getDBConnection();
 	}
 
-	public int getSampleFieldIdBySampleGuidAndName(String sampleGuid, String fieldName) {
+	public int getSampleFieldIdBySampleGuidAndName(String sampleGuid, String fieldName) throws DataAccessException {
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
 		int id = -1;
@@ -68,22 +69,25 @@ public class H2SampleDataAccessObject {
 				}
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return id;
@@ -94,9 +98,12 @@ public class H2SampleDataAccessObject {
 	 * 
 	 * @param guid
 	 * @return DataSampleMetaData
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public DataSample getSampleByGuid(String guid) {
+	public DataSample getSampleByGuid(String guid) throws DataAccessException {
+		if(h2.getH2Database().getFailedAnalysisMapping().containsKey(guid)) {
+			return constructFailedAnalysisSample(guid);
+		}
 		DataSample ds = new DataSample();
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
@@ -113,25 +120,35 @@ public class H2SampleDataAccessObject {
 				return null;
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return ds;
+	}
+
+	public DataSample constructFailedAnalysisSample(String guid) {
+		DataSample failedAnalysisSample = new DataSample();
+		failedAnalysisSample.setDsGuid(guid);
+		failedAnalysisSample.setDsDescription(h2.getH2Database().getFailedAnalysisMapping().get(guid));
+		return failedAnalysisSample;
 	}
 
 	/**
@@ -140,10 +157,10 @@ public class H2SampleDataAccessObject {
 	 * @param guid
 	 *            the guid of the sample
 	 * @return the DataSampleMetaData object representing the sample
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 *             exception thrown to main H2DAO
 	 */
-	public DataSampleMetaData getDataSampleMetaDataByGuid(String guid) {
+	public DataSampleMetaData getDataSampleMetaDataByGuid(String guid) throws DataAccessException {
 		DataSampleMetaData dsMeta = new DataSampleMetaData();
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
@@ -159,22 +176,25 @@ public class H2SampleDataAccessObject {
 				return null;
 			}
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return dsMeta;
@@ -185,9 +205,9 @@ public class H2SampleDataAccessObject {
 	 * 
 	 * @param guid
 	 * @return
-	 * @throws SQLException
+	 * @throws DataAccessException 
 	 */
-	public Map<String, Profile> getSampleFieldByGuid(String guid) {
+	public Map<String, Profile> getSampleFieldByGuid(String guid) throws DataAccessException {
 		return h2.getH2Metrics().getFieldMappingBySampleGuid(guid);
 	}
 
@@ -195,9 +215,9 @@ public class H2SampleDataAccessObject {
 	 * Gets a list of DataSampleMetaData for the catalog
 	 * 
 	 * @return List<DataSampleMetaData>
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public List<DataSampleMetaData> getAllSampleMetaData() {
+	public List<DataSampleMetaData> getAllSampleMetaData() throws DataAccessException {
 		List<DataSampleMetaData> dsList = new ArrayList<DataSampleMetaData>();
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
@@ -212,22 +232,25 @@ public class H2SampleDataAccessObject {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return dsList;
@@ -237,9 +260,9 @@ public class H2SampleDataAccessObject {
 	 * The a list of all existing sample names paired with their file type
 	 * 
 	 * @return a mapping of existing samples name with file types
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public Map<String, String> getExistingSampleNames() {
+	public Map<String, String> getExistingSampleNames() throws DataAccessException {
 		Map<String, String> existingSampleNames = new HashMap<String, String>();
 		PreparedStatement ppst = null;
 		ResultSet rs = null;
@@ -255,22 +278,25 @@ public class H2SampleDataAccessObject {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 result set.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 result set.");
 			}
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 		return existingSampleNames;
@@ -312,53 +338,56 @@ public class H2SampleDataAccessObject {
 	 * @param sample
 	 *            the DataSample bean
 	 * @return the guid of the newly added data sample
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public String addSample(DataSample sample) throws SQLException {
-		dbConnection.setAutoCommit(false);
-		DataSample updatedBean = adjustDataSampleBean(sample);
-		int dataSampleId = addSample(updatedBean.getDsGuid(), updatedBean.getDsName(), updatedBean.getDsVersion(),
-				updatedBean.getDsLastUpdate(), updatedBean.getDsDescription(), updatedBean.getDsFileName(),
-				updatedBean.getDsFileType(), updatedBean.getDsExtractedContentDir());
-		for (String fieldName : sample.getDsProfile().keySet()) {
-			Profile profile = sample.getDsProfile().get(fieldName);
-			h2.getH2Metrics().addSampleField(dataSampleId, fieldName, profile);
-
+	public String addSample(DataSample sample) throws DataAccessException {
+		if(h2.getH2Database().getFailedAnalysisMapping().containsKey(sample.getDsGuid())) {
+			return sample.getDsGuid();
 		}
+		try {
+			dbConnection.setAutoCommit(false);
+			DataSample updatedBean = adjustDataSampleBean(sample);
+			int dataSampleId = addSample(updatedBean.getDsGuid(), updatedBean.getDsName(), updatedBean.getDsVersion(),
+					updatedBean.getDsLastUpdate(), updatedBean.getDsDescription(), updatedBean.getDsFileName(),
+					updatedBean.getDsFileType(), updatedBean.getDsExtractedContentDir(),
+					updatedBean.getRecordsParsedCount(), updatedBean.getDsFileSize());
+			for (String fieldName : sample.getDsProfile().keySet()) {
+				Profile profile = sample.getDsProfile().get(fieldName);
+				h2.getH2Metrics().addSampleField(dataSampleId, fieldName, profile);
+			}
 
-		dbConnection.setAutoCommit(true);
+			dbConnection.setAutoCommit(true);
+		} catch (SQLException e) {
+			logger.error("Error setting the auto commit of H2.");
+			throw new DataAccessException("SQLException: Error setting the auto commit of an H2 call.");
+		}
 		return sample.getDsGuid();
-	}
-
-	// TODO
-	public void addSampleMetaData(DataSampleMetaData sampleMetaData) {
-		addSample(sampleMetaData.getDsGuid(), sampleMetaData.getDsName(), sampleMetaData.getDsVersion(),
-				sampleMetaData.getDsLastUpdate(), sampleMetaData.getDsDescription(), sampleMetaData.getDsFileName(),
-				sampleMetaData.getDsFileType(), sampleMetaData.getDsExtractedContentDir());
 	}
 
 	/**
 	 * Delete a Data Sample from the database by its GUID
 	 * 
 	 * @param guid
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public void deleteSchemaFromDeletionQueue(String guid) {
+	public void deleteSchemaFromDeletionQueue(String guid) throws DataAccessException {
 		PreparedStatement ppst = null;
 		try {
 			ppst = dbConnection.prepareStatement(DELETE_SAMPLE_FROM_DELETION_QUEUE);
 			ppst.setString(1, guid);
 			ppst.execute();
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
 	}
@@ -368,9 +397,9 @@ public class H2SampleDataAccessObject {
 	 * 
 	 * @param guid
 	 *            The GUID of a Data Sample
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public void deleteSampleByGuid(String guid) {
+	public void deleteSampleByGuid(String guid) throws DataAccessException {
 		PreparedStatement ppst = null;
 
 		try {
@@ -378,18 +407,19 @@ public class H2SampleDataAccessObject {
 			ppst.setString(1, guid);
 			ppst.execute();
 		} catch (SQLException e) {
-			logger.error("Error executing query.");
-			e.printStackTrace();
+			logger.error("Error executing H2 query.");
+			logger.error(e);
+			throw new DataAccessException("SQLException: Error executing the H2 query.");
 		} finally {
 			try {
 				if (ppst != null)
 					ppst.close();
 			} catch (SQLException e) {
-				logger.error("Error executing query.");
-				e.printStackTrace();
+				logger.error("Error closing the H2 prepared statement.");
+				logger.error(e);
+				throw new DataAccessException("SQLException: Error closing the H2 prepared statement");
 			}
 		}
-
 	}
 
 	// Private Methods
@@ -399,20 +429,26 @@ public class H2SampleDataAccessObject {
 	 * @param rs
 	 *            Result set from PreparedStatement
 	 * @return DataSampleMetaData bean
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	private DataSample populateDataSample(ResultSet rs) throws SQLException {
+	private DataSample populateDataSample(ResultSet rs) throws DataAccessException {
 		DataSample dataSample = new DataSample();
 
-		dataSample.setDataSampleId(rs.getInt("data_sample_id"));
-		dataSample.setDsGuid(rs.getString("ds_guid"));
-		dataSample.setDsName(rs.getString("ds_name"));
-		dataSample.setDsFileName(rs.getString("ds_file_name"));
-		dataSample.setDsFileType(rs.getString("ds_file_type"));
-		dataSample.setDsVersion(rs.getString("ds_version"));
-		dataSample.setDsLastUpdate(rs.getTimestamp("ds_last_update"));
-		dataSample.setDsDescription(rs.getString("ds_description"));
-		dataSample.setDsExtractedContentDir(rs.getString("ds_extracted_content_dir"));
+		try {
+			dataSample.setDataSampleId(rs.getInt("data_sample_id"));
+			dataSample.setDsGuid(rs.getString("ds_guid"));
+			dataSample.setDsName(rs.getString("ds_name"));
+			dataSample.setDsFileName(rs.getString("ds_file_name"));
+			dataSample.setDsFileType(rs.getString("ds_file_type"));
+			dataSample.setDsVersion(rs.getString("ds_version"));
+			dataSample.setDsLastUpdate(rs.getTimestamp("ds_last_update"));
+			dataSample.setDsDescription(rs.getString("ds_description"));
+			dataSample.setDsExtractedContentDir(rs.getString("ds_extracted_content_dir"));
+			dataSample.setDsFileSize(rs.getInt("ds_file_size"));
+		} catch (SQLException e) {
+			logger.error("Error reading the result set of an H2 call.");
+			throw new DataAccessException("SQLException: Error reading the result set of an H2 prepared statement.");
+		}
 
 		Map<String, Profile> dsProfile = h2.getH2Metrics().getFieldMappingBySampleGuid(dataSample.getDsGuid());
 		dataSample.setDsProfile(dsProfile);
@@ -425,20 +461,26 @@ public class H2SampleDataAccessObject {
 	 * @param rs
 	 *            Result set from PreparedStatement
 	 * @return DataSampleMetaData bean
-	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	private DataSampleMetaData populateDataSampleMetaData(ResultSet rs) throws SQLException {
+	private DataSampleMetaData populateDataSampleMetaData(ResultSet rs) throws DataAccessException {
 		DataSampleMetaData dsMetaData = new DataSampleMetaData();
 
-		dsMetaData = new DataSampleMetaData();
-		dsMetaData.setDataSampleId(rs.getInt("data_sample_id"));
-		dsMetaData.setDsGuid(rs.getString("ds_guid"));
-		dsMetaData.setDsName(rs.getString("ds_name"));
-		dsMetaData.setDsFileName(rs.getString("ds_file_name"));
-		dsMetaData.setDsFileType(rs.getString("ds_file_type"));
-		dsMetaData.setDsVersion(rs.getString("ds_version"));
-		dsMetaData.setDsLastUpdate(rs.getTimestamp("ds_last_update"));
-		dsMetaData.setDsDescription(rs.getString("ds_description"));
+		try {
+			dsMetaData = new DataSampleMetaData();
+			dsMetaData.setDataSampleId(rs.getInt("data_sample_id"));
+			dsMetaData.setDsGuid(rs.getString("ds_guid"));
+			dsMetaData.setDsName(rs.getString("ds_name"));
+			dsMetaData.setDsFileName(rs.getString("ds_file_name"));
+			dsMetaData.setDsFileType(rs.getString("ds_file_type"));
+			dsMetaData.setDsVersion(rs.getString("ds_version"));
+			dsMetaData.setDsLastUpdate(rs.getTimestamp("ds_last_update"));
+			dsMetaData.setDsDescription(rs.getString("ds_description"));
+			dsMetaData.setDsFileSize(rs.getInt("ds_file_size"));
+		} catch (SQLException e) {
+			logger.error("Error reading the result set of an H2 call.");
+			throw new DataAccessException("SQLException: Error reading the result set of an H2 prepared statement.");
+		}
 
 		return dsMetaData;
 	}
@@ -453,10 +495,9 @@ public class H2SampleDataAccessObject {
 	 * @param fileName
 	 * @param fileType
 	 * @return
-	 * @throws SQLException
 	 */
 	private int addSample(String guid, String name, String version, Timestamp timestamp, String description,
-			String fileName, String fileType, String extractedContentDir) {
+			String fileName, String fileType, String extractedContentDir, int recordsParsedCount, int fileSize) {
 		PreparedStatement ppst = null;
 		int dataSampleId = -1;
 
@@ -470,6 +511,8 @@ public class H2SampleDataAccessObject {
 			ppst.setTimestamp(6, timestamp);
 			ppst.setString(7, description);
 			ppst.setString(8, extractedContentDir);
+			ppst.setInt(9, recordsParsedCount);
+			ppst.setInt(10, fileSize);
 			ppst.execute();
 
 			dataSampleId = h2.getGeneratedKey(ppst);
@@ -492,7 +535,7 @@ public class H2SampleDataAccessObject {
 		return dataSampleId;
 	}
 
-	private DataSample adjustDataSampleBean(DataSample dataSample) {
+	private DataSample adjustDataSampleBean(DataSample dataSample) throws DataAccessException {
 		String sourceNameNoPath = dataSample.getDsFileName();
 		int slashIndex = sourceNameNoPath.lastIndexOf("/");
 		if (slashIndex >= 0 && slashIndex < sourceNameNoPath.length() - 1) {

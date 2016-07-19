@@ -1,0 +1,245 @@
+<div style="margin: 6px; width: 100%;">
+    <h4 style="margin: 2px 0px;">Schema Wizard: Finalize Schema Step</h4>
+    <div class="panel-primary"
+         style="width: 604px; margin: 0 auto; margin-top: -25px; margin-bottom: 2px; padding: 1px;">
+        <img style="border: none;" src="assets/img/wizard-finalize.png"/>
+    </div>
+    <div id="wizardFinalizeSchemaContainer"
+         class="panel-primary container" style="width:99%; padding:6px;">
+        <div class="row" style="margin-bottom: 6px; padding-bottom: 0px;">
+            <div class="col-xs-12 panel-group" style="margin-bottom: 0px;">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            Schema Details
+                            <img style="border: none; float: right; margin-top: -3px; margin-right: 0px;"
+                                 src="assets/img/blue-tour-bus-22x22.png"
+                                 uib-tooltip="Take a tour of the Finalize Schema Page"
+                                 tooltip-placement="bottom"
+                                 ng-click="tour.startAt('500')"
+                                 tour-step-template-url="'schema-wizard/schema-wizard.tour-first-step.template.html'"
+                                 tour-step="500"
+                                 tour-step-title={{finalizeSchemaTour.step1.title}}
+                                 tour-step-order="500"
+                                 tour-step-content={{finalizeSchemaTour.step1.message}}
+                                 tour-step-prevStep="500"
+                                 tour-step-orphan="true"
+                                 tour-step-backdrop="false">
+                        </h3>
+                    </div>
+                    <table id="data-sources-table-title" class="table drag-drop">
+                        <tr>
+                            <th style="width: 28%;"
+                                tour-step
+                                tour-step-title={{finalizeSchemaTour.step2.title}}
+                                tour-step-content={{finalizeSchemaTour.step2.message}}
+                                tour-step-order="510"
+                                tour-step-placement="right"
+                                tour-step-orphan="false"
+                                tour-step-backdrop="false">Field</th>
+                            <th style="width: 17%;"
+                                tour-step
+                                tour-step-title={{finalizeSchemaTour.step3.title}}
+                                tour-step-content={{finalizeSchemaTour.step3.message}}
+                                tour-step-order="520"
+                                tour-step-placement="right"
+                                tour-step-orphan="false"
+                                tour-step-backdrop="false">Aliases</th>
+                            <th style="width: 5%;">Main Type</th>
+                            <th style="width: 3%;">Detail Type</th>
+                            <th style="width: 6%; text-align: center;">Min</th>
+                            <th style="width: 5%; text-align: center;">Max</th>
+                            <th style="width: 5%; text-align: center;">Average</th>
+                            <th style="width: 5%; text-align: center;">Std Dev</th>
+                            <th style="width: 2%; text-align: center;">Distinct</th>
+                            <th style="width: 4%; text-align: center;">Presence</th>
+                            <th style="width: 11%;">Interpretation</th>
+                        </tr>
+                    </table>
+                    <div id="wizardFinalizeSchemaPanelBody" class="panel-body"
+                         style="padding-left: 0px; height: 346px; overflow-y: scroll">
+                        <table id="data-sources-table" class="table drag-drop">
+                            <tbody ng-repeat="(field, profile) in currentSchema.sProfile track by $index">
+                            <tr ng-style="$index % 2 === 0 && {'background-color': '#ffffff'} ||
+                                          $index % 2 === 1 && {'background-color': '#f9f9f9'}">
+                                <td style="width: 30%; padding-left: 4px;">
+                                    <span class="btn-property">
+                                        <form id="{{'fieldNameForm' + $index}}">
+                                            <b>
+                                                <input type="text" name="newName" ng-model="field"
+                                                       style="width: 100%;"
+                                                       ng-init="oldValue = ''"
+                                                       ng-focus="oldValue = field"
+                                                       ng-blur="field=editFieldName($event, oldValue, field)"
+                                                       onmouseover="this.scrollLeft = this.scrollWidth"
+                                                       uib-tooltip="{{field}}"
+                                                       tooltip-placement="bottom">
+                                            </b>
+                                            <button style="border: none; background-color: transparent;"
+                                                    uib-dropdown-toggle
+                                                    ng-click="isCollapsed = !isCollapsed;" onclick="this.blur();"
+                                                    ng-hide="profile['main-type'] == 'string' && profile['detail']['detail-type'] == 'phrase'">
+                                                <span ng-show="isCollapsed" class="caret"></span>
+                                                <span ng-show="!isCollapsed" class="inverted-caret"></span>
+                                            </button>
+                                        </form>
+                                    </span>
+                                </td>
+                                <td style="width: 21%; padding-left: 14px;">
+                                    <span ng-repeat="alias in currentSchema.sProfile[field]['alias-names'] as aliases track by $index"
+                                          ng-hide="alias['alias-name'] === field"
+                                          style="margin-left: 2px;">
+                                        {{alias['alias-name']}}{{$index + 2 < aliases.length ? ', ' : ''}}
+                                    </span>
+                                </td>
+                                <td style="width: 3%; text-align: center;" ng-hide="profile['manually-added']">
+                                    {{profile["main-type"]}}
+                                </td>
+                                <td ng-show="profile['manually-added']">
+                                    <select name="singleSelect" ng-model="profile['main-type']"
+                                            ng-change="profile['detail']['detail-type'] = null">
+                                        <option value="number">number</option>
+                                        <option value="string">string</option>
+                                        <option value="binary">binary</option>
+                                    </select>
+                                </td>
+                                <td style="width: 6%; text-align: center;" ng-hide="profile['manually-added']">
+                                    {{profile["detail"]["detail-type"]}}
+                                </td>
+                                <td ng-show="profile['manually-added']">
+                                    <select name="singleSelect" ng-model="profile['detail']['detail-type']">
+                                        <option ng-show="profile['main-type'] == 'number'" value="integer">integer
+                                        </option>
+                                        <option ng-show="profile['main-type'] == 'number'" value="decimal">decimal
+                                        </option>
+                                        <option ng-show="profile['main-type'] == 'number'" value="exponent">exponent
+                                        </option>
+                                        <option ng-show="profile['main-type'] == 'string'" value="datetime">datetime
+                                        </option>
+                                        <option ng-show="profile['main-type'] == 'string'" value="boolean">boolean
+                                        </option>
+                                        <option ng-show="profile['main-type'] == 'string'" value="term">term</option>
+                                        <option ng-show="profile['main-type'] == 'string'" value="phrase">phrase
+                                        </option>
+                                        <option ng-show="profile['main-type'] == 'binary'" value="image">image</option>
+                                        <option ng-show="profile['main-type'] == 'binary'" value="video">video</option>
+                                        <option ng-show="profile['main-type'] == 'binary'" value="audio">audio</option>
+                                    </select>
+                                </td>
+                                <td style="width: 5%; text-align: right;" ng-hide="profile['presence'] === -1">
+                                    {{profile["detail"]["min"]}}
+                                    {{profile["detail"]["min-length"]}}
+                                </td>
+                                <td ng-show="profile['presence'] === -1">&nbsp;</td>
+                                <td style="width: 5%; text-align: right;" ng-hide="profile['presence'] === -1">
+                                    {{profile["detail"]["max"]}}
+                                    {{profile["detail"]["max-length"]}}
+                                    {{profile["detail"]["length"]}}
+                                </td>
+                                <td ng-show="profile['presence'] === -1">&nbsp;</td>
+                                <td style="width: 5%; text-align: right;" ng-hide="profile['presence'] === -1">
+                                    {{profile["detail"]["average"] | number:2}}
+                                    {{profile["detail"]["average-length"] | number:2}}
+                                </td>
+                                <td ng-show="profile['presence'] === -1">&nbsp;</td>
+                                <td style="width: 5%; text-align: right;" ng-hide="profile['presence'] === -1">
+                                    {{profile["detail"]["std-dev"] | number:2}}
+                                    {{profile["detail"]["std-dev-length"] | number:2}}
+                                </td>
+                                <td ng-show="profile['presence'] === -1">&nbsp;</td>
+                                <td style="width: 3%; text-align: right;" ng-hide="profile['presence'] === -1">
+                                    {{profile["detail"]["num-distinct-values"]}}
+                                </td>
+                                <td ng-show="profile['presence'] === -1">&nbsp;</td>
+                                <td style="width: 6%; text-align: center;" ng-hide="profile['presence'] === -1">
+                                    {{profile["presence"]}}
+                                </td>
+                                <td ng-show="profile['presence'] === -1">&nbsp;</td>
+                                <td style="width: 12%; text-align: left;" ng-hide="profile['presence'] === -1">
+                                    <span ng-repeat="interpretation in profile.interpretations">
+                                        {{interpretation.interpretation}}{{$last ? '' : ', '}}
+                                    </span>
+                                </td>
+                                <td ng-show="profile['presence'] === -1">&nbsp;</td>
+                            </tr>
+                            <span ng-hide="isCollapsed || profile['presence'] === -1"
+                                  ng-style="$index %2 === 0 && {'background-color': '#ffffff'} ||
+                                            $index %2 === 1 && {'background-color': '#f9f9f9'}">
+                                <td></td>
+                                <td colspan="8">
+                                    <div uib-collapse="isCollapsed">
+                                        <ng-include
+                                            src="'schema-wizard/schema-wizard.visualizations.html'"></ng-include>
+                                    </div>
+                                </td>
+                            </span>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-include src="'schema-wizard/schema-wizard.legend.html'"></ng-include>
+        <br>
+        <div class="row" style="margin-bottom: 0px; padding-bottom: 0px;">
+            <div class="col-xs-12 panel-group" style="margin-bottom: 0px;">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Data Samples</h3>
+                    </div>
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Sample Name</th>
+                            <th>File Name</th>
+                            <th>File Type</th>
+                            <th>File Size</th>
+                        </tr>
+                    </table>
+                    <div class="panel-body" style="padding-left: 0px; height: 100px; overflow-y: scroll;">
+                        <table class="table drag-drop header-fixed">
+                            <tbody>
+                            <tr ng-repeat="sample in currentSchema.sDataSamples track by $index">
+                                <td>{{sample.dsName}}</td>
+                                <td>{{sample.dsFileName}}</td>
+                                <td>{{sample.dsFileType}}</td>
+                                <td>{{model.dataSamples[$index].dsFileSize}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-primary" style="float: right; margin-top: 5px; margin-left: 4px;"
+                ng-click="navigateTo('/startup')">
+            Cancel
+        </button>
+        <button class="btn btn-primary" style="float: right; margin-top: 5px; margin-left: 4px;"
+                ng-click="wizardStateControl('wizard-save')"
+                tour-step
+                tour-step-title={{finalizeSchemaTour.step5.title}}
+                tour-step-content={{finalizeSchemaTour.step5.message}}
+                tour-step-order="540"
+                tour-step-placement="top"
+                tour-step-orphan="false"
+                tour-step-backdrop="false">
+            Next
+        </button>
+        <button id="wizard-finalize-schema-back"
+                class="btn btn-primary" style="float: right; margin-top: 5px; margin-left: 44px;"
+                ng-click="navigateTo('/wizardMatchFields')">
+            Back
+        </button>
+        <button class="btn btn-primary" style="float: right; margin-left: 4px; margin-top: 5px;"
+                ng-click="addNewField()"
+                tour-step
+                tour-step-title={{finalizeSchemaTour.step4.title}}
+                tour-step-content={{finalizeSchemaTour.step4.message}}
+                tour-step-order="530"
+                tour-step-placement="top"
+                tour-step-orphan="false"
+                tour-step-backdrop="false">
+            Add Field
+        </button>
+    </div>
+</div>

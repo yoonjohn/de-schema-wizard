@@ -6,12 +6,12 @@ public class CharacterBucket extends AbstractBucket {
 	char characterLabel;
 	
 	public CharacterBucket(char label, BigInteger count) {
-		super(String.valueOf(label), count);
+		super(count);
 		characterLabel = label;
 	}
 
 	public CharacterBucket(String label, BigInteger count) {
-		super(String.valueOf(label.charAt(0)), count);
+		super(count);
 		characterLabel = label.charAt(0);
 	}
 

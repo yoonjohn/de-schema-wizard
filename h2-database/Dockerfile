@@ -1,4 +1,4 @@
-FROM java
+FROM java:8
 EXPOSE 9123
 COPY h2-database-0.0.1-SNAPSHOT-jar-with-dependencies.jar /usr/local/h2/
 WORKDIR /usr/local/h2/

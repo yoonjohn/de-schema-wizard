@@ -1,8 +1,13 @@
 package com.deleidos.dmf.accessor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -11,13 +16,14 @@ import org.json.JSONObject;
 
 import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.beans.DataSampleMetaData;
-import com.deleidos.dp.beans.MatchingField;
 import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.Schema;
 import com.deleidos.dp.beans.SchemaMetaData;
-import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.deleidos.dp.deserializors.SerializationUtility;
+import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.h2.H2DataAccessObject;
+import com.deleidos.dp.interpretation.InterpretationEngine;
+import com.deleidos.dp.interpretation.InterpretationEngineFacade;
 
 /**
  * Service layer for the Schema Wizard. All calls from the Schema Wizard are
@@ -27,40 +33,260 @@ import com.deleidos.dp.h2.H2DataAccessObject;
  * @author yoonj1
  *
  */
-public class ServiceLayerAccessor {
+public class ServiceLayerAccessor implements ServiceLayer {
 	public static final Logger logger = Logger.getLogger(ServiceLayerAccessor.class);
-	H2DataAccessObject h2Dao = H2DataAccessObject.getInstance();
+	H2DataAccessObject h2Dao;
+	InterpretationEngine interpretationEngine;
+	private ResourceBundle bundle = ResourceBundle.getBundle("error-messages");
+
+	public ServiceLayerAccessor() {
+		try {
+			h2Dao = H2DataAccessObject.getInstance();
+			interpretationEngine = InterpretationEngineFacade.getInstance();
+		} catch (DataAccessException e) {
+			logger.error(e);
+		}
+	}
 
 	/**
 	 * Gets the catalog from the H2 Database.
 	 * 
-	 * @return A JSON Object conforming with the BNF file
+	 * @return
 	 */
-	public JSONObject getCatalog() {
+	public Response getCatalog() {
 		JSONObject json = new JSONObject();
 
 		try {
 			List<SchemaMetaData> schemaList = h2Dao.getAllSchemaMetaData();
 			List<DataSampleMetaData> sampleList = h2Dao.getAllSampleMetaData();
+			JSONArray domainJson = interpretationEngine.getAvailableDomains();
 
-			json.put("schemaCatalog", new JSONArray(SerializationUtility.serialize(schemaList)));
-			json.put("dataSamplesCatalog", new JSONArray(SerializationUtility.serialize(sampleList)));
-
-			return json;
+				json.put("schemaCatalog", new JSONArray(SerializationUtility.serialize(schemaList)));
+				json.put("dataSamplesCatalog", new JSONArray(SerializationUtility.serialize(sampleList)));
+				json.put("domainsCatalog", new JSONArray(domainJson.toString()));
+				return Response.ok(json.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (JSONException e) {
-			logger.error("Catalog was unable to be built into JSON.");
-			logger.error(e);
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
 		}
-		return null;
 	}
 
 	/**
-	 * Saves a given Schema to the database.
+	 * Gets a list of interpretations from a domain guid.
 	 * 
-	 * @param guid
+	 * @param domainGuid
+	 * @return
 	 */
-	public void saveSchema(String guid) {
-		h2Dao.deleteSchemaFromDeletionQueue(guid);
+	public Response getDomainInterpretations(String domainGuid) {
+		try {
+			JSONObject jObject = interpretationEngine.getInterpretationListByDomainGuid(domainGuid);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Creates a domain in the Interpretation Engine MongoDB
+	 * 
+	 * @param domainJson
+	 * @return
+	 */
+	public Response createDomain(JSONObject domainJson) {
+		try {
+			JSONObject jObject = interpretationEngine.createDomain(domainJson);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Creates an interpretation in the Interpretation Engine MongoDB
+	 * 
+	 * @param interpretationJson
+	 * @return
+	 */
+	public Response createInterpretation(JSONObject interpretationJson) {
+		try {
+			JSONObject jObject = interpretationEngine.createInterpretation(interpretationJson);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Updates a domain in the Interpretation Engine MongoDB
+	 * 
+	 * @param domainJson
+	 * @return
+	 */
+	public Response updateDomain(JSONObject domainJson) {
+		try {
+			JSONObject jObject = interpretationEngine.updateDomain(domainJson);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Updates an interpretation in the Interpretation Engine MongoDB
+	 * 
+	 * @param interpretationJson
+	 * @return
+	 */
+	public Response updateInterpretation(JSONObject interpretationJson) {
+		try {
+			JSONObject jObject = interpretationEngine.updateInterpretation(interpretationJson);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Deletes a domain in the Interpretation Engine MongoDB
+	 * 
+	 * @param domainJson
+	 * @return
+	 */
+	public Response deleteDomain(JSONObject domainJson) {
+		try {
+			JSONObject jObject = interpretationEngine.deleteDomain(domainJson);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Deletes an interpretation in the Interpretation Engine MongoDB
+	 * 
+	 * @param interpretationJson
+	 * @return Number of records modified
+	 */
+	public Response deleteInterpretation(JSONObject interpretationJson) {
+		try {
+			JSONObject jObject = interpretationEngine.deleteInterpretation(interpretationJson);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Validates a Python script that is encoded in base64.
+	 * 
+	 * @param Python
+	 *            script encoded in base64
+	 * @return
+	 */
+	public Response validatePythonScript(String iId) {
+		try {
+			JSONObject iIdJson = new JSONObject();
+			JSONObject jObject = interpretationEngine.validatePythonScript(iIdJson.put("iId", iId));
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			JSONObject json = new JSONObject();
+			json.put("type", "error");
+			json.put("row", "0");
+			json.put("text", bundle.getString("ie.unexpected.error"));
+			return generatedResponse(Status.SERVICE_UNAVAILABLE, json.toString());
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			JSONObject json = new JSONObject();
+			json.put("type", "error");
+			json.put("row", "0");
+			json.put("text", bundle.getString("ie.unexpected.error"));
+			return generatedResponse(Status.INTERNAL_SERVER_ERROR, json.toString());
+		}
+	}
+
+	/**
+	 * Tests a Python script with example data
+	 * 
+	 * @param iId
+	 * @return
+	 */
+	public Response testPythonScript(String iId) {
+		try {
+			JSONObject iIdJson = new JSONObject();
+			JSONObject jObject = interpretationEngine.testPythonScript(iIdJson.put("iId", iId));
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("ie.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public Response addSchema(JSONObject schemaJson) {
+		Schema schema = SerializationUtility.deserialize(schemaJson, Schema.class);
+
+		try {
+			JSONObject jObject = new JSONObject();
+			jObject.put("schemaGuid", h2Dao.addSchema(schema));
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -69,17 +295,44 @@ public class ServiceLayerAccessor {
 	 * @param guid
 	 * @return Schema bean as a JSON Object
 	 */
-	public JSONObject getSchemaByGuid(String guid, boolean showHistogram) {
-		JSONObject json;
-		Schema schema;
+	public Response getSchemaByGuid(String guid) {
+		try {
+			// Show histogram
+			Schema schema = h2Dao.getSchemaByGuid(guid, true);
+			String jsonString = SerializationUtility.serialize(schema);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
 
-		schema = h2Dao.getSchemaByGuid(guid, showHistogram);
-
-		String jsonString = SerializationUtility.serialize(schema);
-		json = new JSONObject(jsonString);
-
-		return json;
-
+	/**
+	 * Gets Schema bean with no histogram from the H2 Database by GUID.
+	 * 
+	 * @param guid
+	 * @return Schema bean as a JSON Object
+	 */
+	public Response getSchemaByGuidNoHistogram(String guid) {
+		try {
+			// Do not show histogram
+			Schema schema = h2Dao.getSchemaByGuid(guid, false);
+			String jsonString = SerializationUtility.serialize(schema);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -88,15 +341,20 @@ public class ServiceLayerAccessor {
 	 * @param guid
 	 * @return SchemaMetaData bean as a JSON Object
 	 */
-	public JSONObject getSchemaMetaDataByGuid(String guid) {
-		JSONObject json;
-		SchemaMetaData schemaMetaData;
-
-		schemaMetaData = h2Dao.getSchemaMetaDataByGuid(guid);
-		String jsonString = SerializationUtility.serialize(schemaMetaData);
-		json = new JSONObject(jsonString);
-
-		return json;
+	public Response getSchemaMetaDataByGuid(String guid) {
+		try {
+			SchemaMetaData schemaMetaData = h2Dao.getSchemaMetaDataByGuid(guid);
+			String jsonString = SerializationUtility.serialize(schemaMetaData);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -105,15 +363,20 @@ public class ServiceLayerAccessor {
 	 * @param guid
 	 * @return Data Sample bean as a JSON object
 	 */
-	public JSONObject getSampleByGuid(String guid) {
-		JSONObject json;
-		DataSample sample;
-
-		sample = h2Dao.getSampleByGuid(guid);
-		String jsonString = SerializationUtility.serialize(sample);
-		json = new JSONObject(jsonString);
-
-		return json;
+	public Response getSampleByGuid(String guid) {
+		try {
+			DataSample sample = h2Dao.getSampleByGuid(guid);
+			String jsonString = SerializationUtility.serialize(sample);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -122,15 +385,20 @@ public class ServiceLayerAccessor {
 	 * @param guid
 	 * @return Data Sample Meta Data bean as a JSON object
 	 */
-	public JSONObject getSampleMetaDataByGuid(String guid) {
-		JSONObject json;
-		DataSampleMetaData sampleMetaData;
-
-		sampleMetaData = h2Dao.getSampleMetaDataByGuid(guid);
-		String jsonString = SerializationUtility.serialize(sampleMetaData);
-		json = new JSONObject(jsonString);
-
-		return json;
+	public Response getSampleMetaDataByGuid(String guid) {
+		try {
+			DataSampleMetaData sampleMetaData = h2Dao.getSampleMetaDataByGuid(guid);
+			String jsonString = SerializationUtility.serialize(sampleMetaData);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -139,15 +407,20 @@ public class ServiceLayerAccessor {
 	 * @param guid
 	 * @return Field descriptor
 	 */
-	public JSONObject getSchemaFieldByGuid(String guid) {
-		JSONObject json;
-		Map<String, Profile> map;
-
-		map = h2Dao.getSchemaFieldByGuid(guid, true);
-		String jsonString = SerializationUtility.serialize(map);
-		json = new JSONObject(jsonString);
-
-		return json;
+	public Response getSchemaFieldByGuid(String guid) {
+		try {
+			Map<String, Profile> map = h2Dao.getSchemaFieldByGuid(guid, true);
+			String jsonString = SerializationUtility.serialize(map);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -156,15 +429,20 @@ public class ServiceLayerAccessor {
 	 * @param guid
 	 * @return Field descriptor
 	 */
-	public JSONObject getSchemaMetaDataFieldByGuid(String guid) {
-		JSONObject json;
-		Map<String, Profile> map;
-
-		map = h2Dao.getSchemaFieldByGuid(guid, false);
-		String jsonString = SerializationUtility.serialize(map);
-		json = new JSONObject(jsonString);
-
-		return json;
+	public Response getSchemaMetaDataFieldByGuid(String guid) {
+		try {
+			Map<String, Profile> map = h2Dao.getSchemaFieldByGuid(guid, false);
+			String jsonString = SerializationUtility.serialize(map);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -173,15 +451,20 @@ public class ServiceLayerAccessor {
 	 * @param guid
 	 * @return Field descriptor
 	 */
-	public JSONObject getSampleFieldByGuid(String guid) {
-		JSONObject json;
-		Map<String, Profile> map;
-
-		map = h2Dao.getSampleFieldByGuid(guid, true);
-		String jsonString = SerializationUtility.serialize(map);
-		json = new JSONObject(jsonString);
-		
-		return json;
+	public Response getSampleFieldByGuid(String guid) {
+		try {
+			Map<String, Profile> map = h2Dao.getSampleFieldByGuid(guid, true);
+			String jsonString = SerializationUtility.serialize(map);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -190,15 +473,20 @@ public class ServiceLayerAccessor {
 	 * @param guid
 	 * @return Field descriptor
 	 */
-	public JSONObject getSampleMetaDataFieldByGuid(String guid) {
-		JSONObject json;
-		Map<String, Profile> map;
-
-		map = h2Dao.getSampleFieldByGuid(guid, false);
-		String jsonString = SerializationUtility.serialize(map);
-		json = new JSONObject(jsonString);
-
-		return json;
+	public Response getSampleMetaDataFieldByGuid(String guid) {
+		try {
+			Map<String, Profile> map = h2Dao.getSampleFieldByGuid(guid, false);
+			String jsonString = SerializationUtility.serialize(map);
+			JSONObject jObject = new JSONObject(jsonString);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -206,9 +494,22 @@ public class ServiceLayerAccessor {
 	 * 
 	 * @param guid
 	 *            The GUID of a Schema
+	 * @return
 	 */
-	public void deleteSchemaByGuid(String guid) {
-		h2Dao.deleteSchemaByGuid(guid);
+	public Response deleteSchemaByGuid(String guid) {
+		try {
+			h2Dao.deleteSchemaByGuid(guid);
+			JSONObject jObject = new JSONObject();
+			jObject.put("deleted", guid);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -216,9 +517,22 @@ public class ServiceLayerAccessor {
 	 * 
 	 * @param guid
 	 *            The GUID of a Data Sample
+	 * @return
 	 */
-	public void deleteSampleByGuid(String guid) {
-		h2Dao.deleteSampleByGuid(guid);
+	public Response deleteSampleByGuid(String guid) {
+		try {
+			h2Dao.deleteSampleByGuid(guid);
+			JSONObject jObject = new JSONObject();
+			jObject.put("deleted", guid);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -226,91 +540,31 @@ public class ServiceLayerAccessor {
 	 * 
 	 * @param guid
 	 *            A GUID from either a Schema or Data Sample
+	 * @return
 	 */
-	public void deleteByGuid(String guid) {
-		h2Dao.deleteByGuid(guid);
-	}
-	
-	public JSONObject test() {
-		JSONObject json = new JSONObject();
-		json.put("test", "key");
-		
-		return json;
-	}
-	
-	// methods that could be migrated over from H2Worker
-	private String persistDataSample(DataSample dataSample) {
-		return h2Dao.addSample(dataSample);
-	}
-	
-	private String persistSchema(Schema schema) {
-		return h2Dao.addSchema(schema);
-	}
-
-	private JSONArray performAnalysisOnSamples(List<DataSample> samples) {
-		JSONArray analysisJson = null;
+	public Response deleteByGuid(String guid) {
 		try {
-			List<String> usedFieldNames = new ArrayList<String>();
-			for(DataSample sample : samples) {
-				for(String key : sample.getDsProfile().keySet()) {
-					if(!usedFieldNames.contains(key)) {
-						sample.getDsProfile().get(key).setUsedInSchema(true);
-						usedFieldNames.add(key);
-					} else {
-						continue; // seed value is already defined, skip analysis of this key
-					}
-					for(DataSample otherSample : samples) {
-						if(sample.equals(otherSample)) {
-							continue; // skip same sample
-						} else {
-							for(String otherKey : otherSample.getDsProfile().keySet()) {
-								String p1Name = key;
-								Profile p1 = sample.getDsProfile().get(p1Name);
-								String p2Name = otherKey;
-								Profile p2 = otherSample.getDsProfile().get(otherKey);
-								
-								double similarity = MetricsCalculationsFacade.similarityAlgorithm2(p1Name, p1, p2Name, p2);
-								if(similarity > .8) {
-									logger.debug("Match detected between " + p1Name + " in " + sample.getDsFileName() + " and " + p2Name + " in " + otherSample.getDsFileName() + " with " + similarity + " confidence.");
-									MatchingField altName = new MatchingField();
-									List<MatchingField> altNames = p2.getMatchingFields();
-									altName.setMatchingField(p1Name);
-									altName.setConfidence((int)(similarity*100));
-									altNames.add(altName);
-									altNames.sort((MatchingField a1, MatchingField a2)->a2.getConfidence()-a1.getConfidence());
-									p2.setMatchingFields(altNames);
-								}
-
-							}
-						}
-					}
-				}
-			}
-			analysisJson = new JSONArray();
-			for(DataSample sample : samples) {
-				analysisJson.put(new JSONObject(SerializationUtility.serialize(sample)));
-			}
-		} catch(JSONException e) {
-			logger.error(e);
-			logger.error("Error serializing sample object.");
-		} 
-		return analysisJson;
+			h2Dao.deleteByGuid(guid);
+			JSONObject jObject = new JSONObject();
+			jObject.put("deleted", guid);
+			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (DataAccessException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			logger.error(bundle.getString("h2.unexpected.error"));
+			return generatedEmptyJsonErrorResponse(Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
-	private JSONArray analyzeMultipleSamples(String[] guids) {
-		JSONArray analysisJson = null;
-
-		List<DataSample> samples = h2Dao.getSamplesByGuids(guids); // lat\long not set here!!1
-		analysisJson = performAnalysisOnSamples(samples);
-
-		return analysisJson;
+	// Private methods
+	private Response generatedResponse(Response.Status status, String message) {
+		return Response.status(status).entity(message).build();
 	}
-
-	private String giveSchema(JSONObject schemaJson) {
-
-		Schema schema = SerializationUtility.deserialize(schemaJson.toString(), Schema.class);
-		h2Dao.addSchema(schema);
-		return schema.getsGuid();
-
+	
+	private Response generatedEmptyJsonErrorResponse(Response.Status status) {
+		JSONObject emptyJson = new JSONObject();
+		return Response.status(status).entity(emptyJson.toString()).build();
 	}
 }

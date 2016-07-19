@@ -1,0 +1,71 @@
+<div id="banner" class="banner">
+    <a href="#" id="titleRef" class="titleStyle" onclick="blur();"
+       ng-click="navigateTo('/startup')">Schema Wizard</a>
+    <span style="position: absolute; top: 2px; right: 15px;">
+        <img id="mainBusIconOnBanner" class="btn btn-primary" style="border: none; margin-top: 0px;"
+             src="assets/img/white-tour-bus-22x22.png"
+             uib-tooltip="Take a tour of this page" tooltip-placement="bottom"
+             ng-disabled="path !== '/startup' && path !== '/catalog'"
+             ng-click="tour.start()"
+             tour-step
+             tour-step-belongs-to="catalog"
+             tour-step-title={{mainTour.generalTextForBus.title}}
+             tour-step-content={{mainTour.generalTextForBus.message}}
+             tour-step-order="40"
+             tour-step-placement="bottom"
+             tour-step-orphan="false"
+             tour-step-backdrop="false"
+             ng-style="path !== '/startup' && path !== '/catalog'?{'pointer-events': 'none'}:{}">
+        &nbsp;&nbsp;
+        <img class="btn btn-primary" style="border: none;"
+             src="assets/img/blueQuestionMark_whiteCalloutBg-16x16.png"
+             uib-tooltip="Launch the help documentation" tooltip-placement="bottom"
+             ng-click="launchHelp($event)"
+             tour-step
+             tour-step-belongs-to="catalog"
+             tour-step-title={{mainTour.generalHelp.title}}
+             tour-step-content={{mainTour.generalHelp.message}}
+             tour-step-order="50"
+             tour-step-placement="bottom"
+             tour-step-orphan="false"
+             tour-step-backdrop="false">
+        &nbsp;&nbsp;
+        <span class="btn-group" uib-dropdown
+              style="border: none; font: normal normal 14pt sans-serif;
+                     font-family: 'Cambria', Cambria, sans-serif;
+                     text-shadow: none;">
+            <button id="btn-append-to-single-button" type="button" class="btn"
+                    style="border: none;" uib-dropdown-toggle>
+                <img src="assets/img/userSilhouette_white-16x16.png">
+                <span>{{userid}}</span>
+                <span class="caret"></span>
+                <span class="sr-only">Split button!</span>
+            </button>
+            <ul class="dropdown-menu" uib-dropdown-menu role="menu"
+                style="border: none; font: normal normal 10pt sans-serif;"
+                aria-labelledby="btn-append-to-single-button">
+                <li role="menuitem">
+                    <a href="#" class="dropdown-item" ng-click="useLeidosTheme($event, false)">
+                        DigitalEdge Theme
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#" class="dropdown-item" ng-click="useLeidosTheme($event, true)">
+                        Leidos Theme
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#" class="dropdown-item" ng-click="launchAbout($event)">
+                        About Schema Wizard
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li role="menuitem">
+                    <a href="#" class="dropdown-item" ng-click="signout($event)">
+                        Sign Out
+                    </a>
+                </li>
+            </ul>
+        </span>
+    </span>
+</div>
