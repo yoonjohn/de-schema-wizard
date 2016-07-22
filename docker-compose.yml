@@ -12,7 +12,7 @@ services:
       - "127.0.0.1:6379:6379"
 
   sw-h2:
-    image: de-schema-wizard-h2
+    image: deleidos/de-schema-wizard-h2:3.0.0-beta1
     ports:
       - "127.0.0.1:9123:9123"
     environment:
@@ -22,14 +22,14 @@ services:
       max-size=10m
 
   sw-mongodb:
-    image: de-schema-wizard-mongodb
+    image: deleidos/de-schema-wizard-mongodb:3.0.0-beta1
     ports:
       - "127.0.0.1:27017:27017"
     logging:
       max-size=10m
 
   sw-ie:
-    image: de-schema-wizard-ie
+    image: deleidos/de-schema-wizard-ie:3.0.0-beta1
     ports:
       - "127.0.0.1:5000:5000"
     environment:
@@ -44,11 +44,11 @@ services:
       - r-cache:redis
 
   sw-ie-sidekick:
-    image: de-schema-wizard-sidekick
+    image: deleidos/de-schema-wizard-sidekick:3.0.0-beta1
     environment:
       - U_PROFILE=docker-untrusted
-      - U_IMAGE=de-schema-wizard-untrusted
-      - PULL_TAG=142
+      - U_IMAGE=deleidos/de-schema-wizard-untrusted
+      - PULL_TAG=3.0.0-beta1
       - REDIS_PORT=tcp://r-cache:6379
     logging:
       max-size=10m
@@ -60,10 +60,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   sw-ie-untrusted:
-    image: de-schema-wizard-untrusted
+    image: deleidos/de-schema-wizard-untrusted:3.0.0-beta1
 
   sw-webapp:
-    image: de-schema-wizard-webapp
+    image: deleidos/de-schema-wizard-webapp:3.0.0-beta1
     ports:
       - "80:8080"
     environment:
