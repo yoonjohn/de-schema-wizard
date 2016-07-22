@@ -23,7 +23,7 @@ Requirements -
 * Docker 1.11
 * AppArmor
 
-From the project root directory:
+Install [docker-compose][docker-compose] and clone this repository.  Then, from the project root directory run:
 
     sudo apparmor_parser -r -W sw-script-profile
     sudo docker-compose up
@@ -111,6 +111,7 @@ Schema Wizard is licensed for use under the Apache 2.0 license.
    [bower]: <https://bower.io/>
    [grunt]: <http://gruntjs.com/>
    [ace]: <https://ace.c9.io/>
+   [docker-compose]: <https://docs.docker.com/compose/>
    
    [geodata]: <http://thematicmapping.org>
    [ogre]: <http://ogre.adc4gis.com/>
