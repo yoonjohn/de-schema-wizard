@@ -10,7 +10,7 @@
 3.0.0-beta1
 
 ## About
-Schema Wizard is an automation driven, human verified data modelling tool.
+Schema Wizard is an automation driven, human verified data modeling tool.
 * Provide data samples
 * Verify automated analysis
 * Merge similar fields 
