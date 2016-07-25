@@ -20,8 +20,9 @@ Schema Wizard is an automation driven, human verified data modeling tool.
 
 Requirements - 
 * Linux environment
-* Docker 1.11
 * AppArmor
+* Docker 1.11
+* Docker Compose 1.7.1
 
 Install [docker-compose][docker-compose] and clone this repository.  Then, from the project root directory run:
 
