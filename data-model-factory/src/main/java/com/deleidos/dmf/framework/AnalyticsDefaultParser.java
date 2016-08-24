@@ -30,6 +30,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import com.deleidos.dmf.analyzer.Analyzer;
+import com.deleidos.dmf.exception.AnalyticsCancelledWorkflowException;
 import com.deleidos.dmf.exception.AnalyticsInitializationRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsParsingRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
@@ -40,9 +41,10 @@ import com.deleidos.dmf.handler.AnalyticsProgressTrackingContentHandler;
 import com.deleidos.dmf.parser.JNetPcapTikaParser;
 import com.deleidos.dmf.parser.pcap.ext.Wireless80211;
 import com.deleidos.dmf.parser.pcap.ext.Wireless80211RadioTap;
-import com.deleidos.dmf.progressbar.ProgressBar;
+import com.deleidos.dmf.progressbar.ProgressBarManager;
 import com.deleidos.dmf.progressbar.ProgressState;
-import com.deleidos.dmf.web.SchemaWizardWebSocketUtility;
+import com.deleidos.dmf.progressbar.ProgressState.STAGE;
+import com.deleidos.dmf.web.SchemaWizardSessionUtility;
 import com.deleidos.dmf.exception.AnalyzerException;
 import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.profiler.AbstractReverseGeocodingProfiler;
@@ -54,13 +56,12 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 	 */
 	private static final long serialVersionUID = -2117902573967865092L;
 	private static final Logger logger = Logger.getLogger(AnalyticsDefaultParser.class);
-	private AnalyticsDefaultDetector detector;
-	private AnalyticsEmbeddedDocumentExtractor extractor;
+	private final AnalyticsDefaultDetector detector;
+	private final AnalyticsEmbeddedDocumentExtractor extractor;
 	public final int INTERNAL_BUFFER_MAX_LENGTH = -1;
 
 	public AnalyticsDefaultParser(AnalyticsDefaultDetector detector, TikaProfilerParameters parameters) {
 		this.detector = detector;
-
 		try {
 			Class.forName("org.jnetpcap.packet.JRegistry", false, this.getClass().getClassLoader());
 			try {
@@ -127,11 +128,15 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 		try {	
 			TikaProfilerParameters params = extractor.initializeTikaProfilingParameters(tis, handler, metadata);
 			analyticsParse(tis, handler, metadata, params, reverseGeocodingPass);
-			logger.info("Finished parsing.");
+			logger.debug("Finished parsing.");
 		} catch (AnalyticsParsingRuntimeException e) {
 			logger.error("Runtime exception from " + e.getParser() + " parser for type " + e.getParser().getSupportedTypes(context) +".", e);
+			throw e;
 		} catch (AnalyticsInitializationRuntimeException e) {
 			logger.error("Initialization exception while attempting to parse.", e);
+			throw e;
+		} catch (AnalyticsCancelledWorkflowException e) {
+			throw new TikaException("Wrapping cancellation in TikaException.", e);
 		} catch (AnalyzerException | DataAccessException e) {
 			logger.error(e);
 			throw new TikaException("Tika Exception wrapping Analytics Exception: " + e.getMessage(), e);
@@ -199,12 +204,9 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 
 		if(!reverseGeocodingPass) {
 			analyticsDetect(tis, analyticsHandler, metadata, analyticsParams, false);
-			analyticsParams.getProgress().setCurrentState(ProgressState.sampleParsingStage);
-			analyticsParams.getProgress().updateCurrentSampleNumerator(ProgressState.sampleParsingStage.getStartValue());
-			SchemaWizardWebSocketUtility.getInstance().updateProgress(analyticsParams.getProgress(), analyticsParams.getSessionId());
-		} else {
-			analyticsParams.getProgress().updateCurrentSampleNumerator(ProgressState.geocodingStage.getStartValue());
-			SchemaWizardWebSocketUtility.getInstance().updateProgress(analyticsParams.getProgress(), analyticsParams.getSessionId());
+			analyticsParams.getProgressBar().goToNextStateIfCurrentIs(STAGE.DETECT);
+			SchemaWizardSessionUtility.getInstance().updateProgress(analyticsParams.getProgressBar(), analyticsParams.getSessionId());
+
 		}
 
 		detector.disableProgressUpdates();
@@ -224,16 +226,12 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 			TikaInputStream bodyStream = extractProfilableContent(parser, tis, analyticsHandler, metadata, analyticsParams);
 			// get body contents as a new stream (in memory for now, need catch exception after certain size and write to file)
 
-
-			analyticsParams.getProgress().updateCurrentSampleNumerator(ProgressState.sampleParsingStage.getStartValue()+5);
-			SchemaWizardWebSocketUtility.getInstance().updateProgress(analyticsParams.getProgress(), analyticsParams.getSessionId());
-
-			int i = 0;
+			//int i = 0;
 			if(shouldExtractBodyContent) {
 				// set remaining split to extract content size + 1 (for body content)
 				if(!reverseGeocodingPass) {
-					analyticsParams.getProgress().setCurrentStateSplits(extractor.getExtractedContents().size()+1);
-					i = 1;
+					analyticsParams.getProgressBar().split(extractor.getExtractedContents().size()+1);
+					//i = 1;
 				}
 
 				Metadata bodyMetadata = new Metadata();
@@ -250,7 +248,8 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 				}
 			} else {
 				if(!reverseGeocodingPass) {
-					analyticsParams.getProgress().setCurrentStateSplits(extractor.getExtractedContents().size());
+					//analyticsParams.getProgress().ifPresent(x->x.setCurrentStateSplits(extractor.getExtractedContents().size()));
+					//analyticsParams.getProgress().ifPresent(x->x.goToNextStateIfCurrentIs(STAGE.SPLIT));
 				}
 			}
 
@@ -272,13 +271,16 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 				embeddedDocumentBodyContentParse(extractedContent, analyticsHandler);
 
 				if(!reverseGeocodingPass) {
-					analyticsParams.getProgress().setCurrentStateSplitIndex(i);
-					analyticsParams.getProgress().updateCurrentSampleNumerator(ProgressState.sampleParsingStage.getEndValue());
-					SchemaWizardWebSocketUtility.getInstance().updateProgress(analyticsParams.getProgress(), analyticsParams.getSessionId());
+					//analyticsParams.getProgress().get().setCurrentStateSplitIndex(i);
+					//analyticsParams.getProgress().get().updateCurrentSampleNumeratorInRequiredState(
+					//		ProgressState.sampleParsingStage.getEndValue(), ProgressState.sampleParsingStage);
+					analyticsParams.getProgressBar().goToNextStateIfCurrentIs(STAGE.SPLIT);
+					SchemaWizardSessionUtility.getInstance().updateProgress(analyticsParams.getProgressBar(), analyticsParams.getSessionId());
 				}
-				i++;
+				//i++;
 			}
-			analyticsParams.getProgress().setCurrentStateSplits(1);
+			//analyticsParams.getProgress().ifPresent(x->x.setCurrentStateSplits(1));
+			analyticsParams.getProgressBar().jumpToEndOfSplits();
 		} 
 
 	}
@@ -294,7 +296,7 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 
 			Metadata extractedMetadata = extractedContent.getMetadata();
 			//extractedMetadata.set(Metadata.RESOURCE_NAME_KEY, extractedContent.getExtractedFile().getAbsolutePath());
-			
+
 			Parser extractedContentParser = getParser(extractedMetadata, extractedContentParams);
 			if(extractedContentParser instanceof TikaProfilableParser) {
 				profilableParse((TikaProfilableParser)extractedContentParser, extractedContentParams);
@@ -407,7 +409,7 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 	public TikaSampleAnalyzerParameters runSampleAnalysis(TikaSampleAnalyzerParameters sampleProfilableParams)
 			throws IOException, AnalyzerException {
 		try {
-			if(sampleProfilableParams.isReverseGeocodingPass()) {
+			if(sampleProfilableParams.getProgressBar().isDuring(STAGE.SECOND_PASS)) {
 				extractor.setAreContentsExtracted(true);
 			}
 			sampleProfilableParams.set(EmbeddedDocumentExtractor.class, extractor);
@@ -416,14 +418,11 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 			sampleProfilableParams.set(Parser.class, this);
 			parse(sampleProfilableParams.getStream(), sampleProfilableParams.getHandler(), sampleProfilableParams.getMetadata(), sampleProfilableParams);
 			sampleProfilableParams.setMediaType(sampleProfilableParams.getMetadata().get(Metadata.CONTENT_TYPE));
-			sampleProfilableParams.getProgress().setCurrentState(ProgressState.geocodingStage);
-			SchemaWizardWebSocketUtility.getInstance().updateProgress(sampleProfilableParams.getProgress(), sampleProfilableParams.getSessionId());
-			if(sampleProfilableParams.getProfilerBean().getDsProfile().isEmpty()) {
-				throw new AnalyticsUnsupportedParserException("Parsing finished without an exception, but no keys were extracted.");
-			}
 			return (TikaSampleAnalyzerParameters) sampleProfilableParams;
 		} catch (SAXException | TikaException e) {
-			if(e.getCause() instanceof AnalyticsUndetectableTypeException) {
+			if(e.getCause() instanceof AnalyticsCancelledWorkflowException) {
+				throw (AnalyticsCancelledWorkflowException) e.getCause();
+			}else if(e.getCause() instanceof AnalyticsUndetectableTypeException) {
 				throw (AnalyticsUndetectableTypeException) e.getCause();
 			} else if(e.getCause() instanceof AnalyticsUnsupportedParserException) {
 				throw (AnalyticsUnsupportedParserException) e.getCause();
@@ -434,7 +433,7 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 	}
 
 	@Override
-	public TikaSchemaAnalyzerParameters runSchemaAnalysis(TikaSchemaAnalyzerParameters schemaProfilableParams)
+	public TikaSchemaAnalyzerParameters runSchemaAnalysis(final TikaSchemaAnalyzerParameters schemaProfilableParams)
 			throws IOException, AnalyzerException {
 		try {
 			schemaProfilableParams.set(EmbeddedDocumentExtractor.class, extractor);
@@ -450,20 +449,17 @@ public class AnalyticsDefaultParser extends DefaultParser implements Analyzer<Ti
 				extractor.setAreContentsExtracted(false);
 			}
 			parse(schemaProfilableParams.getStream(), schemaProfilableParams.getHandler(), schemaProfilableParams.getMetadata(), schemaProfilableParams);
-			schemaProfilableParams.getProgress().setCurrentState(ProgressState.complete);
-			SchemaWizardWebSocketUtility.getInstance().updateProgress(schemaProfilableParams.getProgress(), schemaProfilableParams.getSessionId());
-			return (TikaSchemaAnalyzerParameters) extractor.getParentParameters();
+			return (TikaSchemaAnalyzerParameters) schemaProfilableParams;
 		} catch (SAXException | TikaException e) {
+			if(e.getCause() instanceof AnalyticsCancelledWorkflowException) {
+				throw (AnalyticsCancelledWorkflowException) e.getCause();
+			}
 			throw new AnalyticsTikaProfilingException(e);
 		}
 	}
 
 	public AnalyticsEmbeddedDocumentExtractor getExtractor() {
 		return extractor;
-	}
-
-	public void setExtractor(AnalyticsEmbeddedDocumentExtractor extractor) {
-		this.extractor = extractor;
 	}
 
 }

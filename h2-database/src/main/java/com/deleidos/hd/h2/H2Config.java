@@ -36,7 +36,6 @@ public class H2Config {
 	private String user;
 	private String passwd;
 	private String filePath = null;
-	private List<String> failedAnalysisGuids;
 	
 	public H2Config() {
 		File file = new File("~" + File.separator + CONFIG_RESOURCE_NAME);
@@ -100,6 +99,10 @@ public class H2Config {
 				+ "\n\tname = " + name
 				+ "\n\tuser = " + user
 				+ "\n\ttcpConnectionString = " + tcpConnectionString);
+	}
+	
+	public String getConnectionString() {
+		return "jdbc:h2:" + getTcpConnectionString() + getDir() + "/" + getName();
 	}
 
 	public String getDriver() {
@@ -169,7 +172,7 @@ public class H2Config {
 	/**
 	 * Unit testing configuration.  Runs in the same JVM as the test.
 	 */
-	public static H2Config TEST_CONFIG = new H2Config() {
+	public static final H2Config TEST_CONFIG = new H2Config() {
 		{
 			setDir("~/test-files/");
 			setHost("localhost");
@@ -181,4 +184,6 @@ public class H2Config {
 			setDriver(H2Database.DB_DRIVER);
 		}
 	};
+	
+	
 }

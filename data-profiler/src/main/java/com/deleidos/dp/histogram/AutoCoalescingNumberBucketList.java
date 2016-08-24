@@ -24,14 +24,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @param <T> The bucket type
  */
 
-public class NumberBucketList extends AbstractCoalescingBucketList {
+public class AutoCoalescingNumberBucketList extends AbstractCoalescingBucketList {
 	public static final int bucketExpansionLimit = 1000000;
-	public static final NumberBucketList EMPTY = new NumberBucketList();
-	private static Logger logger = Logger.getLogger(NumberBucketList.class);
+	public static final AutoCoalescingNumberBucketList EMPTY = new AutoCoalescingNumberBucketList();
+	private static Logger logger = Logger.getLogger(AutoCoalescingNumberBucketList.class);
 	private BigDecimal currentColumnWidth = BigDecimal.valueOf(-1);
 	private LinkedList<NumberBucket> bucketList;
 
-	private NumberBucketList(long numBuckets, final BigDecimal min, final BigDecimal max) {
+	private AutoCoalescingNumberBucketList(long numBuckets, final BigDecimal min, final BigDecimal max) {
 		bucketList = new LinkedList<NumberBucket>();
 
 		BigDecimal big = new BigDecimal(numBuckets);
@@ -45,7 +45,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 		currentColumnWidth = width;
 	}
 
-	public NumberBucketList() {
+	public AutoCoalescingNumberBucketList() {
 		bucketList = new LinkedList<NumberBucket>();
 	}
 
@@ -65,7 +65,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 				BigDecimal doubleCoefficient = BigDecimal.valueOf(Math.pow(2, numDoublesNecessary));
 				BigDecimal newWidth = currentColumnWidth.multiply(doubleCoefficient);
 				BigDecimal tempIncludedMinimum = last.minBoundary.subtract(BigDecimal.valueOf(getNumBucketsLow()-1).multiply(newWidth));		
-				NumberBucketList newNumberBucketList = new NumberBucketList(getNumBucketsLow(), tempIncludedMinimum, last.minBoundary);
+				AutoCoalescingNumberBucketList newNumberBucketList = new AutoCoalescingNumberBucketList(getNumBucketsLow(), tempIncludedMinimum, last.minBoundary);
 				for(int j = 0; j < bucketList.size(); j++) {
 					NumberBucket bucketToAddTo = newNumberBucketList.getBucketList().get(j/doubleCoefficient.intValue());
 					BigInteger count = bucketList.get(j).count;
@@ -102,7 +102,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 				BigDecimal doubleCoefficient = BigDecimal.valueOf(Math.pow(2, numDoublesNecessary));
 				BigDecimal newWidth = currentColumnWidth.multiply(doubleCoefficient);
 				BigDecimal tempIncludedMaxValue = first.minBoundary.add(BigDecimal.valueOf(getNumBucketsLow()-1).multiply(newWidth));
-				NumberBucketList newNumberBucketList = new NumberBucketList(getNumBucketsLow(), first.minBoundary, tempIncludedMaxValue);
+				AutoCoalescingNumberBucketList newNumberBucketList = new AutoCoalescingNumberBucketList(getNumBucketsLow(), first.minBoundary, tempIncludedMaxValue);
 				for(int j = 0; j < bucketList.size(); j++) {
 					NumberBucket bucketToAddTo = newNumberBucketList.getBucketList().get(j/doubleCoefficient.intValue());
 					BigInteger count = bucketList.get(j).count;
@@ -215,7 +215,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 
 	@Override
 	public void transformToRange() {
-		NumberBucketList nbl = new NumberBucketList(bucketList.size(), bucketList.getFirst().minBoundary, bucketList.getLast().minBoundary);
+		AutoCoalescingNumberBucketList nbl = new AutoCoalescingNumberBucketList(bucketList.size(), bucketList.getFirst().minBoundary, bucketList.getLast().minBoundary);
 		//nlogn could maybe do better
 		for(int j = 0; j < bucketList.size(); j++) {
 			BigInteger count = bucketList.get(j).count;
@@ -236,7 +236,7 @@ public class NumberBucketList extends AbstractCoalescingBucketList {
 			transformToRange();
 			return;
 		} else {
-			NumberBucketList nbl = new NumberBucketList(getNumBucketsLow(), bucketList.getFirst().minBoundary, bucketList.getLast().minBoundary);
+			AutoCoalescingNumberBucketList nbl = new AutoCoalescingNumberBucketList(getNumBucketsLow(), bucketList.getFirst().minBoundary, bucketList.getLast().minBoundary);
 			nbl.getBucketList().addLast(new NumberBucket(nbl.getBucketList().getLast().maxBoundary, nbl.getBucketList().getLast().maxBoundary.add(nbl.currentColumnWidth)));
 			//nlogn could maybe do better
 			for(int j = 0; j < bucketList.size(); j++) {

@@ -20,8 +20,30 @@
                         scope.$apply(function () {
                             modelSetter(scope, element[0].files);
                             if (document.getElementById('file-upload').files) {
+                                // This iterates over to see if the total files size is greater than 100MB
+                                const maxFilesSize = 104857600;
+                                var totalFilesSize = 0;
+                                var numberOfDataSamples = element[0].files.length;
                                 for (var i = 0; i < element[0].files.length; i++) {
-                                    if (element[0].files[i].name.indexOf(".xlsx")!==-1) {
+                                    totalFilesSize = element[0].files[i].size + totalFilesSize;
+                                    numberOfDataSamples = element[0].files[i]
+                                    if (totalFilesSize > maxFilesSize) {
+                                        $confirm(
+                                            {
+                                                title: 'File(s) size is too large',
+                                                text: "The total file(s) size(s) are over the recommended limit of 100 MB.",
+                                                ok: 'OK'
+                                            },
+                                            {templateUrl: 'schema-wizard/schema-wizard.confirm.template.html'})
+                                            .then(function () {
+                                                totalFilesSize = 0;
+                                                document.getElementById('file-upload-name').innerHTML = "";
+                                                document.getElementById('file-upload-btn').disabled = true;
+                                            });
+                                    }
+                                }
+                                for (var i = 0; i < element[0].files.length; i++) {
+                                    if (element[0].files[i].name.indexOf(".xlsx") !== -1) {
                                         $confirm(
                                             {
                                                 title: 'Schema Wizard does not support this file type',
@@ -126,6 +148,11 @@
 
             $scope.uploadFile = function () {
                 var file = $scope.sampleFile;
+                $scope.numberOfFiles = document.getElementById('file-upload').files.length;
+                $scope.filesTotalSize = 0;
+                for (var i = 0; i < document.getElementById('file-upload').files.length; i++) {
+                    $scope.filesTotalSize = document.getElementById('file-upload').files[i].size + $scope.filesTotalSize;
+                }
                 //$log.debug("fileUploadCtrl file(s) to upload:");
                 //console.dir(file);
                 $rootScope.$broadcast("sampleFilesSelected", {
@@ -134,10 +161,12 @@
 
                 fileUpload.uploadFileToUrl(
                     file,
-                        "rest/upload?" +
-                        "domain=" + $scope.schemaDomain + "&" +
-                        "tolerance=" + $scope.schemaTolerance + "&" +
-                        "schemaGuid=" + ($scope.modifySchemaMode ? $scope.currentSchema.sId : null))
+                    "rest/upload?" +
+                    "domain=" + $scope.schemaDomain + "&" +
+                    "tolerance=" + $scope.schemaTolerance + "&" +
+                    "schemaGuid=" + ($scope.modifySchemaMode ? $scope.currentSchema.sId : null) + "&" +
+                    "numberOfFiles=" + $scope.numberOfFiles + "&" +
+                    "filesTotalSize=" + $scope.filesTotalSize)
                     .success(function (data) {
                         $log.debug("Data returned:");
                         $log.debug(data);
@@ -150,19 +179,42 @@
                         $rootScope.$broadcast("closeWebSocket", {});
                     })
                     .error(function (data) {
-                        $confirm(
-                            {
-                                title: 'File Upload Failed',
-                                text: "Uploading of the file(s) has failed. Click 'Ok' to try again.",
-                                ok: 'OK'
-                            },
-                            {templateUrl: 'schema-wizard/schema-wizard.confirm.template.html'})
-                            .then(function () {
-                                $log.debug(data);
-                                $scope.hideMask();
-                                $scope.navigateTo("/wizardUploadSamples");
-                            });
-                    });
+                        $log.debug("file upload failed")
+                        console.log(data);
+                        data = data.trim();
+                        if (data == "Server timed out trying to reach the Python Interpretation Engine.") {
+                            $confirm(
+                                {
+                                    title: 'File Upload Failed - Interpretation Engine',
+                                    text: "Server timed out trying to reach the Python Interpretation Engine. Check the documentation if this persists.",
+                                    ok: 'OK'
+                                },
+                                {templateUrl: 'schema-wizard/schema-wizard.confirm.template.html'})
+                                .then(function () {
+                                    $rootScope.$broadcast("closeWebSocket", {});
+                                    $log.debug(data);
+                                    $scope.hideMask();
+                                    $scope.navigateTo("/catalog");
+                                });
+                        }
+                        else {
+                            $confirm(
+                                {
+                                    title: 'File Upload Failed',
+                                    text: "Uploading of the file(s) has failed. Click 'Ok' to try again.",
+                                    ok: 'OK'
+                                },
+                                {templateUrl: 'schema-wizard/schema-wizard.confirm.template.html'})
+                                .then(function () {
+                                    $rootScope.$broadcast("closeWebSocket", {});
+                                    $log.debug(data);
+                                    $scope.hideMask();
+                                    $scope.navigateTo("/catalog");
+                                });
+
+                        }
+                    })
+
             }; // uploadFile
         }); // fileUploadCtrl
 })();

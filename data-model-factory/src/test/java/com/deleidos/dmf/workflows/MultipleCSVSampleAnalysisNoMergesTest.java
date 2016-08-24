@@ -14,6 +14,8 @@ import com.deleidos.dmf.exception.AnalyticsUndetectableTypeException;
 import com.deleidos.dmf.exception.AnalyticsUnsupportedParserException;
 import com.deleidos.dmf.exception.AnalyzerException;
 import com.deleidos.dmf.framework.DMFMockUpEnvironmentTest;
+import com.deleidos.dmf.framework.TestingWebSocketUtility;
+import com.deleidos.dmf.web.SchemaWizardSessionUtility;
 import com.deleidos.dp.exceptions.DataAccessException;
 
 
@@ -27,6 +29,17 @@ public class MultipleCSVSampleAnalysisNoMergesTest extends DMFMockUpEnvironmentT
 		aat = AbstractAnalyzerTestWorkflow.addOrGetStaticWorkflow(new MultipleCSVSampleAnalysisWorkflow());
 		aat.setOutput(true);
 		aat.runAnalysis();
+	}	
+	
+	@Test
+	public void assertMonotinicallyIncreasingProgress() {
+		try {
+			TestingWebSocketUtility webSocketUtility = (TestingWebSocketUtility) SchemaWizardSessionUtility.getInstance();
+			assertTrue(webSocketUtility.isError());
+			logger.info("Progress bar increased appropriately.");
+		} catch(AssertionError e) {
+			logger.error("Progress bar did not increase appropriately.");
+		}
 	}
 
 	@Test

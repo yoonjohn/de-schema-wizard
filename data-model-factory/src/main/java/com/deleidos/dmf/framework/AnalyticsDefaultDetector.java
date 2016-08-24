@@ -19,9 +19,10 @@ import org.apache.tika.mime.MimeTypes;
 import org.apache.tika.parser.pkg.PackageParser;
 
 import com.deleidos.dmf.parser.JNetPcapTikaParser;
-import com.deleidos.dmf.progressbar.ProgressBar;
+import com.deleidos.dmf.progressbar.ProgressBarManager;
 import com.deleidos.dmf.progressbar.ProgressState;
-import com.deleidos.dmf.web.SchemaWizardWebSocketUtility;
+import com.deleidos.dmf.progressbar.ProgressState.STAGE;
+import com.deleidos.dmf.web.SchemaWizardSessionUtility;
 import com.google.common.collect.Iterables;
 
 /**
@@ -37,7 +38,7 @@ public class AnalyticsDefaultDetector extends DefaultDetector {
 	public static final String BODY_CONTENT_TYPE = "body-content-type";
 	//public static final String FILE_SIZE = "file-size";
 	private static final long FILE_CUTOFF_IN_BYTES = 1024 * 1024 * 1024;
-	private ProgressBar progressBar = null;
+	private ProgressBarManager progressBar = null;
 	private String sessionId = null;
 
 	public AnalyticsDefaultDetector() {
@@ -45,7 +46,7 @@ public class AnalyticsDefaultDetector extends DefaultDetector {
 		blackListStaticInit();
 	}
 	
-	public void enableProgressUpdates(String sessionId, ProgressBar progressBar) {
+	public void enableProgressUpdates(String sessionId, ProgressBarManager progressBar) {
 		this.sessionId = sessionId;
 		this.progressBar = progressBar;
 	}
@@ -79,9 +80,9 @@ public class AnalyticsDefaultDetector extends DefaultDetector {
 		int numDetectors = detectors.size();
 		int i = 0;
 		if(progressBar != null) {
-			progressBar.setCurrentState(ProgressState.detectStage);
-			SchemaWizardWebSocketUtility.getInstance().updateProgress(progressBar, sessionId);
-			progressBar.setCurrentStateSplits(numDetectors);
+			progressBar.goToNextStateIfCurrentIs(ProgressState.STAGE.UPLOAD);
+			SchemaWizardSessionUtility.getInstance().updateProgress(progressBar, sessionId);
+			progressBar.split(numDetectors);
 		}
 		
 		for (Detector detector : detectors) {
@@ -90,9 +91,9 @@ public class AnalyticsDefaultDetector extends DefaultDetector {
 			MediaType detected = wrapper.detect(input, metadata);
 			
 			if(progressBar != null) {
-				progressBar.setCurrentStateSplitIndex(i);
-				progressBar.updateCurrentSampleNumerator(ProgressState.detectStage.getEndValue());
-				SchemaWizardWebSocketUtility.getInstance().updateProgress(progressBar, sessionId);
+				progressBar.goToNextStateIfCurrentIs(STAGE.SPLIT);
+				progressBar.updateNumeratorInRequiredState(progressBar.getCurrentState().getStartValue(), STAGE.SPLIT);
+				SchemaWizardSessionUtility.getInstance().updateProgress(progressBar, sessionId);
 			}
 			i++;
 			
@@ -118,7 +119,7 @@ public class AnalyticsDefaultDetector extends DefaultDetector {
 		}
 		
 		if(progressBar != null) {
-			progressBar.setCurrentStateSplits(1);
+			progressBar.jumpToEndOfSplits();
 		}
 		
 		if(confidenceList.size() == 0) {

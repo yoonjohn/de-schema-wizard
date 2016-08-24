@@ -31,7 +31,7 @@ public interface InterpretationEngine extends ReverseGeocodingWorker {
 	
 	public JSONObject deleteInterpretation(JSONObject interpretationJson) throws DataAccessException;
 	
-	public Map<String, Profile> interpret(String domainGuid, Map<String, Profile> profileMap) throws DataAccessException;
+	public Map<String, Profile> interpret(String domainGuid, Map<String, Profile> profileMap, int timeout) throws DataAccessException;
 	
 	public JSONObject validatePythonScript(JSONObject b64Script) throws DataAccessException;
 	

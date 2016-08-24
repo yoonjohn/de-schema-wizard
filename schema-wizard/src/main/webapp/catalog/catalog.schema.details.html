@@ -35,8 +35,7 @@
                                             <b>{{field}}</b>
                                             <button style="border: none; background-color: transparent;" uib-dropdown-toggle
                                                     ng-click="isCollapsed = !isCollapsed;" onclick="this.blur();"
-                                                    ng-init="isCollapsed = true; currentSample.viz = 'hbc'"
-                                                    ng-hide="detailsRow == 'false' || profile['main-type'] == 'string' && profile['detail']['detail-type'] == 'phrase'">
+                                                    ng-init="isCollapsed = true; currentSample.viz = 'hbc'">
                                                 <span ng-show="isCollapsed" class="caret"></span>
                                                 <span ng-show="!isCollapsed" class="inverted-caret"></span>
                                             </button>
@@ -46,7 +45,7 @@
                                 <td>
                                     <span ng-repeat="alias in currentSchema.sProfile[field]['alias-names']"
                                           ng-hide="alias['alias-name'] === field"
-                                          style="width: 21%; margin-left: 2px; padding-left: 14px;"">
+                                          style="width: 21%; margin-left: 2px; padding-left: 14px;">
                                         {{alias['alias-name']}}
                                     </span>
                                 </td>

@@ -2,58 +2,23 @@
 
     var schemaWizardApp = angular.module('schemaWizardApp');
     schemaWizardApp.constant("matchConfidenceThreshold", 94);
+    schemaWizardApp.constant("defaultInterpretationMatch", false);
     schemaWizardApp.controller('schemaWizardCtrl', ['$scope', '$rootScope', '$window',
         '$cookies', '$location', '$http', '$routeParams', '$uibModal', '$timeout',
         '$interval', '$log', 'DomainInformation', 'Server', 'UploadParameters',
-        'matchConfidenceThreshold', 'myModals', '$confirm', '$sce', 'guidedTourStepFactory', '$q', 'uiTourService', 'statusCodesFactory',
+        'matchConfidenceThreshold', 'defaultInterpretationMatch', 'myModals', '$confirm', '$sce', 'guidedTourStepFactory', '$q', 'uiTourService', 'statusCodesFactory',
         function ($scope, $rootScope, $window, $cookies, $location, $http, $routeParams,
                   $uibModal, $timeout, $interval, $log,
                   DomainInformation, Server, UploadParameters,
-                  matchConfidenceThreshold, myModals, $confirm, $sce, guidedTourStepFactory, $q, TourService, statusCodesFactory) {
+                  matchConfidenceThreshold, defaultInterpretationMatch, myModals, $confirm, $sce, guidedTourStepFactory, $q, TourService, statusCodesFactory) {
 
             $scope.userid = "wizard-user";
-            // TODO test
-            $scope.fileIndex = -1;
 
             $scope.animationsEnabled = true;
             $scope.isCollapsed = true;
             $scope.modifySchemaMode = false;
-
-            $scope.transformTable = function () {
-                $rootScope.$broadcast("transformTable", {});
-                $scope.hasBeenClicked = false;
-                setTimeout(fixHeader, 200);
-                function fixHeader() {
-                    var tableHeader = document.getElementById('customTableHeader');
-                    tableHeader.style.position = "fixed";
-                    $scope.hasBeenClicked = true;
-                    console.log($scope.hasBeenClicked)
-                }
-
-                if ($scope.hasBeenClicked == true) {
-                    var tableHeader = document.getElementById('customTableHeader');
-                    tableHeader.style.position = "relative";
-                    console.log($scope.hasBeenClicked)
-                }
-            };
-
-            guidedTourStepFactory.get()
-                .$promise.then(function (response) {
-                $rootScope.tourInformation = response;
-                $scope.mainTour = $rootScope.tourInformation.mainTour;
-                $scope.inspectionTour = $rootScope.tourInformation.inspectSampleTour;
-                $scope.inspectDataSourceTour = $rootScope.tourInformation.inspectDataSourceTour;
-                $scope.finalizeSchemaTour = $rootScope.tourInformation.finalizeSchemaTour;
-                console.log($rootScope.tourInformation)
-            });
-            if ($scope.path == "/wizardInspectSamples") {
-                if ($cookies.get('schwiz.tours.inspectSample') !== "visited") {
-                    $timeout(function () {
-                        TourService.getTourByName('catalog').startAt('300');
-                    }, 2500);
-                    $cookies.put('schwiz.tours.interpretations', "visited");
-                }
-            }
+            $scope.confidenceThreshold = matchConfidenceThreshold;
+            $scope.interpretationMatch = defaultInterpretationMatch;
 
             $scope.initializeModels = function () {
                 $scope.model = {
@@ -76,13 +41,58 @@
             }; // initializeModels
             $scope.initializeModels();
 
-            $scope.transformTable = function () {
-                $rootScope.$broadcast("transformTable", {});
-                setTimeout(fixHeader, 250);
-                function fixHeader() {
-                    document.getElementById('customTableHeader').style.position = "fixed";
+            guidedTourStepFactory.get()
+                .$promise.then(function (response) {
+                $rootScope.tourInformation = response;
+                $scope.mainTour = $rootScope.tourInformation.mainTour;
+                $scope.inspectionTour = $rootScope.tourInformation.inspectSampleTour;
+                $scope.inspectDataSourceTour = $rootScope.tourInformation.inspectDataSourceTour;
+                $scope.finalizeSchemaTour = $rootScope.tourInformation.finalizeSchemaTour;
+                console.log($rootScope.tourInformation)
+            });
+            if ($scope.path == "/wizardInspectSamples") {
+                if ($cookies.get('schwiz.tours.inspectSample') !== "visited") {
+                    $timeout(function () {
+                        TourService.getTourByName('catalog').startAt('300');
+                    }, 2500);
+                    $cookies.put('schwiz.tours.interpretations', "visited");
                 }
             }
+
+            //TODO: test
+            $scope.fileIndex = -1;
+
+            //TODO: determine scoping issue for long field names
+            $scope.placeHolderForLongFieldName = "Hover over points to see full name";
+
+            //these are used to grab the field name and then log long-field names
+            $scope.fieldName = null;
+            $scope.logFieldNameFromRepeat = function(field){
+                $scope.fieldName = field;
+            }
+            $scope.hoverLongFieldName = function (points, evt) {
+                $scope.index = points[0]['_index']
+                $scope.placeHolderForLongFieldName = $rootScope.test.sProfile[$scope.fieldName]['detail']['freq-histogram']['long-labels'][$scope.index];
+                $scope.$apply()
+            };
+
+            $scope.transformTable = function () {
+                $rootScope.$broadcast("transformTable", {});
+                $scope.hasBeenClicked = false;
+                setTimeout(fixHeader, 200);
+                function fixHeader() {
+                    var tableHeader = document.getElementById('customTableHeader');
+                    tableHeader.style.position = "fixed";
+                    $scope.hasBeenClicked = true;
+                    console.log($scope.hasBeenClicked)
+                }
+
+                if ($scope.hasBeenClicked == true) {
+                    var tableHeader = document.getElementById('customTableHeader');
+                    tableHeader.style.position = "relative";
+                    console.log($scope.hasBeenClicked)
+                }
+            }; // transformTable
 
             $scope.hidePanel = false;
             $scope.collapseDetailsPanels = function () {
@@ -204,34 +214,48 @@
                                     newViewHeight - 276 + "px";
                                 break;
                             case "/schema":
-                                document.getElementById("schemaDetailsPanelBody").style.height =
-                                    newViewHeight - 406 + "px";
                                 document.getElementById("schemaDetailsContainer").style.height =
                                     newViewHeight - 45 + "px";
+                                document.getElementById("schemaDetailsPanelBody").style.height =
+                                    newViewHeight - 413 + "px";
                                 break;
                             case "/sampleData":
-                                document.getElementById("sampleDetailsPanelBody").style.height =
-                                    newViewHeight - 150 + "px";
                                 document.getElementById("sampleDetailsContainer").style.height =
                                     newViewHeight - 45 + "px";
+                                document.getElementById("sampleDetailsPanelBody").style.height =
+                                    newViewHeight - 129 + "px";
+                                document.getElementById("wizardDetailsPanelBody").style.height =
+                                    newViewHeight - 129 + "px";
+                                document.getElementById("wizardDetailsHbcCanvas").style.height =
+                                    newViewHeight - 355 + "px";
+                                document.getElementById("wizardDetailsVbcCanvas").style.height =
+                                    newViewHeight - 355 + "px";
+                                document.getElementById("wizardDetailsGphCanvas").style.height =
+                                    newViewHeight - 355 + "px";
+                                document.getElementById("wizardDetailsMapCanvas").style.height =
+                                    newViewHeight - 355 + "px";
+                                document.getElementById("wizardDetailsExampleCanvas").style.height =
+                                    newViewHeight - 355 + "px";
                                 break;
                             case "/wizardUploadSamples":
                                 break;
                             case "/wizardInspectSamples":
                                 document.getElementById("wizardInspectSamplesContainer").style.height =
-                                    newViewHeight - 108 + "px";
+                                    newViewHeight - 115 + "px";
                                 document.getElementById("sampleDetailsPanelBody").style.height =
-                                    newViewHeight - 237 + "px";
+                                    newViewHeight - 199 + "px";
                                 document.getElementById("wizardDetailsPanelBody").style.height =
-                                    newViewHeight - 215 + "px";
+                                    newViewHeight - 199 + "px";
                                 document.getElementById("wizardDetailsHbcCanvas").style.height =
-                                    newViewHeight - 440 + "px";
+                                    newViewHeight - 425 + "px";
                                 document.getElementById("wizardDetailsVbcCanvas").style.height =
-                                    newViewHeight - 440 + "px";
+                                    newViewHeight - 425 + "px";
                                 document.getElementById("wizardDetailsGphCanvas").style.height =
-                                    newViewHeight - 440 + "px";
+                                    newViewHeight - 425 + "px";
                                 document.getElementById("wizardDetailsMapCanvas").style.height =
-                                    newViewHeight - 440 + "px";
+                                    newViewHeight - 425 + "px";
+                                document.getElementById("wizardDetailsExampleCanvas").style.height =
+                                    newViewHeight - 425 + "px";
                                 break;
                             case "/wizardMatchFields":
                                 document.getElementById("wizardMatchFieldsContainer").style.height =
@@ -254,6 +278,8 @@
                                     newViewHeight - 418 + "px";
                                 document.getElementById("wizardDetails1MapCanvas").style.height =
                                     newViewHeight - 418 + "px";
+                                document.getElementById("wizardDetails1ExampleCanvas").style.height =
+                                    newViewHeight - 418 + "px";
                                 document.getElementById("wizardDetails2HbcCanvas").style.height =
                                     newViewHeight - 418 + "px";
                                 document.getElementById("wizardDetails2VbcCanvas").style.height =
@@ -262,12 +288,14 @@
                                     newViewHeight - 418 + "px";
                                 document.getElementById("wizardDetails2MapCanvas").style.height =
                                     newViewHeight - 418 + "px";
+                                document.getElementById("wizardDetails2ExampleCanvas").style.height =
+                                    newViewHeight - 418 + "px";
                                 break;
                             case "/wizardFinalizeSchema":
-                                document.getElementById("wizardFinalizeSchemaPanelBody").style.height =
-                                    newViewHeight - 411 + "px";
                                 document.getElementById("wizardFinalizeSchemaContainer").style.height =
                                     newViewHeight - 108 + "px";
+                                document.getElementById("wizardFinalizeSchemaPanelBody").style.height =
+                                    newViewHeight - 419 + "px";
                                 break;
                             case "/wizardSave":
                                 break;
@@ -308,6 +336,7 @@
                 $scope.path = path;
                 if (path == "/catalog") {
                     document.getElementById('titleRef').style.pointerEvents = 'auto';
+                    $rootScope.$broadcast("closeWebSocket", {});
                 }
                 if (path == "/wizardUploadSample" || "/startup") {
                     $rootScope.tabNumber = 1;
@@ -385,6 +414,7 @@
                             ).then(function () {
                                 $scope.fileIndex = -1;
                                 $scope.navigateTo("/catalog");
+                                $rootScope.$broadcast("closeWebSocket", {});
                             })
                         }
                         $scope.currentSampleIndex += 1;
@@ -394,41 +424,31 @@
                                 $confirm({
                                         title: 'Schema Wizard does not support this file type',
                                         text: "Cannot determine the format of the data sample, or does not support: "
-                                        // + $scope.fileArray[$scope.currentSampleIndex].name +
-                                        + $scope.sampleFiles[$scope.fileIndex].name +
+                                        + $scope.sampleFiles[$scope.currentSampleIndex].name +
                                         "\n\nPress OK to discard and proceed to the next data sample.",
                                         ok: 'OK'
                                     },
                                     {templateUrl: 'schema-wizard/schema-wizard.confirm.template.html'}
                                 ).then(function () {
-                                    // console.log($scope.fileArray)
                                     $scope.model.dataSamples.splice($scope.currentSampleIndex, 1);
                                     // decrement the index since we just created a hole
                                     $scope.currentSampleIndex -= 1;
+                                    $scope.fileIndex -=1;
                                     $scope.wizardStateControl('wizard-inspect-samples');
                                 })
                             }
                             //   }
-                            // TODO: dsFileName will be returned in the future so won't have to do this
-                            $scope.model.dataSamples[$scope.currentSampleIndex].dsFileName =
-                                $scope.sampleFiles[$scope.currentSampleIndex].name;
+
                             $scope.model.dataSamples[$scope.currentSampleIndex].dsFileSize =
                                 $scope.sampleFiles[$scope.currentSampleIndex].size;
                             $scope.currentSample = $scope.model.dataSamples[$scope.currentSampleIndex];
-                            // TODO: not working; reinitialize rows to collapsed
-                            $scope.isCollapsed = true;
-                            $scope.currentSample.viz = "hbc";
-                            var foundPropertyToDisplay = null;
-                            angular.forEach(Object.keys($scope.currentSample.dsProfile), function (property) {
-                                if ($scope.currentSample.dsProfile[property].detail['detail-type'] != "phrase" && !foundPropertyToDisplay) {
-                                    $scope.currentSample.dsProfile[property]['shown-in-details'] = true;
-                                    foundPropertyToDisplay = property;
-                                }
-                            });
+
                             $scope.navigateTo("/wizardInspectSamples");
-                            if (foundPropertyToDisplay) {
-                                $scope.showInGenericDetails($scope.currentSample, foundPropertyToDisplay);
-                            }
+                            // broadcast to treeTableController (after waiting for it to become available in the dom)
+                            $timeout(function () {
+                                    $rootScope.$broadcast("setCurrentSample", {
+                                    sample: $scope.currentSample
+                                })}, 500);
                         } else {
                             $scope.wizardStateControl("wizard-match-fields");
                             $scope.fileIndex = -1;
@@ -443,10 +463,19 @@
                         }
                         if ($scope.modifySchemaMode === true) {
                             $scope.addSchemaToModel();
+                            //$log.debug("$scope.model.properties");
+                            //$log.debug($scope.model.properties);
                         }
                         $log.debug("$scope.model.dataSamples");
                         $log.debug($scope.model.dataSamples);
-                        $scope.addNewDataSamples($scope.model.dataSamples);
+                        // make a copy of data samples to preserve the originals
+                        // repeatMatching() needs to start with the original copy each time it gets called
+                        $scope.model.originalDataSamples = angular.copy($scope.model.dataSamples);
+                        // reinitialize interpretationMatch
+                        $scope.interpretationMatch = defaultInterpretationMatch;
+                        $scope.addNewDataSamples($scope.model.dataSamples,
+                                                 $scope.confidenceValues.selectedConfidenceValue,
+                                                 $scope.interpretationMatch);
 
                         var foundDetailsToDisplay = false;
                         angular.forEach(Object.keys($scope.model.properties), function (property) {
@@ -482,7 +511,7 @@
                                     });
                             })
                         });
-                        // check for alias names
+                        // overwrite the original dataSamples with the possibly altered ones after matching
                         $log.debug($scope.model.dataSamples);
                         // open the websocket for progress bar updates
                         $rootScope.$broadcast("openWebSocket", {
@@ -574,9 +603,10 @@
                 if ($event) $event.preventDefault();
                 for (var i = 0; i < document.styleSheets.length; i++) {
                     if (document.styleSheets[i].href &&
-                        document.styleSheets[i].href.indexOf("leidos") > 0) {
+                        document.styleSheets[i].href.indexOf("leidos-theme.css") > 0) {
                         document.styleSheets[i].disabled = !use;
                         $cookies.put('schwiz.theme', (use ? 'leidos' : 'digitalEdge2'));
+                        break;
                     }
                 }
             }; // useLeidosTheme
@@ -602,11 +632,6 @@
                 $scope.dropzoneModels['selected' + dropzone] = null;
                 delete $scope.dropzoneModels.dropzones['zone' + dropzone][0];
             }; // clearDetails
-
-            //$scope.startDetached = function () {
-            // see '.run' in app.js for creating detached tours
-            //   TourService.getTourByName('detachedDemoTour').start();
-            //};
 
             // tour 'previous' button
             $scope.onTourPrev = function (tour) {
@@ -678,6 +703,8 @@
                 $log.debug("onSetCurrentSchema");
                 $log.debug(args.schema);
                 $scope.currentSchema = args.schema;
+                //TODO dont use rootscope to try and resolve scoping issue before broadcast
+                $rootScope.test = $scope.currentSchema;
             }); // onsetCurrentSchema
 
             $scope.$on("setSchemaDomain", function (event, args) {
@@ -703,6 +730,12 @@
                 angular.forEach(Object.keys($scope.currentSchema.sProfile), function (property) {
                     $log.debug("adding property: " + property);
                     $scope.model.properties[property] = $scope.currentSchema.sProfile[property];
+                    $scope.model.properties[property]["interpretations"] = [];
+                    for (var i = 0; i < $scope.currentSchema.sProfile[property].interpretations.length; i++) {
+                        if ($scope.model.properties[property].interpretations.indexOf($scope.currentSchema.sProfile[property].interpretations[i].iName) === -1) {
+                            $scope.model.properties[property].interpretations.push($scope.currentSchema.sProfile[property].interpretations[i]);
+                        }
+                    }
                     $scope.model.properties[property]["linkedDs"] = [];
                     $scope.model.properties[property]["existing-schema-property"] = true;
                 });
@@ -717,7 +750,7 @@
                 if (!$scope.model.properties.hasOwnProperty(property)) {
                     // add the property and an array for linking data samples
                     $scope.model.properties[property] =
-                    {"display-name": dataSample.dsProfile[property]["display-name"], "linkedDs": []};
+                        {"display-name": dataSample.dsProfile[property]["display-name"], "interpretations": [], "linkedDs": []};
                     $scope.model.properties[property]["existing-schema-property"] = false;
                     // since first ds in linked list, mark it as seed and not merged
                     dataSample.dsProfile[property]['used-in-schema'] = true;
@@ -725,6 +758,11 @@
                 } else {
                     dataSample.dsProfile[property]['used-in-schema'] = false;
                     dataSample.dsProfile[property]['merged-into-schema'] = true;
+                }
+                for (var i = 0; i < dataSample.dsProfile[property].interpretations.length; i++) {
+                    if ($scope.model.properties[property].interpretations.indexOf(dataSample.dsProfile[property].interpretations[i].iName) === -1) {
+                        $scope.model.properties[property].interpretations.push(dataSample.dsProfile[property].interpretations[i].iName);
+                    }
                 }
                 // unless a seed property, mark for merging
                 if (!dataSample.dsProfile[property]['used-in-schema']) {
@@ -734,7 +772,62 @@
                 $scope.model.properties[property].linkedDs.push(dataSample);
             }; // addPropertyToModel
 
-            $scope.addNewDataSamples = function (newDataSamples) {
+            $scope.repeatMatching = function (interpretationMatch) {
+                $log.debug("confidenceThreshold");
+                $scope.interpretationMatch = interpretationMatch;
+                //TODO: make this work with modify existing schema
+                // can't do this when modifying existing schema, would need to start with addSchemaToModel
+                if (!$scope.modifySchemaMode) {
+                    $scope.model.properties = {};
+                    //$rootScope.$apply();
+                    $timeout(function () {
+                        $log.debug("$scope.confidenceValues.selectedConfidenceValue");
+                        $log.debug($scope.confidenceValues.selectedConfidenceValue);
+                        $log.debug("$scope.interpretationMatch: " + $scope.interpretationMatch);
+                        // start matching over using the original copy of the data samples
+                        $scope.model.dataSamples = angular.copy($scope.model.originalDataSamples);
+                        $log.debug("$scope.model.dataSamples");
+                        $log.debug($scope.model.dataSamples);
+                        $scope.addNewDataSamples($scope.model.dataSamples,
+                                                 $scope.confidenceValues.selectedConfidenceValue,
+                                                 $scope.interpretationMatch);
+                        var foundDetailsToDisplay = false;
+                        angular.forEach(Object.keys($scope.model.properties), function (property) {
+                            if ($scope.model.properties[property].linkedDs.length > 1 &&
+                                $scope.model.properties[property].linkedDs[0].dsProfile[property]['main-type'] == "number" && !foundDetailsToDisplay) {
+                                $scope.showInDetails1($scope.model.properties[property].linkedDs[0], property, false);
+                                $scope.showInDetails2($scope.model.properties[property].linkedDs[1], property, false);
+                                foundDetailsToDisplay = true;
+                            }
+                        });
+                    }, 300)
+                }
+            }; // repeatMatching
+
+            // TODO: test interpretation match in the future
+            $scope.matchesFieldInOtherDataSample = function(interpretationsToMatch, fieldToMatch, newDataSamples) {
+                $log.debug("matchesFieldInOtherDataSample");
+                $log.debug("interpretationsToMatch: " + angular.toJson(interpretationsToMatch));
+                $log.debug("fieldToMatch: " + fieldToMatch);
+                foundMatch = false;
+                findMatch: for (var i = 0; i < interpretationsToMatch.length; i++) {
+                    for (var j = 0; j < newDataSamples.length; j++) {
+                        if (newDataSamples[j].dsProfile.hasOwnProperty(fieldToMatch)) {
+                            for (var k = 0; k < newDataSamples[j].dsProfile[fieldToMatch].interpretations.length; k++) {
+                                foundMatch = foundMatch
+                                    || (newDataSamples[j].dsProfile.hasOwnProperty(fieldToMatch)
+                                    && interpretationsToMatch[i].iName
+                                        === newDataSamples[j].dsProfile[fieldToMatch].interpretations[k].iName
+                                    && interpretationsToMatch[i].iName != "Unknown");
+                                if (foundMatch) break findMatch;
+                            }
+                        }
+                    }
+                }
+                return foundMatch;
+            }; // matchesFieldInOtherDataSample
+
+            $scope.addNewDataSamples = function (newDataSamples,  confidenceThreshold, interpretationMatch) {
                 $log.debug("addNewDataSamples");
                 $log.debug(newDataSamples);
                 angular.forEach(newDataSamples, function (newDs) {
@@ -742,16 +835,23 @@
                     angular.forEach(Object.keys(newDs.dsProfile), function (property) {
                         // build drop-down listbox for alternate names
                         newDs.dsProfile[property]['match-names'] =
-                        {availableOptions: [], selectedOption: null, previousOption: null};
+                            {availableOptions: [], selectedOption: null, previousOption: null};
                         for (var i = 0; i < newDs.dsProfile[property]['matching-fields'].length; i++) {
-                            newDs.dsProfile[property]['match-names']['availableOptions'].push(
-                                {
-                                    id: i,
-                                    name: newDs.dsProfile[property]['matching-fields'][i]['matching-field'] +
-                                    ':' +
-                                    newDs.dsProfile[property]['matching-fields'][i]['confidence']
-                                }
-                            );
+                            // TODO: test interpretation match in the future
+                            if (!interpretationMatch
+                                || $scope.matchesFieldInOtherDataSample(
+                                    newDs.dsProfile[property].interpretations,
+                                    newDs.dsProfile[property]['matching-fields'][i]['matching-field'],
+                                    newDataSamples)) {
+                                newDs.dsProfile[property]['match-names']['availableOptions'].push(
+                                    {
+                                        id: i,
+                                        name: newDs.dsProfile[property]['matching-fields'][i]['matching-field'] +
+                                        ':' +
+                                        newDs.dsProfile[property]['matching-fields'][i]['confidence']
+                                    }
+                                )
+                            }
                         }
                         // examine alternate names and their confidence factor
                         // if high and not a seed property then change the name of data
@@ -771,7 +871,12 @@
 
                             // if this alternate name has high confidence then rename
                             // this property to that alternate name
-                            if (matchingField['confidence'] > matchConfidenceThreshold) {
+                            if (matchingField['confidence'] >= confidenceThreshold
+                                && ((interpretationMatch
+                                     && newDs.dsProfile[property].interpretations[0].interpretation
+                                        != "Unknown")
+                                    || !interpretationMatch
+                                   )) {
                                 if ($scope.model.properties.hasOwnProperty(matchingField['matching-field'])) {
                                     newDs.dsProfile[property]['original-name'] = property;
                                     newDs.dsProfile[property]['used-in-schema'] = false;
@@ -805,7 +910,8 @@
                         $scope.addPropertyToModel(newDs, property);
                     });
                 });
-                $log.debug($scope.model.dataSamples);
+                $log.debug("$scope.model");
+                $log.debug($scope.model);
             }, function (error) {
                 statusCodesFactory.get().$promise.then(function (response) {
                     $confirm(
@@ -817,7 +923,7 @@
                         },
                         {templateUrl: 'schema-wizard/schema-wizard.confirm.template.html'})
                 })
-            } // addNewDataSamples
+            }; // addNewDataSamples
 
             $scope.changeMatchedProperty = function (dataSample, property) {
                 $log.debug("changeMatchField");
@@ -843,35 +949,6 @@
                         dataSample.dsProfile[property]['match-names'].previousOption;
                     return;
                 }
-
-/* TODO: get this to work
-                // check if the new name already exists as an alias in the current schema
-                if ($scope.modifySchemaMode === true) {
-                    var aliasExists = false;
-                    aliasCheck: for (var key in Object.keys($scope.currentSchema.dsProfile)) {
-                        $log.debug("%%%%%%%%%% key: " + key);
-                        for (var i = 0; i < $scope.currentSchema.dsProfile[key]['alias-names'].length; i++) {
-                            if ($scope.currentSchema.dsProfile[key]['alias-names'][i]['alias-name'] === newName) {
-                                aliasExists = true;
-                                break aliasCheck;
-                            }
-                        }
-                    };
-                    if (aliasExists) {
-                        $confirm(
-                            {
-                                title: 'Merge Operation',
-                                text: "The alias '" + newName + "' already exists in the current schema.",
-                                ok: 'OK'
-                            },
-                            {templateUrl: 'schema-wizard/schema-wizard.confirm.template.html'});
-                        // undo user selection to previous selection
-                        dataSample.dsProfile[property]['match-names'].selectedOption =
-                            dataSample.dsProfile[property]['match-names'].previousOption;
-                        return;
-                    }
-                }
-*/
 
                 var linkedDs = $scope.model.properties[property].linkedDs;
                 $scope.removeFromDetailsPanels(dataSample.dsProfile[property]);
@@ -905,6 +982,16 @@
                 $log.debug(linkedDs);
                 if (linkedDs.length == 0 && $scope.modifySchemaMode === false) {
                     delete $scope.model.properties[property];
+                } else {
+                    // rebuild the interpretations for this property based on the linked data samples
+                    $scope.model.properties[property].interpretations = [];
+                    for (var i = 0; i < linkedDs.length; i++) {
+                        for (var j = 0; j < linkedDs[i].dsProfile[property].interpretations.length; j++) {
+                            if ($scope.model.properties[property].interpretations.indexOf(linkedDs[i].dsProfile[property].interpretations[j].iName) === -1) {
+                                $scope.model.properties[property].interpretations.push(linkedDs[i].dsProfile[property].interpretations[j].iName);
+                            }
+                        }
+                    }
                 }
                 // add restored property to property model
                 $scope.addPropertyToModel(removedDs, newName);
@@ -925,7 +1012,6 @@
                 if (property) {
                     if (property['shown-in-details1']) return {"background-color": "gold", "cursor": "pointer"};
                     if (property['shown-in-details2']) return {"background-color": "lightsalmon", "cursor": "pointer"};
-                    if (property['main-type'] == 'string' && property['detail']['detail-type'] == 'phrase') return {'cursor': 'not-allowed'};
                 }
             }; // highlightIfInDetails
 
@@ -945,10 +1031,6 @@
                 $log.debug("showInGenericDetails");
                 $log.debug(dataSource);
                 $log.debug(property);
-                if (dataSource.dsProfile[property]['main-type'] == 'string' &&
-                    dataSource.dsProfile[property].detail['detail-type'] == 'phrase') {
-                    return;
-                }
                 // interate through dataSource properties to turn off shown-in-details
                 angular.forEach(Object.keys(dataSource.dsProfile), function (property) {
                     dataSource.dsProfile[property]['shown-in-details'] = false;
@@ -961,7 +1043,11 @@
                 // set the default viz for the histogram
                 if ($scope.detailModels.detailPanels.panel1[0].detail['freq-histogram'].type == "map") {
                     $scope.detailModels.detailPanels.panel1[0].viz = "map";
-                } else {
+                }
+                else if($scope.detailModels.detailPanels.panel1[0].detail['detail-type'] == "text") {
+                    $scope.detailModels.detailPanels.panel1[0].viz = "example";
+                }
+                else {
                     $scope.detailModels.detailPanels.panel1[0].viz = "hbc";
                 }
                 $log.debug("detailModels.detailPanels.panel1[0]");
@@ -973,9 +1059,6 @@
                 $log.debug("showInDetails1");
                 $log.debug(dataSource);
                 $log.debug(property);
-                // don't display string/phrase types in visualizations
-                if (!(dataSource.dsProfile[property]['main-type'] == 'string' &&
-                    dataSource.dsProfile[property].detail['detail-type'] == 'phrase')) {
                     // interate through working model properties to turn off shown-in-details1
                     angular.forEach(Object.keys($scope.model.properties), function (property) {
                         $scope.model.properties[property]['shown-in-details1'] = false;
@@ -1001,7 +1084,11 @@
                     // set the default viz for the histogram
                     if ($scope.detailModels.detailPanels.panel1[0].detail['freq-histogram'].type == "map") {
                         $scope.detailModels.detailPanels.panel1[0].viz = "map";
-                    } else {
+                    }
+                    else if($scope.detailModels.detailPanels.panel1[0].detail['detail-type'] == "text") {
+                        $scope.detailModels.detailPanels.panel1[0].viz = "example";
+                    }
+                    else {
                         $scope.detailModels.detailPanels.panel1[0].viz = "hbc";
                     }
                     if (dataSource.dsProfile[property]['original-name']) {
@@ -1010,16 +1097,12 @@
                     }
                     $log.debug("detailModels.detailPanels.panel1[0]");
                     $log.debug($scope.detailModels.detailPanels.panel1[0]);
-                }
             }; // showInDetails1
 
             $scope.showInDetails2 = function (dataSource, property) {
                 $log.debug("showInDetails2");
                 $log.debug(dataSource);
                 $log.debug(property);
-                // don't display string/phrase types in visualizations
-                if (!(dataSource.dsProfile[property]['main-type'] == 'string' &&
-                    dataSource.dsProfile[property].detail['detail-type'] == 'phrase')) {
                     // interate through linked data sources to turn off shown-in-details2
                     angular.forEach(Object.keys($scope.model.properties), function (property) {
                         angular.forEach($scope.model.properties[property].linkedDs, function (linkedDs) {
@@ -1034,7 +1117,11 @@
                     // set the default viz for the histogram
                     if ($scope.detailModels.detailPanels.panel2[0].detail['freq-histogram'].type == "map") {
                         $scope.detailModels.detailPanels.panel2[0].viz = "map";
-                    } else {
+                    }
+                    else if($scope.detailModels.detailPanels.panel2[0].detail['detail-type'] == "text") {
+                        $scope.detailModels.detailPanels.panel2[0].viz = "example";
+                    }
+                    else {
                         $scope.detailModels.detailPanels.panel2[0].viz = "hbc";
                     }
                     if (dataSource.dsProfile[property]['original-name']) {
@@ -1043,7 +1130,6 @@
                     }
                     $log.debug("detailModels.detailPanels.panel2[0]");
                     $log.debug($scope.detailModels.detailPanels.panel2[0]);
-                }
             }; // showInDetails2
 
             $scope.editFieldName = function ($event, oldName, newName) {
@@ -1330,6 +1416,14 @@
                     })
                 });
             }; // removeDs
+
+            $scope.confidenceValues = {
+                selectedConfidenceValue: $scope.confidenceThreshold.toString(),
+                availableValues: []
+            };
+            for (var i = 100; i > 80; i--) {
+                $scope.confidenceValues.availableValues.push( { value: i });
+            }
 
             $scope.dragEnd = function (property, obj) {
                 for (var i = 1; i < 4; i++) {

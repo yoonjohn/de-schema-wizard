@@ -70,11 +70,10 @@
         },
         "step2": {
             "title": "Data Sample Details",
-            "message": "This specifies the current data sample that you are inspecting and how many are left in the files that were uploaded."
-        },
+            "message": "This specifies the current data sample that you are inspecting and how many are left in the files that were uploaded.\n\n Inside of this panel, Schema Wizard has laid out each field that has been identified in your data sample and the correlating statistics, as well as any matching interpretations."        },
         "step3": {
-            "title": "Data Sample Fields",
-            "message": "Inside of this table, Schema Wizard has analyzed and identified certain fields in the data sample."
+            "title": "Data Sample Analytics",
+            "message": "In this panel, it lists all of the analytics, as well as different graph options to view the data."
         },
         "step4": {
             "title": "Data Sample Legend",
@@ -155,6 +154,12 @@
         "step5": {
             "title": "Finalize Schema",
             "message": "By clicking 'Next' you will move onto the final step of Finalizing your schema by giving it a name, version, and description\n\n This concludes the Schema Creation Tour"
+        }
+    },
+    "dataSampleCatalog": {
+        "step1": {
+            "title": "Welcome to this data sample in the catalog",
+            "message": "From here you are able to view a data sample that has been previously uploaded and view any statistics or graphs that correlate to the field in the sample"
         }
     }
 }

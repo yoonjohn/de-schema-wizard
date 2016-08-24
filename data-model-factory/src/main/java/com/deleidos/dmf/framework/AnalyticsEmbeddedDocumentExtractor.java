@@ -2,7 +2,6 @@ package com.deleidos.dmf.framework;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,13 +24,13 @@ import org.apache.tika.parser.pdf.PDFParserConfig;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.deleidos.dmf.analyzer.AnalyzerProgressUpdater;
 import com.deleidos.dmf.exception.AnalyticsInitializationRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsRuntimeException;
-import com.deleidos.dmf.exception.AnalyticsUndetectableTypeException;
-import com.deleidos.dmf.progressbar.ProgressBar;
-import com.deleidos.dp.h2.H2SampleDataAccessObject;
+import com.deleidos.dmf.progressbar.ProgressBarManager;
+import com.deleidos.dmf.progressbar.SimpleProgressUpdater;
+import com.deleidos.dp.beans.DataSampleMetaData;
 import com.deleidos.dp.profiler.api.Profiler;
+import com.deleidos.dp.profiler.api.ProfilingProgressUpdateHandler;
 
 public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtractor {
 	public static final String RESOURCE_PATH_KEY = "resource-abs-path";
@@ -160,7 +159,7 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 		for(String file : new File(parentParameters.getExtractedContentDir()).list()) {
 			files.add(file);
 		}
-		embeddedDocumentName = H2SampleDataAccessObject.generateNewSampleName(embeddedDocumentName, files);
+		embeddedDocumentName = DataSampleMetaData.generateNewSampleName(embeddedDocumentName, files);
 
 		return embeddedDocumentName;
 	}
@@ -180,7 +179,7 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 				for(String file : extractedContentDirectory.getParentFile().list()) {
 					existingSampleNames.add(file);
 				}
-				String extractedName = H2SampleDataAccessObject.generateNewSampleName(extractedContentDirectory.getName(), existingSampleNames);
+				String extractedName = DataSampleMetaData.generateNewSampleName(extractedContentDirectory.getName(), existingSampleNames);
 				extractedContentDirectory = new File(fileLocation.getParent(), extractedName);
 			}
 			if(!extractedContentDirectory.mkdir()) {
@@ -215,13 +214,16 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 		TikaProfilerParameters parameters;
 		if(parentParameters instanceof TikaSampleAnalyzerParameters) {
 			TikaSampleAnalyzerParameters sampleParams = (TikaSampleAnalyzerParameters) parentParameters; 
-			parameters = new TikaSampleAnalyzerParameters(sampleParams.get(Profiler.class), sampleParams.get(AnalyzerProgressUpdater.class), 
-					sampleParams.getUploadFileDir(), sampleParams.getGuid(), inputStream, handler, metadata); 
-			((TikaSampleAnalyzerParameters)parameters).setReverseGeocodingCallsEstimate(sampleParams.getReverseGeocodingCallsEstimate());
+			parameters = new TikaSampleAnalyzerParameters(sampleParams.get(Profiler.class), sampleParams.getProgressBar(),
+					sampleParams.getUploadFileDir(), sampleParams.getGuid(), inputStream, handler, metadata);
+			parameters.set(ProfilingProgressUpdateHandler.class, sampleParams.get(ProfilingProgressUpdateHandler.class));
+			((TikaSampleAnalyzerParameters)parameters).setRecordsInSample(sampleParams.getRecordsInSample());
 		} else if(parentParameters instanceof TikaSchemaAnalyzerParameters) {
 			TikaSchemaAnalyzerParameters schemaParams = (TikaSchemaAnalyzerParameters) parentParameters;
-			parameters = new TikaSchemaAnalyzerParameters(schemaParams.get(Profiler.class), schemaParams.get(AnalyzerProgressUpdater.class), 
-					schemaParams.getUploadFileDir(), schemaParams.getGuid(), schemaParams.getDomainName(), schemaParams.getUserModifiedSampleList());
+			parameters = new TikaSchemaAnalyzerParameters(schemaParams.get(Profiler.class), schemaParams.getProgressBar(),
+					schemaParams.getUploadFileDir(), schemaParams.getGuid(), schemaParams.getDomainName(), 
+					schemaParams.getUserModifiedSampleList());
+			parameters.set(ProfilingProgressUpdateHandler.class, schemaParams.get(ProfilingProgressUpdateHandler.class));
 			parameters.setStream(inputStream);
 			parameters.setHandler(handler);
 			parameters.setMetadata(metadata);
@@ -229,9 +231,7 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 			inputStream.close();
 			throw new AnalyticsRuntimeException("Parameters not defined as sample or schema parameters.");
 		}
-		ProgressBar progress = parentParameters.getProgress();
 		parameters.setStreamLength(metadata.get(Metadata.CONTENT_LENGTH) != null ? Integer.valueOf(metadata.get(Metadata.CONTENT_LENGTH)) : 0);
-		parameters.setProgress(progress);
 		File parentFile = parentParameters.get(File.class);
 		parameters.set(File.class, parentFile);
 		parameters.set(Detector.class, parentParameters.get(Detector.class));
@@ -239,6 +239,8 @@ public class AnalyticsEmbeddedDocumentExtractor implements EmbeddedDocumentExtra
 		parameters.set(EmbeddedDocumentExtractor.class, parentParameters.get(EmbeddedDocumentExtractor.class));
 		parameters.set(PDFParserConfig.class, parentParameters.get(PDFParserConfig.class));
 		parameters.setSessionId(parentParameters.getSessionId());
+		parameters.setProgressUpdatingBehavior(parentParameters.getProgressUpdatingBehavior());
+		parameters.set(ProfilingProgressUpdateHandler.class, parentParameters.get(ProfilingProgressUpdateHandler.class));
 		//EmbeddedDocumentExtractor extractor= new ParsingEmbeddedDocumentExtractor(parameters);
 		//parameters.set(EmbeddedDocumentExtractor.class, extractor);
 		return parameters;

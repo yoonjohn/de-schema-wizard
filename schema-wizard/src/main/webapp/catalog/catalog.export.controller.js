@@ -11,7 +11,8 @@
             // Export for VizWiz
             var vizWizExportObject = {};
             vizWizExportObject.sId = schema.sId;
-            vizWizExportObject.sProfile = {};
+            vizWizExportObject.sName = $scope.name;
+            vizWizExportObject.sProfile = [];
             //DigitalEdge
             var digitalEdgeExportObject = {};
             digitalEdgeExportObject.sProfile = {};
@@ -19,7 +20,8 @@
             var fieldCount = 0;
             angular.forEach(schema.sProfile, function (value, key) {
                 fieldCount += 1;
-                vizWizExportObject.sProfile[key] = {};
+                var vizWizArrayObject = {};
+
                 if (value['presence'] === -1) {
                     vizWizExportObject.sProfile[key].mainType = (value['main-type']);
 //TODO: remove try/catch after detail gets set for user added fields (ref VersionOne B-06537)
@@ -31,17 +33,27 @@
                     vizWizExportObject.sProfile[key].numberDistinctValues = 0;
                     vizWizExportObject.sProfile[key].interpretations = "Unknown";
                 } else {
-                    vizWizExportObject.sProfile[key].mainType = (value['main-type']);
-                    vizWizExportObject.sProfile[key].detailType = (value['detail']['detail-type']);
-                    vizWizExportObject.sProfile[key].numberDistinctValues = (value['detail']['num-distinct-values']);
-                    vizWizExportObject.sProfile[key].interpretations = (value['interpretation']);
+                    // creates the array of objects for vizWiz
+                    vizWizArrayObject.fullName = key;
+                    vizWizArrayObject.displayName = value['display-name'];
+                    vizWizArrayObject.interpretation = value['interpretation']['iName'];
+                    vizWizArrayObject.attributes = {};
+                    vizWizArrayObject.attributes.identifier = value['attributes']['identifier'];
+                    vizWizArrayObject.attributes.categorical = value['attributes']['categorical'];
+                    vizWizArrayObject.attributes.quantitative = value['attributes']['quantitative'];
+                    vizWizArrayObject.attributes.relational = value['attributes']['relational'];
+                    vizWizArrayObject.attributes.ordinal = value['attributes']['ordinal'];
+                    vizWizArrayObject.mainType = value['main-type'];
+                    vizWizArrayObject.detailType = value['detail']['detail-type'];
+                    vizWizArrayObject.presence = value['presence'];
+                    vizWizArrayObject.numberDistinctValues = value['detail']['num-distinct-values'];
+                    vizWizExportObject.sProfile.push(vizWizArrayObject);
                 }
                 // DigitalEdge
                 digitalEdgeExportObject.sProfile[key] = (value['main-type']);
                 //Ingest Object
-                ingestExportObject[key] = "get("+(value['alias-names'][0]['alias-name'])+")";
+                ingestExportObject[key] = "get(" + (value['alias-names'][0]['alias-name']) + ")";
             });
-            vizWizExportObject.numberOfFields = fieldCount;
             //Export DigitalEdge
             var digitalEdgeData = angular.toJson(digitalEdgeExportObject, true);
             digitalEdgeData = digitalEdgeData.replace(/\n/g, "\r\n");

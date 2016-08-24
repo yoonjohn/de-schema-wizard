@@ -1,25 +1,28 @@
 package com.deleidos.dp.profiler;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import com.deleidos.dp.accumulator.AbstractProfileAccumulator;
 import com.deleidos.dp.accumulator.BundleProfileAccumulator;
 import com.deleidos.dp.beans.DataSample;
-import com.deleidos.dp.beans.Domain;
 import com.deleidos.dp.beans.Interpretation;
 import com.deleidos.dp.beans.Profile;
+import com.deleidos.dp.enums.DetailType;
 import com.deleidos.dp.enums.GroupingBehavior;
 import com.deleidos.dp.enums.Tolerance;
 import com.deleidos.dp.exceptions.DataAccessException;
+import com.deleidos.dp.exceptions.MainTypeException;
 import com.deleidos.dp.interpretation.InterpretationEngineFacade;
 import com.deleidos.dp.profiler.api.Profiler;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
-import com.deleidos.dp.profiler.api.ProfilingProgressUpdateListener;
+import com.deleidos.dp.profiler.api.ProfilingProgressUpdateHandler;
 
 /**
  * Profiler class for sample data sets.  Takes in objects and loads them into a BundleAccumulator.  Every object key
@@ -31,29 +34,24 @@ import com.deleidos.dp.profiler.api.ProfilingProgressUpdateListener;
  *
  */
 public class SampleProfiler implements Profiler {
-	public static final String EMPTY_FIELD_NAME = "(Blank Field Name)";
-	private boolean hasCalledInterpretationEngine;
-	private GroupingBehavior groupingBehavior = GroupingBehavior.GROUP_ARRAY_VALUES;
-	private ProfilingProgressUpdateListener progressUpdateListener;
+	private ProfilingProgressUpdateHandler progressUpdateListener;
 	private static Logger logger = Logger.getLogger(SampleProfiler.class);
-	private String domainName;
+	//private String domainName;
 	private Tolerance tolerance;
-	private int numGeoSpatialQueries = 0;
+	//private int numGeoSpatialQueries = 0;
 	private int recordsParsed;
 	protected Map<String, BundleProfileAccumulator> fieldMapping;
 
-	public SampleProfiler(String domainGuid, Tolerance tolerance) {
-		hasCalledInterpretationEngine = false;
-		setDomainName(domainGuid);
+	public SampleProfiler(Tolerance tolerance) {
 		setTolerance(tolerance);
 		fieldMapping = new LinkedHashMap<String, BundleProfileAccumulator>();
 		recordsParsed = 0;
 	}
 
 	@Override
-	public void load(ProfilerRecord record) {
+	public int load(ProfilerRecord record) {
 		boolean isBinary = record instanceof BinaryProfilerRecord;
-		Map<String, List<Object>> normalizedMapping = record.normalizeRecord(groupingBehavior);
+		Map<String, List<Object>> normalizedMapping = record.normalizeRecord();
 		for(String key : normalizedMapping.keySet()) {
 			if(normalizedMapping.get(key) == null) {
 				continue;
@@ -65,7 +63,7 @@ public class SampleProfiler implements Profiler {
 			if(fieldMapping.containsKey(accumulatorKey)) { 
 				bundleAccumulator = fieldMapping.get(accumulatorKey);
 			} else {
-				bundleAccumulator = new BundleProfileAccumulator(accumulatorKey, domainName, tolerance);
+				bundleAccumulator = new BundleProfileAccumulator(accumulatorKey, tolerance);
 				fieldMapping.put(accumulatorKey, bundleAccumulator);
 			}
 			if(!values.isEmpty()) {
@@ -74,25 +72,27 @@ public class SampleProfiler implements Profiler {
 					bundleAccumulator.accumulate(values.get(i), false);
 				}
 			}
-
+			
 		}
 		if(!isBinary) {
 			// do not increment records parsed count for binary objects
 			recordsParsed++;
-		} 
-		if(progressUpdateListener != null) {
-			progressUpdateListener.handleProgressUpdate(record.recordProgressWeight());
+		} else {
+			// if the record binary, use get the detail type from the profiler record
+			// this is a special case because we need Tika (in dmf) to determine the detail type
+			// for binary
+			BinaryProfilerRecord binaryRecord = (BinaryProfilerRecord) record;
+			if(fieldMapping.containsKey(binaryRecord.getBinaryName())) {
+				BundleProfileAccumulator bundleAccumulator = fieldMapping.get(binaryRecord.getBinaryName());
+				BundleProfileAccumulator.getBinaryProfileAccumulator(bundleAccumulator.getState()).ifPresent(
+					binAccumulator->{
+						binAccumulator.getDetailTypeTracker()
+						[binaryRecord.getDetailType().getIndex()]++;
+					});
+			}
 		}
-		return;
-	}
 
-	/**
-	 * Get a copy of the appropriate metrics that the loader has created for the given key.
-	 * @param key Any key in the data model object.
-	 * @return The metrics for the given key.
-	 */
-	public Profile getProfile(String key) {
-		return fieldMapping.get(key).getBestGuessProfile();
+		return recordsParsed;
 	}
 
 	/**
@@ -112,29 +112,15 @@ public class SampleProfiler implements Profiler {
 	public DataSample asBean() {
 		DataSample dataSample = new DataSample();
 		dataSample.setRecordsParsedCount(recordsParsed);
-		Map<String, Profile> dsProfile = new LinkedHashMap<String, Profile>();
+		final Map<String, Profile> dsProfile = new LinkedHashMap<String, Profile>();
 
-		Set<String> accKeys = fieldMapping.keySet();
-		for(String accKey : accKeys) {
-			for(AbstractProfileAccumulator bpa : fieldMapping.get(accKey).getState()) {
-				if(bpa != null) {
-					float presence = ((float)bpa.getPresenceCount())/((float)recordsParsed);
-					bpa.getState().setPresence(presence);
-				} 
-			}
-			Profile profile = fieldMapping.get(accKey).getBestGuessProfile();
-			if(profile == null) {
-				logger.warn("Field \'" + accKey + "\' did not have any values.  Dropping.");
-				continue;
-			}
+		// put any recognizable profiles in the dsProfile map
+		fieldMapping.forEach((k,v)-> 
+			v.getBestGuessProfile(getRecordsParsed()).ifPresent(profile->dsProfile.put(k, profile)));
 
-			accKey = accKey.isEmpty() ? EMPTY_FIELD_NAME : accKey;
-			dsProfile.put(accKey, profile);
-		}
-
-		if(!hasCalledInterpretationEngine) {
+		/*if(!hasCalledInterpretationEngine && domainName != null) {
 			try {
-				dsProfile = InterpretationEngineFacade.getInstance().interpret(domainName, dsProfile);
+				dsProfile.putAll(InterpretationEngineFacade.getInstance().interpret(domainName, dsProfile));
 			} catch (DataAccessException e) {
 				logger.error("Could not interpret data sample.");
 				logger.error(e);
@@ -144,7 +130,7 @@ public class SampleProfiler implements Profiler {
 
 		int numLats = 0;
 		int numLngs = 0;
-		
+
 		for(String key : dsProfile.keySet()) {
 			Profile profile = dsProfile.get(key);
 			if(Interpretation.isLatitude(profile.getInterpretation())) {
@@ -154,21 +140,21 @@ public class SampleProfiler implements Profiler {
 			}
 		}
 
-		numGeoSpatialQueries = Math.min(numLats, numLngs);
+		numGeoSpatialQueries = Math.min(numLats, numLngs);*/
 
-		dsProfile = DisplayNameHelper.determineDisplayNames(dsProfile);
+		dsProfile.putAll(DisplayNameHelper.determineDisplayNames(dsProfile));
 		dataSample.setDsProfile(dsProfile);
 
 		return dataSample;
 	}
 
-	public String getDomainGuid() {
+	/*public String getDomainGuid() {
 		return domainName;
 	}
 
 	public void setDomainName(String domainName) {
 		this.domainName = domainName;
-	}
+	}*/
 
 	public Tolerance getTolerance() {
 		return tolerance;
@@ -182,21 +168,41 @@ public class SampleProfiler implements Profiler {
 		return recordsParsed;
 	}
 
-	public int getNumGeoSpatialQueries() {
+	/*public int getNumGeoSpatialQueries() {
 		return numGeoSpatialQueries;
 	}
 
 	public void setNumGeoSpatialQueries(int numGeoSpatialQueries) {
 		this.numGeoSpatialQueries = numGeoSpatialQueries;
-	}
+	}*/
 
-	public ProfilingProgressUpdateListener getProgressUpdateListener() {
+	public ProfilingProgressUpdateHandler getProgressUpdateListener() {
 		return progressUpdateListener;
 	}
 
-	public void setProgressUpdateListener(ProfilingProgressUpdateListener progressUpdateListener) {
+	public void setProgressUpdateListener(ProfilingProgressUpdateHandler progressUpdateListener) {
 		this.progressUpdateListener = progressUpdateListener;
 	}
 
+	/**
+	 * Convenience method for generating a data sample based on profiler records.
+	 * @param records
+	 * @return
+	 * @throws DataAccessException 
+	 * @throws MainTypeException 
+	 */
+	public static DataSample generateDataSampleFromProfilerRecords(String domain, Tolerance tolerance, List<ProfilerRecord> records) throws DataAccessException {
+		SampleProfiler sampleProfiler = new SampleProfiler(tolerance);
+		records.forEach(record->sampleProfiler.load(record));
+		DataSample bean = sampleProfiler.asBean();
+		InterpretationEngineFacade.interpretInline(bean, domain, null);
+		SampleSecondPassProfiler secondPassProfiler = new SampleSecondPassProfiler(bean);
+		records.forEach(record->secondPassProfiler.load(record));
+		DataSample sample = secondPassProfiler.asBean();
+		sample.setDsName(UUID.randomUUID().toString());
+		sample.setDsGuid(sample.getDsName());
+		sample.setDsLastUpdate(Timestamp.from(Instant.now()));
+		return sample;
+	}
 
 }

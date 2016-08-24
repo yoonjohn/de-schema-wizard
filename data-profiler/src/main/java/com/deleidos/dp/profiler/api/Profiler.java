@@ -1,20 +1,5 @@
 package com.deleidos.dp.profiler.api;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.deleidos.dp.beans.Profile;
-import com.deleidos.dp.profiler.DefaultProfilerRecord;
-
 public interface Profiler {
 	/**
 	 * Load a Profiler Record object into the profiler
@@ -22,7 +7,7 @@ public interface Profiler {
 	 * @param jsonObject Any flat JSON object.  The object should be pushed to the appropriate metrics loader in the
 	 * interfacing class.
 	 */
-	public void load(ProfilerRecord record);
+	public int load(ProfilerRecord record);
 
 	/**
 	 * Return a bean of the data that has been profiled.

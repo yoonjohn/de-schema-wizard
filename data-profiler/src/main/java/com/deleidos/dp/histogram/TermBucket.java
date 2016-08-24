@@ -12,14 +12,14 @@ public class TermBucket extends AbstractBucket {
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
 	}
-	
+
 	public TermBucket(String label, BigInteger count) {
 		super(count);
 		String[] labels = parseLabels(label);
 		this.lowerBound = labels[0];
 		this.upperBound = labels[1];
 	}
-	
+
 	public TermBucket(String term) {
 		super();
 		this.lowerBound = term;
@@ -47,26 +47,31 @@ public class TermBucket extends AbstractBucket {
 			}
 		}
 	}
-	
+
 	public static String[] parseLabels(String rawLabel) {
 		String[] labels = new String[2];
 		String[] splits = rawLabel.split(",", 2);
 		if(splits.length > 1) {
-			labels[0] = splits[0].substring(1);
-			labels[1] = splits[1].substring(0, splits[1].length()-1);
+			if(splits[0].length() == 0 || splits[1].length() == 0) {
+				labels[0] = rawLabel;
+			} else {
+				labels[0] = splits[0].substring(1);
+				int length = splits[1].length() - 1;
+				labels[1] = splits[1].substring(0, length);
+			}
 		} else {
 			labels[0] = splits[0];
 		}
 		return labels;
 	}
-	
+
 	private static String trimLabel(String label, int cutoff) {
 		if(label.length() > cutoff) {
 			return label.substring(0, cutoff) + "...";
 		}
 		return label;
 	}
-	
+
 	public static String trimRawLabel(String rawLabel, int cutoff) {
 		String[] labels = parseLabels(rawLabel);
 		if(labels[1] == null) {
@@ -77,7 +82,7 @@ public class TermBucket extends AbstractBucket {
 			return "["+ trimLabel(labels[0], cutoff) + "," + trimLabel(labels[1], cutoff) + "]";
 		}
 	}
-	
+
 	private static String generateRawLabel(String lowerBound, String upperBound) {
 		if(upperBound == null) {
 			return lowerBound;

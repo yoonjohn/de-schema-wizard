@@ -10,12 +10,12 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.deleidos.dmf.progressbar.ProgressBar;
+import com.deleidos.dmf.progressbar.ProgressBarManager;
 import com.deleidos.dmf.progressbar.ProgressState;
 import com.deleidos.dp.deserializors.SerializationUtility;
 
 public class ProgressBarTest {
-	private static final Logger logger = Logger.getLogger(ProgressBarTest.class);
+	/*private static final Logger logger = Logger.getLogger(ProgressBarTest.class);
 	private ProgressBar progressBar;
 	private List<Integer> orderedValues;
 	
@@ -25,7 +25,7 @@ public class ProgressBarTest {
 		} else if(i >24 && i < 50) {
 			return ProgressState.sampleParsingStage;
 		} else if(i >49 && i < 100) {
-			return ProgressState.geocodingStage;
+			return ProgressState.secondPass;
 		} else if(i > 99) {
 			return ProgressState.complete;
 		}
@@ -41,10 +41,9 @@ public class ProgressBarTest {
 		}
 
 		ProgressState state = null;
-		progressBar = new ProgressBar("example-file-name.txt", 0, 3, ProgressState.detectStage);
+		progressBar = ProgressBar.SampleProgressBar("example-file-name.txt", 0, 3);
 
 		for(int i : range) {
-			progressBar.setCurrentState(progressFromInt(i));
 			progressBar.updateCurrentSampleNumerator(i);
 			progressBar.updateCurrentSampleNumerator(i-1);
 			progressBar.updateCurrentSampleNumerator(10000);
@@ -54,15 +53,9 @@ public class ProgressBarTest {
 			orderedValues.add(progressBar.getNumerator());
 		}
 
-		progressBar = new ProgressBar("example-file-name.txt", 1, 3, ProgressState.detectStage);
+		progressBar = ProgressBar.SampleProgressBar("example-file-name.txt", 1, 3);
 
 		for(int i : range) {
-			if(i == 25) {
-				progressBar.setCurrentState(ProgressState.lock);
-			} else if(i ==75) {
-				progressBar.setCurrentState(ProgressState.unlock);
-			}
-			progressBar.setCurrentState(progressFromInt(i));
 			progressBar.updateCurrentSampleNumerator(i);
 			progressBar.updateCurrentSampleNumerator(i-1);
 			progressBar.updateCurrentSampleNumerator(10000);
@@ -72,14 +65,12 @@ public class ProgressBarTest {
 			orderedValues.add(progressBar.getNumerator());
 		}
 
-		progressBar = new ProgressBar("example-file-name.txt", 2, 3, ProgressState.detectStage);
+		progressBar = ProgressBar.SampleProgressBar("example-file-name.txt", 2, 3);
 
-		progressBar.setCurrentState(ProgressState.sampleParsingStage);
 		progressBar.setCurrentStateSplits(3);
 		for(int j = 0; j < 3; j++) {
 			progressBar.setCurrentStateSplitIndex(j);
 			for(int i = 25; i < 50; i++) {
-				progressBar.setCurrentState(progressFromInt(i));
 				progressBar.updateCurrentSampleNumerator(i);
 				progressBar.updateCurrentSampleNumerator(i-1);
 				progressBar.updateCurrentSampleNumerator(10000);
@@ -89,8 +80,6 @@ public class ProgressBarTest {
 				orderedValues.add(progressBar.getNumerator());
 			}
 		}
-		progressBar.setCurrentState(ProgressState.geocodingStage);
-		progressBar.setCurrentState(ProgressState.complete);
 	}
 
 
@@ -131,5 +120,5 @@ public class ProgressBarTest {
 			}
 		}
 		return true;
-	}
+	}*/
 }

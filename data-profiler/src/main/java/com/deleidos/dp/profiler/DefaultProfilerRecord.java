@@ -37,8 +37,9 @@ c.y->[20]
  */
 public class DefaultProfilerRecord extends HashMap<String, Object> implements ProfilerRecord {
 	private static final long serialVersionUID = 6313190276596879359L;
+	public static final String EMPTY_FIELD_VALUE_INDICATOR = "(Blank Value)";
+	public static final String EMPTY_FIELD_NAME_INDICATOR = "(Blank Field Name)";
 	public static final String STRUCTURED_OBJECT_APPENDER = ".";
-	private int recordProgress;
 	
 	public DefaultProfilerRecord() {
 		
@@ -69,11 +70,15 @@ public class DefaultProfilerRecord extends HashMap<String, Object> implements Pr
 				flattenMap(updatedPathKey, o, flattenedMap, behavior);
 			}
 		} else {
+			if(baseObject instanceof String) {
+				baseObject = ((String)baseObject).isEmpty() ? EMPTY_FIELD_VALUE_INDICATOR : baseObject; 
+			}
 			if(flattenedMap.containsKey(currentPath)) {
 				flattenedMap.get(currentPath).add(baseObject);
 			} else {
 				List<Object> valuesList = new ArrayList<Object>();
 				valuesList.add(baseObject);
+				currentPath = (currentPath.isEmpty()) ? EMPTY_FIELD_NAME_INDICATOR : currentPath;
 				flattenedMap.put(currentPath, valuesList);
 			}
 		}
@@ -86,19 +91,6 @@ public class DefaultProfilerRecord extends HashMap<String, Object> implements Pr
 		String startingString = "";
 		flattenMap(startingString, this, normalizedMap, groupingBehavior);
 		return normalizedMap;
-	}
-
-	public int getRecordProgress() {
-		return recordProgress;
-	}
-
-	public void setRecordProgress(int recordProgress) {
-		this.recordProgress = recordProgress;
-	}
-	
-	@Override
-	public int recordProgressWeight() {
-		return recordProgress;
 	}
 
 }

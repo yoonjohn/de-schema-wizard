@@ -3,18 +3,23 @@ package com.deleidos.dp.metrics;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.deleidos.dp.accumulator.AbstractProfileAccumulator;
+import com.deleidos.dp.accumulator.BundleProfileAccumulator;
 import com.deleidos.dp.accumulator.NumberProfileAccumulator;
-import com.deleidos.dp.accumulator.StringProfileAccumulator;
 import com.deleidos.dp.beans.NumberDetail;
 import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.StringDetail;
 import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.deleidos.dp.enums.DetailType;
 import com.deleidos.dp.enums.MainType;
+import com.deleidos.dp.exceptions.MainTypeException;
 
 public class MatchingAlgorithmsTest {
 	private Logger logger = Logger.getLogger(MatchingAlgorithmsTest.class);
@@ -39,8 +44,10 @@ public class MatchingAlgorithmsTest {
 	}
 	
 	@Test
-	public void matchingTest() {
-		StringProfileAccumulator sma = new StringProfileAccumulator("Region", "MD");
+	public void matchingTest() throws MainTypeException {
+		List<Object> values = Arrays.asList("MD","MD","MD","NJ","NJ","NJ","NJ");
+		Profile p = BundleProfileAccumulator.generateProfile("Region", values);
+		/*StringProfileAccumulator sma = new StringProfileAccumulator("Region", "MD");
 		sma.accumulate("MD");
 		sma.accumulate("MD");
 		sma.accumulate("MD");
@@ -48,9 +55,11 @@ public class MatchingAlgorithmsTest {
 		sma.accumulate("NJ");
 		sma.accumulate("NJ");
 		sma.accumulate("NJ");
-		sma.finish();
+		sma.finish();*/
 		
-		StringProfileAccumulator sma2 = new StringProfileAccumulator("Rgn", "NJ");
+		List<Object> values2 = Arrays.asList("NJ","NJ","NJ","DE","DE","DE","DE");
+		Profile p2 = BundleProfileAccumulator.generateProfile("Rgn", values2);
+		/*StringProfileAccumulator sma2 = new StringProfileAccumulator("Rgn", "NJ");
 		sma2.accumulate("NJ");
 		sma2.accumulate("NJ");
 		sma2.accumulate("NJ");
@@ -62,40 +71,43 @@ public class MatchingAlgorithmsTest {
 		sma2.finish();
 		double similarity = MetricsCalculationsFacade.match(sma.getFieldName(), sma.getState(), sma2.getFieldName(), sma2.getState());
 		logger.info("Similarity for desired-to-be-matching string fields " + similarity);
-		assertTrue(similarity > .80);
+		assertTrue(similarity > .80);*/
 		
-		double newSimilarity = MetricsCalculationsFacade.match(sma.getFieldName(), sma.getState(), sma2.getFieldName(), sma2.getState());
+		double newSimilarity = MetricsCalculationsFacade.match("Region", p, "Rgn", p2);
 		logger.info("New similarity is " +newSimilarity);
 	}
 	
 	@Test
-	public void noMatchingTest() {
-		StringProfileAccumulator sma = new StringProfileAccumulator("Name", "John");
-		sma.accumulate("Greg");
-		sma.accumulate("Aaron");
-		sma.accumulate("Jamal");
-		sma.accumulate("Matt");
-		sma.accumulate("Jim");
-		sma.accumulate("Dave");
-		sma.accumulate("Kevin");
-		sma.finish();
+	public void noMatchingTest() throws MainTypeException {
+		List<Object> values = new ArrayList<Object>();
+		//StringProfileAccumulator sma = new StringProfileAccumulator("Name", "John");
+		values.add("Greg");
+		values.add("Aaron");
+		values.add("Jamal");
+		values.add("Matt");
+		values.add("Jim");
+		values.add("Dave");
+		values.add("Kevin");
+		//sma.finish();
+		Profile p = BundleProfileAccumulator.generateProfile("Name", values);
 		
-		StringProfileAccumulator sma2 = new StringProfileAccumulator("Rgn", "NJ");
-		sma2.accumulate("NJ");
-		sma2.accumulate("NJ");
-		sma2.accumulate("NJ");
+		List<Object> values2 = new ArrayList<Object>();
+		//StringProfileAccumulator sma2 = new StringProfileAccumulator("Rgn", "NJ");
+		values2.add("NJ");
+		values2.add("NJ");
+		values2.add("NJ");
 
-		sma2.accumulate("DE");
-		sma2.accumulate("DE");
-		sma2.accumulate("DE");
-		sma2.accumulate("DE");
-		sma2.finish();
-		double similarity = MetricsCalculationsFacade.match(sma.getFieldName(), sma.getState(), sma2.getFieldName(), sma2.getState());
-		logger.info("Similarity for desired-to-be-not-matching string fields " + similarity);
-		assertTrue(similarity < .80);
+		values2.add("DE");
+		values2.add("DE");
+		values2.add("DE");
+		values2.add("DE");
+		Profile p2 = BundleProfileAccumulator.generateProfile("Rgn", values2);
+
+		//sma2.finish();
 		
-		double newSimilarity = MetricsCalculationsFacade.match(sma.getFieldName(), sma.getState(), sma2.getFieldName(), sma2.getState());
+		double newSimilarity = MetricsCalculationsFacade.match("Name", p, "Rgn", p2);
 		logger.info("New similarity is " +newSimilarity);
+		assertTrue(newSimilarity < .80);
 	}
 	
 	@Test
@@ -134,13 +146,15 @@ public class MatchingAlgorithmsTest {
 	}
 	
 	@Test
-	public void latLngTest() {
-		NumberProfileAccumulator nma = new NumberProfileAccumulator("lat", 16.0);
-		nma.accumulate(20);
+	public void latLngTest() throws MainTypeException {
+		NumberProfileAccumulator nma = AbstractProfileAccumulator.generateNumberProfileAccumulator("lat");
+		nma.accumulate(16.0, true);
+		nma.accumulate(20, true);
 		nma.finish();
 		
-		NumberProfileAccumulator nma2 = new NumberProfileAccumulator("latitude", 15.0);
-		nma2.accumulate(22);
+		NumberProfileAccumulator nma2 = AbstractProfileAccumulator.generateNumberProfileAccumulator("latitude");
+		nma2.accumulate(15.0, true);
+		nma2.accumulate(22, true);
 		nma2.finish();
 		
 		double similarity = MetricsCalculationsFacade.match(nma.getFieldName(), nma.getState(), nma2.getFieldName(), nma2.getState());

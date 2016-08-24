@@ -24,7 +24,7 @@ public class DataProfilerIntegrationEnvironment {
 		if(!isStarted) {
 			try {
 				logger.info("Starting up Integration Environment.");
-				H2DataAccessObject.setInstance(new H2Database().connect()).initConnection();
+				H2DataAccessObject.setInstance(new H2Database());
 				InterpretationEngineFacade.setInstance(new IEConfig().load());
 				isStarted = true;
 			} catch (Exception e) {

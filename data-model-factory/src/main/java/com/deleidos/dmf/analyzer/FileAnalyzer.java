@@ -1,17 +1,29 @@
 package com.deleidos.dmf.analyzer;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
+import com.deleidos.dmf.exception.AnalyticsCancelledWorkflowException;
 import com.deleidos.dmf.exception.AnalyticsUndetectableTypeException;
 import com.deleidos.dmf.exception.AnalyticsUnsupportedParserException;
 import com.deleidos.dmf.exception.AnalyzerException;
 import com.deleidos.dmf.framework.TikaSampleAnalyzerParameters;
 import com.deleidos.dmf.framework.TikaSchemaAnalyzerParameters;
+import com.deleidos.dmf.progressbar.ProgressBarManager;
+import com.deleidos.dmf.progressbar.SimpleProgressUpdater;
+import com.deleidos.dmf.progressbar.ProgressState.STAGE;
+import com.deleidos.dmf.web.CancellableFileUploader;
+import com.deleidos.dmf.web.SchemaWizardSessionUtility;
+import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.exceptions.DataAccessException;
 
 /**
@@ -37,10 +49,46 @@ public interface FileAnalyzer extends Analyzer<TikaSampleAnalyzerParameters, Tik
 	 * @throws AnalyzerException if there is an unspecified error while analyzing the sample
 	 * @throws DataAccessException if a required service (H2 or IE) could not provide necessary data
 	 */
-	public String analyzeSample(String sampleFilePath, String domainName, String tolerance,
+	default String analyzeSample(String uploadDir, String sampleFilePath, String domainName, String tolerance,
 			String sessionId, int sampleNumber, int totalNumberSamples) 
-			throws IOException, AnalyzerException, DataAccessException;
+					throws AnalyticsCancelledWorkflowException {
+		return analyzeSample(uploadDir, sampleFilePath, domainName, tolerance, sessionId, sampleNumber, totalNumberSamples, null);
+	}
 	
+	public String analyzeSample(String uploadDir, String sampleFilePath, String domainName, String tolerance,
+			String sessionId, int sampleNumber, int totalNumberSamples, ProgressBarManager progressBar)  
+					throws AnalyticsCancelledWorkflowException;
+
+	default public JSONArray analyzeSamples(final String existingSchemaGuid, final String sampleFileDirectory, 
+			final String domainName, final String tolerance, final String sessionId, final HttpServletRequest uploadRequest,
+			final int totalNumberSamples, final long sumOfSampleUploadSize) 
+					throws IOException, AnalyticsCancelledWorkflowException, DataAccessException, FileUploadException {
+		Logger logger = Logger.getLogger(FileAnalyzer.class);
+		List<String> dummyFileNames, processedFileNames;
+		dummyFileNames = new ArrayList<String>(totalNumberSamples);
+		processedFileNames = new ArrayList<String>(totalNumberSamples);
+		for(int i = 0; i < totalNumberSamples; i++) {
+			dummyFileNames.add("File " + (i+1));
+		}
+		ProgressBarManager fullProgressBar = ProgressBarManager.fullProgressBar(dummyFileNames, sumOfSampleUploadSize);
+		SimpleProgressUpdater fileUploadProgressUpdater =
+				new SimpleProgressUpdater(sessionId, fullProgressBar, sumOfSampleUploadSize);
+		List<File> files = new CancellableFileUploader(uploadRequest, 
+				SchemaWizardSessionUtility.getInstance().getExecutorService(),
+				fileUploadProgressUpdater, sampleFileDirectory).call();
+		fullProgressBar.goToNextStateIfCurrentIs(STAGE.UPLOAD);
+		files.forEach(file->processedFileNames.add(file.getName()));
+		fullProgressBar.setSampleNamesIfApplicable(processedFileNames);
+		File[] samples = files.toArray(new File[files.size()]);
+		String[] processedSampleGuids = new String[samples.length];
+		for(int i = 0; i < samples.length; i++) {
+			processedSampleGuids[i] = analyzeSample(sampleFileDirectory, 
+					samples[i].getAbsolutePath(), domainName, tolerance, sessionId, i, samples.length, fullProgressBar);
+		}
+		logger.info("Finished analyzing " + totalNumberSamples + " samples.");
+		return matchAnalyzedFields(sessionId, existingSchemaGuid, processedSampleGuids, fullProgressBar);
+	}
+
 	/**
 	 * Retrieve the proposed schema object based on the source analysis objects.  
 	 * Run schema analysis pass on data samples.
@@ -53,9 +101,7 @@ public interface FileAnalyzer extends Analyzer<TikaSampleAnalyzerParameters, Tik
 	 * @throws AnalyzerException exception thrown if there is an unspecified error analyzing the schema
 	 * @throws DataAccessException thrown if the backend has an error accessing necessary data
 	 */
-	public JSONObject analyzeSchema(String existingSchemaGuid, String domainName, JSONArray editedSourceAnalysis, String sessionId) 
-			throws IOException, AnalyzerException, DataAccessException;
+	public JSONObject analyzeSchema(String uploadFileDir, JSONObject schemaAndSampleList, String domainName, String sessionId) 
+			throws AnalyticsCancelledWorkflowException;
 
-	public JSONObject analyzeSchema(JSONObject schemaAndSampleList, String domainName, String sessionId) throws IOException, AnalyzerException, DataAccessException;
-		
 }

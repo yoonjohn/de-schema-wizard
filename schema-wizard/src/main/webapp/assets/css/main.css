@@ -134,7 +134,7 @@ body {
     left: 0;
 }
 
-.btn, btn-xs, .btn-primary {
+.btn, .btn-xs, .btn-primary {
     color: white;
     background-color: rgb(44, 125, 180) !important;
 }
@@ -354,7 +354,7 @@ body {
 
 .table {
     border-width: 1px;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .table > thead > tr > th, .table > tbody > tr > th {

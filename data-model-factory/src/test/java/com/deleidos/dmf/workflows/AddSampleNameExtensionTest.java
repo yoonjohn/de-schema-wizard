@@ -3,6 +3,8 @@ package com.deleidos.dmf.workflows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -29,14 +31,21 @@ public class AddSampleNameExtensionTest extends DMFMockUpEnvironmentTest {
 	}
 
 	@Test
-	public void testNameIncremented() throws DataAccessException {
-		Map<String,String> existing = H2DataAccessObject.getInstance().getExistingSampleNames();
-		assertTrue(existing.containsKey("TeamsHalf"));
-		assertTrue(existing.containsKey("TeamsHalf(1)"));
+	public void testNameIncremented() throws DataAccessException, SQLException {
+		Connection connection = H2DataAccessObject.getInstance().getH2Database().getNewConnection();
+		try {
+			Map<String,String> existing = H2DataAccessObject.getInstance().getExistingSampleNames(connection);
+			connection.close();
+			assertTrue(existing.containsKey("TeamsHalf"));
+			assertTrue(existing.containsKey("TeamsHalf(1)"));
+		} catch (SQLException e) {
+			connection.close();
+			throw e;
+		}
 	}
 
 	private static class AddSampleNameExtensionWorkflow extends AbstractAnalyzerTestWorkflow {
-		
+
 		@Override
 		public void addNecessaryTestFiles() {
 			addResourceTestFile("/TeamsHalf.csv");

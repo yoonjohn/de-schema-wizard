@@ -14,7 +14,7 @@ Schema Wizard is not configured to use SSL.  Sensitive material should not be pr
 | Defect_ID | Description | Work Around (If Applicable) |
 |:-------------:|:-------------:|:-----------:|
 | D-02723 | Schema Wizard cannot handle requests from multiple clients simultaneously. Attempting to use the application in this manner may cause errors. | Only one client should use Schema Wizard at a time. |
-| D-02706 | Schema Wizard will not process "large" files.  The size limit depends on the memory allocated to the Java process. | Manually reduce the size of your sample files or allocate more memory to the JVM. |
+| D-02706 | Schema Wizard will not process "large" files.  The size limit depends on the memory allocated to the Java process. | Manually reduce the size of your sample files. |
 | D-02676 | Refresh button breaks the schema creation screen. | Only use buttons that are displayed as part of the application. |
 | D-02674 | Some graphs have labels that overlap each other. | N/A |
 | D-02671 | Field ordering is random. | N/A |

@@ -53,6 +53,29 @@
                     </div>
                     <div id="wizardMatchFieldsProfilesPanelBody"
                          class="panel-body" style="height: 222px; overflow-y: scroll;">
+                        <div style="width: 100%; height: 30px; margin: 0 auto;"
+                             ng-hide="modifySchemaMode == true">
+                            <span style="margin-left: 20px; font-style: normal; font-size 10pt;"">
+                            Matching Confidence
+                            <select id="selectedConfidence" name="selectedConfidence"
+                                    style="margin-top: -6px;"
+                                    ng-model="confidenceValues.selectedConfidenceValue"
+                                    ng-disabled="modifySchemaMode"
+                                    ng-change="repeatMatching()">
+                                <option style="font-size 9pt;"
+                                        ng-repeat="confidence in confidenceValues.availableValues"
+                                        value="{{confidence.value}}">{{confidence.value}}
+                                </option>
+                            </select>
+                            </span>
+                            <span style="margin-left: 20px; font-style: normal; font-size 10pt;">
+                                Require Interpretation Match
+                                <input id="interpretationMatch" type="checkbox" ng-model="interpretationMatch"
+                                       ng-disabled="modifySchemaMode"
+                                       ng-change="repeatMatching(interpretationMatch)"/>
+                            </span>
+                        </div>
+
                         <table id="data-sources-table" class="table table-striped drag-drop" fixed-header>
                             <thead id="customTableHeader" style="margin-top:-2px;"
                                    tour-step
@@ -96,6 +119,9 @@
                                                 dnd-copied="dragEnd(property, ds.dsProfile[property])"
                                                 dnd-selected="dropzoneModels.selected = ds.dsProfile[property]">
                                                 <label class="btn-property" style="font-size: 100%;"
+                                                       ng-style="modifySchemaMode == true &&
+                                                                 model.properties[property]['existing-schema-property'] != true &&
+                                                                 { 'color': 'blue' } || { 'color': 'black' }"
                                                        uib-tooltip="{{property}}"
                                                        tooltip-placement="right">
                                                     {{model.properties[property]['display-name']}}
@@ -111,6 +137,9 @@
                                                     <!--keep the following on the same line to prevent spaces between values-->
                                                     {{model.properties[property]["main-type"]}}<span
                                                     ng-show="model.properties[property]['main-type']">:{{model.properties[property]["detail"]["detail-type"]}}</span>
+                                                </div>
+                                                <div ng-repeat="interpretation in model.properties[property].interpretations track by $index">
+                                                    &laquo;{{interpretation}}&raquo;
                                                 </div>
                                             </li>
                                         </ul>
@@ -139,14 +168,16 @@
                                             ng-show="ds.dsProfile[property]['main-type']">:{{ds.dsProfile[property]["detail"]["detail-type"]}}</span>
                                             <span class="btn-merge-indicator"
                                                   ng-show="ds.dsProfile[property]['merged-into-schema']">
-                                                &nbsp;&nbsp;&nbsp;
                                             </span>
                                         </label>
                                         <span class="btn-use-check"
                                               ng-show="ds.dsProfile[property]['used-in-schema']">
                                             &nbsp;&nbsp;&nbsp;
                                         </span>
-                                        <br>
+                                        <div ng-show="ds.dsProfile[property].interpretation.iName"
+                                             ng-repeat="interpretation in ds.dsProfile[property].interpretations">
+                                            &laquo;{{interpretation.iName}}&raquo;
+                                        </div>
                                         <select name="altNameSelected" id="altNameSelected"
                                                 ng-options="option.name for option in ds.dsProfile[property]['match-names'].availableOptions track by option.id"
                                                 ng-model="ds.dsProfile[property]['match-names'].selectedOption"

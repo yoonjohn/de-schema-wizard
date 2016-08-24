@@ -9,7 +9,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="IE=10" />
 
 	<title>Schema Wizard</title>
 
@@ -23,6 +22,7 @@
     <link href="assets/css/charts.css" rel="stylesheet">
     <link href="assets/css/split-pane.css" rel="stylesheet">
     <link href="assets/css/pretty-split-pane.css" rel="stylesheet">
+    <link href="assets/css/tree-table-grid.css" rel="stylesheet">
     <link href="assets/css/dropzone.css" rel="stylesheet">
     <link href="assets/css/main.css" rel="stylesheet">
     <link href="assets/css/leidos-theme.css" rel="stylesheet">
@@ -35,8 +35,6 @@
 	<script src="bower_components/angular-animate/angular-animate.js"></script>
 	<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 	<script src="bower_components/angular-cookies/angular-cookies.js"></script>
-	<script src="bower_components/Chart.js/Chart.js"></script>
-	<script src="bower_components/angular-chart.js/dist/angular-chart.js"></script>
 	<script src="bower_components/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js"></script>
 	<script src="bower_components/angular-resource/angular-resource.js"></script>
 	<script src="bower_components/angular-route/angular-route.js"></script>
@@ -55,7 +53,7 @@
     <script src="assets/lib/angular-confirm.js"></script>
     <script src="assets/lib/angular-google-chart-0.1.0-beta.1.js"></script>
     <script src="assets/lib/canvas-to-blob.js"></script>
-    <script src="assets/lib/Chart.HorizontalBar.js"></script>
+    <script src="assets/lib/Chart.min.js"></script>
     <script src="assets/lib/FileSaver.min.js"></script>
     <script src="assets/lib/jszip.min.js"></script>
     <!-- split-pane-modified must appear before angular-split-pane, however, since it
@@ -64,11 +62,13 @@
     <script src="assets/lib/split-pane-modified.js"></script>
     <script src="assets/lib/angular-split-pane.js"></script>
     <script src="assets/lib/src-min/ace.js"></script>
+    <script src="assets/lib/angular-chart.js"></script>
     <!-- endbuild-->
 
     <!-- build:js assets/js/schema-wizard.js -->
 	<script src="app.js" type="text/javascript"></script>
     <script src="schema-wizard/schema-wizard.controller.js" type="text/javascript"></script>
+    <script src="schema-wizard/schema-wizard.services.js" type="text/javascript"></script>
     <script src="schema-wizard/schema-wizard.details.directive.js" type="text/javascript"></script>
     <script src="schema-wizard/schema-wizard.draggable-popup.js" type="text/javascript"></script>
     <script src="schema-wizard/schema-wizard.map.controller.js" type="text/javascript"></script>
@@ -76,6 +76,7 @@
     <script src="schema-wizard/schema-wizard.progressbar.controller.js" type="text/javascript"></script>
     <script src="schema-wizard/schema-wizard.schema.details.directive.js" type="text/javascript"></script>
     <script src="schema-wizard/schema-wizard.sticky.header.directive.js" type="text/javascript"></script>
+    <script src="schema-wizard/schema-wizard.number.validation.directive.js" type="text/javascript"></script>
     <script src="catalog/catalog.controller.js" type="text/javascript"></script>
     <script src="catalog/catalog.domains.interpretation.controller.js" type="text/javascript"></script>
     <script src="catalog/catalog.export.controller.js" type="text/javascript"></script>
@@ -83,6 +84,12 @@
     <script src="catalog/catalog.schema.controller.js" type="text/javascript"></script>
     <script src="file-upload/file-upload.controller.js" type="text/javascript"></script>
     <script src="wizard/wizard.finalize.controller.js" type="text/javascript"></script>
+
+    <script src="tree-table-grid/tree-table-grid.controller.js" type="text/javascript"></script>
+    <script src="tree-table-grid/tree-table-grid.directive.js" type="text/javascript"></script>
+    <script src="tree-table-grid/tree-table-grid.tree-cell-directive.js" type="text/javascript"></script>
+    <script src="tree-table-grid/tree-table-grid.table-cell-directive.js" type="text/javascript"></script>
+    <script src="tree-table-grid/tree-table-grid.select-cell-directive.js" type="text/javascript"></script>
     <!-- endbuild -->
 
 </head>

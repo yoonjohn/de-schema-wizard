@@ -219,7 +219,6 @@ public class JSONTikaParser extends AbstractAnalyticsParser {
 				if (!jsonNode.isNull()) {
 						//addKeys("", jsonNode, map);
 					profilerRecord = addKeyWithHierarchicalObjects(jsonNode);
-					profilerRecord.setRecordProgress(context.getCharsRead()+content.length());
 					break;
 
 				} else {

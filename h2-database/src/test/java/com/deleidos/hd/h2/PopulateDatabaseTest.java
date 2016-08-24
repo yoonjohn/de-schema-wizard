@@ -17,20 +17,15 @@ public class PopulateDatabaseTest {
 	private static boolean isH2Started;
 	public static H2TestDatabase h2;
 
-	@Before
+	@Test
 	public void setUpBase() throws SQLException, ClassNotFoundException, InterruptedException {
 		if (!isH2Started) {
 			isH2Started = true;
 			logger.info("Beginning tests.");
 			
 			h2 = new H2TestDatabase();
-			h2.startTestServer();
+			h2.startTestServer(h2.getConfig());
 		}
-	}
-	
-	@Test
-	public void populateDatabaseTest() {
-		h2.populateDatabase();
 	}
 	
 	@Test

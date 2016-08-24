@@ -24,7 +24,4 @@ public interface ProfilerRecord {
 		return normalizeRecord(GroupingBehavior.GROUP_ARRAY_VALUES);
 	}
 	
-	default int recordProgressWeight() {
-		return 1;
-	}
 }

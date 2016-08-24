@@ -10,6 +10,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -256,29 +258,24 @@ public interface ISchemaWizardController {
 	/**
 	 * Upload one or more user modified data samples. Return a JSON Array of the
 	 * proposed schema.
-	 *
 	 * @param request
 	 * @param dataSources
-	 * @return
-	 *
-	 * 		Only available to Schema Wizard
 	 */
 	@POST
 	@Path("/uploadModifiedSamples")
-	public Response uploadModifiedSamples(@Context HttpServletRequest request, String schemaAnalysisData);
+	public void uploadModifiedSamples(@Suspended final AsyncResponse asyncResponse, 
+			@Context HttpServletRequest request, String schemaAnalysisData);
 
 	/**
 	 * Upload one or more files for analysis. Return a JSON Array of the Data
 	 * Sample Descriptors (JSON Object) for each file.
 	 *
 	 * @param request
-	 * @return
-	 *
-	 * 		Only available to Schema Wizard
 	 */
 	@POST
 	@Path("/upload")
-	public Response uploadSamples(@Context HttpServletRequest request);
+	public void uploadSamples(@Suspended final AsyncResponse asyncResponse, 
+			@Context HttpServletRequest request);
 
 	/**
 	 * Create a new domain object

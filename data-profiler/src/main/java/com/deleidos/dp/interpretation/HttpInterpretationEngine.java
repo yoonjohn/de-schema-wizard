@@ -47,8 +47,8 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 	private final String REVERSE_GEO_PATH = "/reversegeo";
 	private final String VALIDATE_PYTHON_PATH = "/validatePythonScript";
 	private final String TEST_PYTHON_PATH = "/testPythonScript";
-	private final int CONNECTION_TIMEOUT = 8000;
-	private final int READ_TIMEOUT = 8000;
+	private final int CONNECTION_TIMEOUT;
+	private final int READ_TIMEOUT;
 	private String baseUrl;
 	private IEConfig config;
 	private ResourceBundle bundle = ResourceBundle.getBundle("error-messages");
@@ -59,6 +59,8 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 	}
 
 	public HttpInterpretationEngine(IEConfig config) throws DataAccessException {
+		this.CONNECTION_TIMEOUT = config.getConnectionTimeout();
+		this.READ_TIMEOUT = config.getReadTimeout();
 		this.config = config;
 		this.baseUrl = config.getUrl() + ROOT_CONTEXT;
 		if (!testConnection()) {
@@ -79,7 +81,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		try {
 			String url = baseUrl + GET_INTERPRETATIONS_BY_DOMAIN_PATH_PREFIX + "/" + domainName;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request(MediaType.APPLICATION_JSON).get();
 			Status status = Status.fromStatusCode(response.getStatus());
 			String body = response.readEntity(String.class);
@@ -101,7 +103,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			throw new DataAccessException(e.toString());
 		}
@@ -114,7 +116,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		try {
 			String url = baseUrl + GET_DOMAINS_PATH;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request(MediaType.APPLICATION_JSON).get();
 			Status status = Status.fromStatusCode(response.getStatus());
 			String body = response.readEntity(String.class);
@@ -132,7 +134,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -140,8 +142,13 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 	}
 
 	@Override
-	public Map<String, Profile> interpret(String domainGuid, Map<String, Profile> profileMap)
+	public Map<String, Profile> interpret(String domainGuid, Map<String, Profile> profileMap, int timeout)
 			throws DataAccessException {
+		if(domainGuid == null || domainGuid.equals("Not Available")) {
+			return profileMap;
+		}
+		timeout = (timeout < READ_TIMEOUT) ? READ_TIMEOUT : timeout;
+		logger.debug("Timeout set to ");
 		logger.debug("Interpret request received. Sending request to the Python Interpretation Engine.");
 		logger.debug("");
 		try {
@@ -162,7 +169,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.debug("Sending object to Interpretation Engine: ");
 			logger.debug(formContent);
 
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(timeout, timeout).target(url);
 			Response response = resourceTarget.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(formContent.toString()), Response.class);
 			Status status = Status.fromStatusCode(response.getStatus());
@@ -198,9 +205,9 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			}
 		} catch (ProcessingException e) {
 			logger.error(bundle.getString("ie.server.timeout"));
-			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
-			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			logger.error("Connection timeout is currently set to " + timeout + "ms.");
+			logger.error("Read timeout is currently set to " + timeout + "ms.");
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -255,6 +262,11 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 				}
 			}
 			conn.disconnect();
+		} catch (ProcessingException e) {
+			logger.error(bundle.getString("ie.server.timeout"));
+			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
+			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (MalformedURLException e) {
 			logger.error(e);
 			throw new DataAccessException("There was a problem with the URL. " + e);
@@ -262,6 +274,9 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(e);
 			throw new DataAccessException(
 					"There was a problem reading the data from the Python Interpretation Engine " + e);
+		} catch (Exception e) {
+			logger.error(e.toString());
+			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
 		}
 		return countryList;
 	}
@@ -273,7 +288,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		try {
 			String url = baseUrl + CREATE_PATH + DOMAIN_PATH;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(domainJson.toString()), Response.class);
 			Status status = Status.fromStatusCode(response.getStatus());
@@ -295,7 +310,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -309,7 +324,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		try {
 			String url = baseUrl + CREATE_PATH + INTERPRETATION_PATH;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(interpretationJson.toString()), Response.class);
 			Status status = Status.fromStatusCode(response.getStatus());
@@ -331,7 +346,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -345,7 +360,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		try {
 			String url = baseUrl + UPDATE_PATH + DOMAIN_PATH;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(domainJson.toString()), Response.class);
 			Status status = Status.fromStatusCode(response.getStatus());
@@ -369,7 +384,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -383,7 +398,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		try {
 			String url = baseUrl + UPDATE_PATH + INTERPRETATION_PATH;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(interpretationJson.toString()), Response.class);
 			Status status = Status.fromStatusCode(response.getStatus());
@@ -407,7 +422,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -422,7 +437,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			String dId = domainJson.getString("dId");
 			String url = baseUrl + DELETE_PATH + DOMAIN_PATH + "/" + dId;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request().delete();
 			Status status = Status.fromStatusCode(response.getStatus());
 			String body = response.readEntity(String.class);
@@ -445,7 +460,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -460,7 +475,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			String iId = interpretationJson.getString("iId");
 			String url = baseUrl + DELETE_PATH + INTERPRETATION_PATH + "/" + iId;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request().delete();
 			Status status = Status.fromStatusCode(response.getStatus());
 			String body = response.readEntity(String.class);
@@ -483,7 +498,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -496,7 +511,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		try {
 			String url = baseUrl + VALIDATE_PYTHON_PATH;
 			logger.debug("Connecting with URL " + url);
-			WebTarget resourceTarget = disposableClient().target(url);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(url);
 			Response response = resourceTarget.request(MediaType.APPLICATION_JSON).post(Entity.json(iIdJson.toString()),
 					Response.class);
 			Status status = Status.fromStatusCode(response.getStatus());
@@ -516,7 +531,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -574,7 +589,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 			logger.error(bundle.getString("ie.server.timeout"));
 			logger.error("Connection timeout is currently set to " + CONNECTION_TIMEOUT + "ms.");
 			logger.error("Read timeout is currently set to " + READ_TIMEOUT + "ms.");
-			throw new DataAccessException(bundle.getString("ie.server.timeout"));
+			throw new ProcessingException(bundle.getString("ie.server.timeout"));
 		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new DataAccessException(bundle.getString("ie.unexpected.error"));
@@ -586,7 +601,7 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		logger.debug("");
 		boolean connected = false;
 		try {
-			WebTarget resourceTarget = disposableClient().target(baseUrl);
+			WebTarget resourceTarget = disposableClient(CONNECTION_TIMEOUT, READ_TIMEOUT).target(baseUrl);
 			Response response = resourceTarget.request(MediaType.TEXT_PLAIN).get();
 			Status status = Status.fromStatusCode(response.getStatus());
 			connected = status == Status.OK;
@@ -644,10 +659,6 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		return Response.status(status).entity(bundle.getString(messageKey)).build();
 	}
 
-	private Response buildStandardResponse(Status status, Response response, String expectedContentName) {
-		return buildStandardResponse(status, response, expectedContentName, false);
-	}
-
 	private Response buildStandardResponse(Status status, Response response, String expectedContentName,
 			boolean array) {
 		String body = response.readEntity(String.class);
@@ -668,10 +679,18 @@ public class HttpInterpretationEngine implements InterpretationEngine {
 		return Response.status(status).entity(json.toString()).build();
 	}
 
-	private javax.ws.rs.client.Client disposableClient() {
+	private javax.ws.rs.client.Client disposableClient(int connectionTimeout, int readTimeout) {
 		javax.ws.rs.client.Client client = ClientBuilder.newClient();
-		client.property(ClientProperties.CONNECT_TIMEOUT, CONNECTION_TIMEOUT);
-		client.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT);
+		client.property(ClientProperties.CONNECT_TIMEOUT, connectionTimeout);
+		client.property(ClientProperties.READ_TIMEOUT, readTimeout);
 		return client;
+	}
+
+	public IEConfig getConfig() {
+		return config;
+	}
+
+	public void setConfig(IEConfig config) {
+		this.config = config;
 	}
 }

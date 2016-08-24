@@ -6,16 +6,20 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.beans.NumberDetail;
 import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.Schema;
+import com.deleidos.dp.deserializors.SerializationUtility;
 import com.deleidos.dp.enums.Tolerance;
+import com.deleidos.dp.exceptions.MainTypeException;
 import com.deleidos.dp.integration.DataProfilerIntegrationEnvironment;
 import com.deleidos.dp.profiler.api.Profiler;
 
@@ -28,7 +32,7 @@ public class ModifyExistingSchemaSimluationIT extends DataProfilerIntegrationEnv
 	static int numAs = 0;
 	
 	@Before
-	public void runThroughTwoConsecutiveWorkflows() {
+	public void runThroughTwoConsecutiveWorkflows() throws MainTypeException {
 		List<Integer> rands = new ArrayList<Integer>(Arrays.asList(1,2,3));
 		List<Integer> randsSeeds = new ArrayList<Integer>(Arrays.asList(100,100,100));
 		List<DataSample> samples = new ArrayList<DataSample>();
@@ -50,7 +54,7 @@ public class ModifyExistingSchemaSimluationIT extends DataProfilerIntegrationEnv
 	}
 	
 	@Test
-	public void a() {
+	public void testMergedValues() {
 		NumberDetail d2 = new NumberDetail();
 		d2.setWalkingCount(BigDecimal.valueOf(400));
 		d2.setAverage(BigDecimal.valueOf(2.5));
@@ -58,6 +62,7 @@ public class ModifyExistingSchemaSimluationIT extends DataProfilerIntegrationEnv
 		boolean a1 = (d2.getWalkingCount().equals(numberDetailAAfterSecondSchema.getWalkingCount()));
 		boolean a2 = (d2.getAverage().equals(numberDetailAAfterSecondSchema.getAverage()));
 		boolean a3 = (Math.abs(d2.getStdDev() - numberDetailAAfterSecondSchema.getStdDev()) < .1);
+		boolean a4 = profileAfterSecondSchema.getPresence() <= 1.0;
 		logger.info("Walking count: " + a1);
 		logger.info(d2.getWalkingCount() + " -> " + numberDetailAAfterSecondSchema.getWalkingCount());
 		logger.info("Average: " + a2);
@@ -66,12 +71,10 @@ public class ModifyExistingSchemaSimluationIT extends DataProfilerIntegrationEnv
 		logger.info(d2.getStdDev() + " -> " + numberDetailAAfterSecondSchema.getStdDev());
 		logger.info("Presence: " + profileAfterSecondSchema.getPresence());
 		logger.info("Num A's " + numAs);
-		assertTrue(a1 && a2 && a3 );
+		assertTrue(a1 && a2 && a3 && a4 && numAs == 1200);
 	}
 
-	private Schema schemaPass(Schema existingSchema, List<DataSample> samples, List<Integer> numRecords, List<Integer> randomSeeds) {
-		SchemaProfiler schemaProfiler = new SchemaProfiler();
-		schemaProfiler.initExistingSchema(existingSchema);
+	private Schema schemaPass(Schema existingSchema, List<DataSample> samples, List<Integer> numRecords, List<Integer> randomSeeds) throws MainTypeException {
 		int i = 0;
 		for(DataSample dataSample : samples) {
 			for(String key : dataSample.getDsProfile().keySet()) {
@@ -81,21 +84,26 @@ public class ModifyExistingSchemaSimluationIT extends DataProfilerIntegrationEnv
 					dataSample.getDsProfile().get(key).setMergedInto(true);
 				}
 			}
-			schemaProfiler.setCurrentDataSample(dataSample);
+		}
+		SchemaProfiler schemaProfiler = new SchemaProfiler(existingSchema, samples);
+		for(DataSample dataSample : samples) {
+			schemaProfiler.setCurrentDataSampleGuid(dataSample.getDsGuid());
 			loadSomeRecords(schemaProfiler, numRecords.get(i), randomSeeds.get(i));
 			i++;
 		}
-		return schemaProfiler.asBean();
+		Schema schema = schemaProfiler.asBean();
+		schema.setsGuid(UUID.randomUUID().toString());
+		return schema;
 	}
 
-	private DataSample samplePass(int numRecords, int randomSeed) {
-		SampleProfiler sampleProfiler = new SampleProfiler("Transportation", Tolerance.STRICT);
+	private DataSample samplePass(int numRecords, int randomSeed) throws MainTypeException {
+		SampleProfiler sampleProfiler = new SampleProfiler(Tolerance.STRICT);
 		loadSomeRecords(sampleProfiler, numRecords, randomSeed);
 		DataSample sample = sampleProfiler.asBean();
+		sample.setDsGuid(UUID.randomUUID().toString());
 
-		SampleSecondPassProfiler srgProfiler = new SampleSecondPassProfiler();
+		SampleSecondPassProfiler srgProfiler = new SampleSecondPassProfiler(sample);
 		srgProfiler.setMinimumBatchSize(500);
-		srgProfiler.initializeWithSampleBean(sample);
 		loadSomeRecords(srgProfiler, numRecords, randomSeed);
 		return srgProfiler.asBean();
 	}

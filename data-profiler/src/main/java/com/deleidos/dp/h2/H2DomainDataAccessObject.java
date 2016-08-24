@@ -24,7 +24,6 @@ public class H2DomainDataAccessObject {
 
 	public H2DomainDataAccessObject(H2DataAccessObject h2) {
 		this.h2 = h2;
-		dbConnection = h2.getDBConnection();
 	}
 	
 	public int addDomain(DomainMetaData domain) throws SQLException {

@@ -33,6 +33,7 @@ INSERT INTO detail_type(detail_type_id, dt_name) VALUES (NULL, 'PHRASE');
 INSERT INTO detail_type(detail_type_id, dt_name) VALUES (NULL, 'IMAGE');
 INSERT INTO detail_type(detail_type_id, dt_name) VALUES (NULL, 'VIDEO_FRAME');
 INSERT INTO detail_type(detail_type_id, dt_name) VALUES (NULL, 'AUDIO_SEGMENT');
+INSERT INTO detail_type(detail_type_id, dt_name) VALUES (NULL, 'TEXT');
 
 INSERT INTO bucket (bucket_id, histogram_id, b_order, b_short_definition, b_count) VALUES (NULL, 1, 0, '1', '26'); 
 INSERT INTO bucket (bucket_id, histogram_id, b_order, b_short_definition, b_count) VALUES (NULL, 2, 0, 'N', '52'); 
@@ -64,3 +65,5 @@ INSERT INTO schema_field(schema_field_id, schema_model_id, number_histogram, str
 INSERT INTO data_sample_field(data_sample_field_id, data_sample_id, number_histogram, string_character_histogram, string_term_histogram, binary_character_histogram, detail_type_id, interpretation_id, field_name, field_order, num_distinct, count, walking_square_sum, walking_sum, number_min, number_max, number_average, number_std_dev) VALUES (NULL, 1, 1, 1, 1, 1, 1, 1, 'DivWin', '1', '1', '1', '1', '1', '1', '1', '1', 1);
 
 INSERT INTO schema_alias_mapping VALUES(1, 1);
+
+INSERT INTO data_sample_example_value VALUES (null, 1, 'ten');

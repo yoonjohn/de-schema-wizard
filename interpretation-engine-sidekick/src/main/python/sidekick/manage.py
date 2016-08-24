@@ -16,7 +16,7 @@ from tempfile import mkdtemp
 
 DIV = "__***__"
 PULL_TAG_KEY = "PULL_TAG"
-UNTRUSTED_IMAGE="de-schema-wizard-untrusted"
+UNTRUSTED_IMAGE="der.deleidos.com/digitaledge/schema-wizard/sw-ie-untrusted"
 UNTRUSTED_IMAGE_KEY = "U_IMAGE"
 UNTRUSTED_USER = 1111
 UNTRUSTED_GROUP = 999

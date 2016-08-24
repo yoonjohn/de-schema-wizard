@@ -30,7 +30,7 @@ On each platform, you must install third party dependencies before you can compi
 Then, execute the platform appropriate script (Windows - **install_link.cmd**, Linux - **install_link.sh**) **as an administrator.**  This is a one time install as long as you do not delete your local Maven repository or change any .ddl or .so files.  Now that that's over, let's get to the fun part.
 
 ## Project Structure
-Schema Wizard is composed of eight projects: three Java, one Java/JavaScript, and four Python projects.  Project loosely correlate to a container in the Schema Wizard deployment.
+Schema Wizard is composed of eight projects: three Java, one Java/JavaScript, and four Python projects. 
 
 ### Java Projects
 **h2-database**: Configures and starts up the H2 database.
@@ -60,7 +60,7 @@ Schema Wizard is composed of eight projects: three Java, one Java/JavaScript, an
 
 
 ## Building
-Schema Wizard uses Apache Maven for build and dependency management. To build the project, navigate to the root project directory (de-schema-wizard/) and run the command:
+Schema Wizard uses Apache Maven for build and dependency management. To build the project, navigate to the root project directory and run the command:
                
     mvn clean install
                
@@ -94,46 +94,48 @@ This is a brief description of the deployment scheme that Schema Wizard uses.  T
 * **sw-mongodb**: Mongo database that stores interpretation and domain data 
 * **sw-ie**: Python web application that provides RESTful access to the Interpretation Engine
 * **sw-sidekick**: a Python application that watches untrusted containers and handles untrusted communication
-* **r-cache**: a Redis data structure store handles data exchange between untrusted and trusted code
+* **r_cache**: a Redis data structure store handles data exchange between untrusted and trusted code
+* **sw-untrusted**: a repeated used Python stub that executes arbitrary Python code in an *isolated but insecure* environment
 * **shared-volume**: a Docker volume that conveniently shares certain files across containers
-* *anonymous untrusted container*: a repeatedly used Python container that executes user Python code in an *isolated but insecure* environment.  This image should only be used by the sw-sidekick.
 
-After you successfully build the necessary artifacts with Maven, you can build the "latest" containers with these commands.  Just set the variable on the first line:
+After you successfully build the necessary artifacts with Maven, you can build the containers with these commands.  Just set the variables on the first two lines:
 
 	schwiz_build_dir=<your-local-project-directory>
+	BUILD_NUMBER=<build-tag>
 	cd ${schwiz_build_dir}/h2-database/target
     sudo cp ../Dockerfile .
-    sudo docker build --force-rm=true --tag de-schema-wizard-h2 .
+    sudo docker build --force-rm=true --tag der.deleidos.com/digitaledge/schema-wizard/sw-h2:${BUILD_NUMBER} .
             
     cd ${schwiz_build_dir}/interpretation-engine-mongodb
-    sudo docker build --force-rm=true --tag de-schema-wizard-mongodb .
+    sudo docker build --force-rm=true --tag der.deleidos.com/digitaledge/schema-wizard/sw-mongodb:${BUILD_NUMBER} .
             
     cd ${schwiz_build_dir}/interpretation-engine
-    sudo docker build --force-rm=true --tag de-schema-wizard-ie .
+    sudo docker build --force-rm=true --tag der.deleidos.com/digitaledge/schema-wizard/sw-ie:${BUILD_NUMBER} .
             
     cd ${schwiz_build_dir}/schema-wizard/target
     sudo cp ../Dockerfile .
-    sudo docker build --force-rm=true --tag de-schema-wizard-webapp .
+    sudo docker build --force-rm=true --tag der.deleidos.com/digitaledge/schema-wizard/sw-webapp:${BUILD_NUMBER} .
             
     cd ${schwiz_build_dir}/interpretation-engine-sidekick
-    sudo docker build --force-rm=true --tag de-schema-wizard-sidekick .
+    sudo docker build --force-rm=true --tag der.deleidos.com/digitaledge/schema-wizard/sw-ie-sidekick:${BUILD_NUMBER} .
             
     cd ${schwiz_build_dir}/interpretation-engine-untrusted
-    sudo docker build --force-rm=true --tag de-schema-wizard-untrusted .
+    sudo docker build --force-rm=true --tag der.deleidos.com/digitaledge/schema-wizard/sw-ie-untrusted:${BUILD_NUMBER} .
 
 The following Docker commands are executed in order to start Schema Wizard.  If you have a Docker group set up, you may omit the superuser prefix.  These commands name each container the image name without the version:
 
+    sudo docker pull sw-ie-untrusted
     sudo docker run -d -v /usr/local/shared/untrusted/ --name shared-volume python /bin/true
-    sudo docker run -d -p 127.0.0.1:6379:6379 --name r-cache redis
-    sudo docker run -d -p 127.0.0.1:9123:9123 --name sw-h2 de-schema-wizard-h2
-    sudo docker run -d -p 127.0.0.1:27017:27017 --name sw-mongodb de-schema-wizard-mongodb
-    sudo docker run -d -p 127.0.0.1:5000:5000 --link sw-mongodb:sw-mongodb --link r_cache:redis --name sw-ie de-schema-wizard-ie
-    sudo docker run -d --link r_cache:redis -e "PULL_TAG=latest" -e "U_IMAGE=de-schema-wizard-untrusted" -e "U_PROFILE=sw-script-profile" --volumes-from shared-volume -v /var/run/docker.sock:/var/run/docker.sock --name sw-sidekick de-schema-wizard-sidekick
-    sudo docker run -d -p 80:8080 --link sw-h2:h2-db --link sw-ie:sw-ie --name sw-webapp de-schema-wizard-webapp
+    sudo docker run -d -p 127.0.0.1:6379:6379 --name r_cache redis
+    sudo docker run -d -p 127.0.0.1:9123:9123 --name sw-h2 sw-h2
+    sudo docker run -d -p 127.0.0.1:27017:27017 --name sw-mongodb sw-mongodb
+    sudo docker run -d -p 127.0.0.1:5000:5000 --link sw-mongodb:sw-mongodb --link r_cache:redis --name sw-ie sw-ie
+    sudo docker run -d --link r_cache:redis -e "PULL_TAG=${pull_tag}" -e "U_PROFILE=sw-script-profile" --volumes-from shared-volume -v /var/run/docker.sock:/var/run/docker.sock --name sw-sidekick sw-ie-sidekick
+    sudo docker run -d -p 80:8080 --link sw-h2:h2-db --link sw-ie:sw-ie --name sw-webapp sw-webapp
                
-Alternatively, once your containers are built and tagged, use docker-compose.  In the project root directory, execute:
+Alternatively, use the docker-compose method of deployment by navigating to the root project directory and then executing
 
-    sudo docker compose up
+    sudo docker compose up (May not be available on the public Docker repository at the time of this writing)
                
 [//]: # (Links)
 

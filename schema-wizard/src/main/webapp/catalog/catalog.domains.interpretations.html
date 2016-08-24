@@ -699,13 +699,6 @@
                 </div>
                 <button class="btn btn-primary"
                         style="position: absolute; bottom: 34px; right: 17px;"
-                        uib-tooltip="Clear forms, pending changes are lost"
-                        tooltip-placement="left"
-                        ng-click="cancelNewInterpretation()">
-                    Cancel
-                </button>
-                <button class="btn btn-primary"
-                        style="position: absolute; bottom: 34px; right: 95px;"
                         uib-tooltip="Return to Domains"
                         tooltip-placement="left"
                         ng-disabled="newInterpretation !== null ||
@@ -721,7 +714,7 @@
                     Ok
                 </button>
                 <button class="btn btn-primary"
-                        style="display: none; position: absolute; width: 70px; bottom: 34px; right: 175px;"
+                        style="display: none; position: absolute; width: 70px; bottom: 34px; right: 95px;"
                         uib-tooltip="Update this interpretation "
                         tooltip-placement="left"
                         ng-disabled="interpretationForm.iDescription.$invalid ||
@@ -733,13 +726,11 @@
                     Save
                 </button>
                 <button class="btn btn-primary"
-                        style="display: none; position: absolute; width: 70px; bottom: 34px; right: 175px;"
-                        uib-tooltip="Save this interpretation "
+                        style="position: absolute; bottom: 34px; right: 175px;"
+                        uib-tooltip="Clear forms, pending changes are lost"
                         tooltip-placement="left"
-                        ng-disabled="interpretationForm.$invalid"
-                        ng-show="newInterpretation !== null"
-                        ng-click="updateInterpretation()">
-                    Save
+                        ng-click="cancelNewInterpretation()">
+                    Cancel
                 </button>
                 <button class="btn btn-primary"
                         style="position: absolute; bottom: 34px; right: 253px;"

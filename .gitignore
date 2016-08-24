@@ -55,6 +55,7 @@ data-profiler/example.log
 reverse-geocoding-service/
 
 interpretation-engine/src/main/python/engine/_interpretation_.py
+interpretation-engine/src/main/python/_interpretation_.py
 
 interpretation-engine-mongodb/src/main/python/domain_builder/__pycache__/*
 interpretation-engine-mongodb/.classpath
@@ -73,3 +74,4 @@ third-party-repo/jnetpcap/linux/jnetpcap-1.3.0-1.fc.x86_64
 third-party-repo/jnetpcap/ubuntu/jnetpcap-1.3.0-1.ubuntu.x86_64
 third-party-repo/jnetpcap/windows/jnetpcap-1.3.0-1.win64
 third-party-repo/data-services/analytics-data-services
+third-party-repo/bin

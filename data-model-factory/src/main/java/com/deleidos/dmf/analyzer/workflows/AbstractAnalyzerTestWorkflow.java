@@ -25,10 +25,12 @@ import com.deleidos.dmf.exception.AnalyzerException;
 import com.deleidos.dmf.framework.AnalyticsDefaultDetector;
 import com.deleidos.dmf.framework.AnalyticsEmbeddedDocumentExtractor;
 import com.deleidos.dmf.framework.TikaSampleAnalyzerParameters;
+import com.deleidos.dmf.web.SchemaWizardSessionUtility;
 import com.deleidos.dp.beans.Schema;
 import com.deleidos.dp.deserializors.SerializationUtility;
 import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.h2.H2DataAccessObject;
+import com.deleidos.dp.profiler.api.ProfilingProgressUpdateHandler;
 
 /**
  * Abstract class defining most functionality of a "workflow."  A workflow is a mocked up series of front end interactions built for 
@@ -49,9 +51,9 @@ import com.deleidos.dp.h2.H2DataAccessObject;
  */
 public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFlow {
 	public static final Logger logger = Logger.getLogger(AbstractAnalyzerTestWorkflow.class);
-	private File uploadDirFile;
-	private String existingSchemaGuid = null;
-	private String uploadDir;
+	private Schema existingSchema = null;
+	public static final String testSessionId = "test-session";
+	public  static final String uploadDir =  new File("./target" +File.separator+ "test-uploads-dir" + File.separator + testSessionId).getAbsolutePath();
 	private String sessionId;
 	private TikaAnalyzer analyzer;
 	private List<String> resourceNames;
@@ -67,7 +69,6 @@ public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFl
 	private boolean testComplete;
 	private boolean output = false;
 	private List<AnalyzerWorkflowMetadata> workflowMetadataList;
-	public static final String testSessionId = "test-sesssion";
 
 	/**
 	 * Static method to add a workflow to the testing suite.  Workflows should be passed into this method when instantiated.  This will
@@ -81,13 +82,10 @@ public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFl
 
 	public void init() {
 		testComplete = false;
-		uploadDirFile = new File("./target", "test-uploads-dir");
-		uploadDir = uploadDirFile.getPath();
 		if(output) {
 			logger.info("Mock upload directory: " + uploadDir);
 		}
 		analyzer = new TikaAnalyzer();
-		TikaAnalyzer.setUploadFileDir(uploadDir);
 		sessionId = testSessionId;
 		resourceNames = new ArrayList<String>();
 		fileNames = new ArrayList<String>();
@@ -123,7 +121,7 @@ public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFl
 			file = resourceNames.get(i);
 			stream = getClass().getResourceAsStream(file);
 
-			File resourceCopy = new File(uploadDirFile, file);
+			File resourceCopy = new File(uploadDir, file);
 			FileUtils.copyInputStreamToFile(stream, resourceCopy);
 
 			definedTestResources.add(new DefinedTestResource(resourceCopy.getPath(), null, null, new FileInputStream(resourceCopy), true, true));
@@ -132,7 +130,7 @@ public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFl
 			String file;
 			file = fileNames.get(i);
 			File existingFile = new File(file);
-			File fileCopy = new File(uploadDirFile, existingFile.getName());
+			File fileCopy = new File(uploadDir, existingFile.getName());
 
 			FileUtils.copyFile(existingFile, fileCopy);
 
@@ -145,7 +143,8 @@ public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFl
 
 		for(int i = 0; i < definedTestResources.size(); i++) {
 			DefinedTestResource dtr = definedTestResources.get(i);
-			TikaSampleAnalyzerParameters params = TikaAnalyzer.generateSampleParameters(dtr.getFilePath(), domainName, tolerance, getSessionId(), i, definedTestResources.size());
+			TikaSampleAnalyzerParameters params = TikaAnalyzer.generateSampleParameters(uploadDir, 
+					dtr.getFilePath(), domainName, tolerance, getSessionId(), i, definedTestResources.size());
 			long t1 = System.currentTimeMillis();
 			params = analyzer.runSampleAnalysis(params);
 			long totalTime = System.currentTimeMillis() - t1;
@@ -200,7 +199,8 @@ public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFl
 			testComplete = true;
 			return;
 		} else {
-			retrieveSourceAnalysisResult = analyzer.matchAnalyzedFields(existingSchemaGuid, sampleGuids);
+			String existingSchemaGuid = (existingSchema != null) ? existingSchema.getsGuid() : null;
+			retrieveSourceAnalysisResult = analyzer.matchAnalyzedFields(sessionId, existingSchemaGuid, sampleGuids);
 			if(output) {
 				logger.info("Retrieved source group analysis.");
 			}
@@ -217,13 +217,16 @@ public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFl
 	public abstract JSONArray performMockMergeSamplesStep(Schema existingSchema, JSONArray retrieveSourceAnalysisResult);
 
 	private void retrieveSchemaAnalysis() throws DataAccessException, AnalyzerException, IOException {
-		Schema existingSchema = H2DataAccessObject.getInstance().getSchemaByGuid(getExistingSchemaGuid(), true);
 		JSONArray mockedUpFrontendAdjustedSourceAnalysis = performMockMergeSamplesStep(existingSchema, new JSONArray(retrieveSourceAnalysisResult.toString()));
+		JSONObject mockedUpFrontendSchema = (existingSchema != null) ? new JSONObject(SerializationUtility.serialize(existingSchema)) : null; 
+		JSONObject analyzeSchemaData = new JSONObject();
+		analyzeSchemaData.put("existing-schema", mockedUpFrontendSchema);
+		analyzeSchemaData.put("data-samples", mockedUpFrontendAdjustedSourceAnalysis);
 		if(mockedUpFrontendAdjustedSourceAnalysis == null) {
 			testComplete = true;
 			return;
 		} else { 
-			schemaAnalysis = analyzer.analyzeSchema(existingSchemaGuid, domainName, mockedUpFrontendAdjustedSourceAnalysis, getSessionId());
+			schemaAnalysis = analyzer.analyzeSchema(uploadDir, analyzeSchemaData, domainName, getSessionId());
 			if(output) {
 				logger.info("Retrieved schema analysis.");
 			}
@@ -389,12 +392,12 @@ public abstract class AbstractAnalyzerTestWorkflow implements AnalyzerTestWorkFl
 		this.workflowMetadataList = workflowMetadataList;
 	}
 
-	public String getExistingSchemaGuid() {
-		return existingSchemaGuid;
+	public Schema getExistingSchema() {
+		return existingSchema;
 	}
 
-	public void setExistingSchemaGuid(String existingSchemaGuid) {
-		this.existingSchemaGuid = existingSchemaGuid;
+	public void setExistingSchema(Schema existingSchema) {
+		this.existingSchema = existingSchema;
 	}
 
 	public class AnalyzerWorkflowMetadata {

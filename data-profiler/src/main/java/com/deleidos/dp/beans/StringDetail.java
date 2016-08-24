@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.apache.log4j.Logger;
 
 import com.deleidos.dp.histogram.CharacterBucketList;
-import com.deleidos.dp.histogram.TermBucketList;
+import com.deleidos.dp.histogram.ShortStringBucketList;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**

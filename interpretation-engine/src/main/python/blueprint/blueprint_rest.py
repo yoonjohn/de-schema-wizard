@@ -263,7 +263,7 @@ def run_reverse_geo_batch():
             current_app.logger.error("Error: Undefined content received (no \'coordinates\' key).")
             return None
         num_Coordinates = len(request.json['coordinates'])
-        current_app.logger.info("Received " + str(num_Coordinates) + " reverse geocoding requests.")
+        current_app.logger.debug("Received " + str(num_Coordinates) + " reverse geocoding requests.")
         geo_data = bpc.reverse_geo_batch(_get_reverse_geo_collection(), request.json['coordinates'])
         return Response(geo_data, status=200, mimetype='application/json')
     else:

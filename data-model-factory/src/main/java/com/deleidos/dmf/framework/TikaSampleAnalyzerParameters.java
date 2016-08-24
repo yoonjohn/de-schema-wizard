@@ -1,12 +1,15 @@
 package com.deleidos.dmf.framework;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.tika.metadata.Metadata;
 import org.xml.sax.ContentHandler;
 
-import com.deleidos.dmf.analyzer.AnalyzerProgressUpdater;
 import com.deleidos.dmf.exception.AnalyticsRuntimeException;
+import com.deleidos.dmf.framework.AbstractAnalyticsParser.ProgressUpdatingBehavior;
+import com.deleidos.dmf.framework.TikaProfilerParameters.MostCommonFieldWithWalking;
+import com.deleidos.dmf.progressbar.ProgressBarManager;
 import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.profiler.api.Profiler;
 
@@ -20,21 +23,22 @@ public class TikaSampleAnalyzerParameters extends TikaProfilerParameters {
 	private String sampleFilePath; 
 	private int sampleNumber;
 	private int numSamplesUploading;
-	private int recordsInSample;
+	private int recordsInSample = -1;
 	private int reverseGeocodingCallsEstimate;
 	private String uploadFileDir;
 	private String mediaType;
+	private Map<String, MostCommonFieldWithWalking> secondPassMostCommonFieldWithWalkingCount;
 	
-	private boolean isReverseGeocodingPass;
-	private boolean doReverseGeocode;
-	private boolean persistInH2;
+	private boolean persist;
 	
-	public TikaSampleAnalyzerParameters(Profiler profiler, AnalyzerProgressUpdater progressUpdater, String uploadFileDir, String guid,
+	public TikaSampleAnalyzerParameters(Profiler profiler, ProgressBarManager progressBar, String uploadFileDir, String guid,
 			InputStream stream, ContentHandler handler, Metadata metadata) {
-		super(profiler, progressUpdater, uploadFileDir, guid);
+		super(profiler, progressBar, uploadFileDir, guid);
 		this.setStream(stream);
 		this.setHandler(handler);
 		this.setMetadata(metadata);
+		this.persist = true;
+		this.setProgressUpdatingBehavior(ProgressUpdatingBehavior.BY_CHARACTERS_READ);
 	}
 
 	@Override
@@ -102,20 +106,20 @@ public class TikaSampleAnalyzerParameters extends TikaProfilerParameters {
 		this.uploadFileDir = uploadFileDir;
 	}
 
-	public boolean isDoReverseGeocode() {
+	/*public boolean isDoReverseGeocode() {
 		return doReverseGeocode;
 	}
 
 	public void setDoReverseGeocode(boolean doReverseGeocode) {
 		this.doReverseGeocode = doReverseGeocode;
-	}
+	}*/
 
 	public boolean isPersistInH2() {
-		return persistInH2;
+		return persist;
 	}
 
 	public void setPersistInH2(boolean persistInH2) {
-		this.persistInH2 = persistInH2;
+		this.persist = persistInH2;
 	}
 
 	public String getMediaType() {
@@ -126,12 +130,21 @@ public class TikaSampleAnalyzerParameters extends TikaProfilerParameters {
 		this.mediaType = mediaType;
 	}
 
-	public boolean isReverseGeocodingPass() {
+	public Map<String, MostCommonFieldWithWalking> getSecondPassMostCommonFieldWithWalkingCount() {
+		return secondPassMostCommonFieldWithWalkingCount;
+	}
+
+	public void setSecondPassMostCommonFieldWithWalkingCount(
+			Map<String, MostCommonFieldWithWalking> secondPassMostCommonFieldWithWalkingCount) {
+		this.secondPassMostCommonFieldWithWalkingCount = secondPassMostCommonFieldWithWalkingCount;
+	}
+
+	/*public boolean isReverseGeocodingPass() {
 		return isReverseGeocodingPass;
 	}
 
 	public void setReverseGeocodingPass(boolean isReverseGeocodingPass) {
 		this.isReverseGeocodingPass = isReverseGeocodingPass;
-	}
+	}*/
 
 }

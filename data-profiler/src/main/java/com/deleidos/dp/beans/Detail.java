@@ -22,45 +22,38 @@ public abstract class Detail {
 	protected BigDecimal walkingCount;
 	protected BigDecimal walkingSum;
 	protected BigDecimal walkingSquareSum;
-	
+
 	public Detail() { }
-	
+
 	@JsonIgnore
 	public Optional<Histogram> getHistogramOptional() {
-		Optional<Histogram> optionalBucket = Optional.empty();
 		if(this instanceof NumberDetail) {
-			NumberDetail nDetail = (NumberDetail)this;
-			return Optional.of(nDetail.getFreqHistogram());
+			if(this instanceof NumberDetail) {
+				NumberDetail nDetail = (NumberDetail)this;
+				return Optional.of(nDetail.getFreqHistogram());
+			} else {
+				return Optional.empty();
+			}
 		} else if(this instanceof StringDetail) {
-			StringDetail sDetail = (StringDetail)this;
-			return Optional.of(sDetail.getTermFreqHistogram());
+			if(this instanceof StringDetail) {
+				StringDetail sDetail = (StringDetail)this;
+				return Optional.of(sDetail.getTermFreqHistogram());
+			} else {
+				return Optional.empty();
+			}
 		} else if(this instanceof BinaryDetail) {
-			BinaryDetail bDetail = (BinaryDetail)this;
-			return Optional.of(bDetail.getByteHistogram());
+			if(this instanceof BinaryDetail) {
+				BinaryDetail bDetail = (BinaryDetail)this;
+				return Optional.of(bDetail.getByteHistogram());
+			} else {
+				return Optional.empty();
+			}
 		} else {
 			logger.error("Not a number, string, or binary detail type!!");
-			return optionalBucket;
+			return null;
 		}
 	}
-	
-	@JsonIgnore
-	public boolean setHistogram(Histogram histogram) {
-		if(this instanceof NumberDetail) {
-			NumberDetail nDetail = (NumberDetail)this;
-			nDetail.setFreqHistogram(histogram);
-		} else if(this instanceof StringDetail) {
-			StringDetail sDetail = (StringDetail)this;
-			sDetail.setTermFreqHistogram(histogram);
-		} else if(this instanceof BinaryDetail) {
-			BinaryDetail bDetail = (BinaryDetail)this;
-			bDetail.setByteHistogram(histogram);
-		} else {
-			logger.error("Not a number, string, or binary detail type!");
-			return false;
-		}
-		return true;
-	}
-	
+
 	@JsonIgnore
 	public void nullifyBucketList() {
 		if(this instanceof NumberDetail) {
@@ -74,12 +67,12 @@ public abstract class Detail {
 			bDetail.setByteHistogram(null);
 		}
 	}
-	
-	/*@JsonIgnore
+
+	@JsonIgnore
 	public void setRegionDataIfApplicable(RegionData regionData) {
-		getBucketListIfApplicable().ifPresent(x->x.setRegionData(regionData));
-	}*/
-	
+		getHistogramOptional().ifPresent(x->x.setRegionData(regionData));
+	}
+
 	@JsonProperty("detail-type")
 	public String getDetailType() {
 		return detailType;
@@ -123,7 +116,7 @@ public abstract class Detail {
 	public void setWalkingSquareSum(BigDecimal walkingSquareSum) {
 		this.walkingSquareSum = walkingSquareSum;
 	}
-	
+
 	@JsonIgnore
 	public boolean isNumberDetail() {
 		if(this instanceof NumberDetail) {
@@ -131,7 +124,7 @@ public abstract class Detail {
 		}
 		return false;
 	}
-	
+
 	@JsonIgnore
 	public boolean isStringDetail() {
 		if(this instanceof StringDetail) {
@@ -139,12 +132,27 @@ public abstract class Detail {
 		}
 		return false;
 	}
-	
+
 	@JsonIgnore
 	public boolean isBinaryDetail() {
 		if(this instanceof BinaryDetail) {
 			return true;
 		}
 		return false;
+	}
+	
+	@JsonIgnore
+	public static boolean isNumberDetail(Detail detail) {
+		return detail instanceof NumberDetail;
+	}
+
+	@JsonIgnore
+	public static boolean isStringDetail(Detail detail) {
+		return detail instanceof StringDetail;
+	}
+
+	@JsonIgnore
+	public static boolean isBinaryDetail(Detail detail) {
+		return detail instanceof BinaryDetail;
 	}
 }

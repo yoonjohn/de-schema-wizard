@@ -36,12 +36,16 @@ public enum MainType {
 	
 	public static MainType fromString(String string) {
 		string = string.toLowerCase();
-		if(string.equals("number")) {
+		if(string.equals(NUMBER.toString())) {
 			return NUMBER;
-		} else if(string.equals("string")) {
+		} else if(string.equals(STRING.toString())) {
 			return STRING;
-		} else if(string.equals("binary")) {
+		} else if(string.equals(BINARY.toString())) {
 			return BINARY;
+		} else if(string.equals(OBJECT.toString())) {
+			return OBJECT;
+		} else if(string.equals(ARRAY.toString())) {
+			return ARRAY;
 		} else {
 			return null;
 		}

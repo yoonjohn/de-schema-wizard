@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import org.apache.log4j.Logger;
+import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.RunScript;
+import org.h2.tools.Server;
 
 public class H2TestDatabase extends H2Database {
 	private Logger logger = Logger.getLogger(H2TestDatabase.class);
@@ -20,7 +23,7 @@ public class H2TestDatabase extends H2Database {
 	 * @throws InterruptedException 
 	 */
 	public H2TestDatabase() throws ClassNotFoundException, SQLException {
-		super(H2Config.TEST_CONFIG);
+		super(H2Config.TEST_CONFIG, true);
 	}
 
 	/**
@@ -29,9 +32,8 @@ public class H2TestDatabase extends H2Database {
 	 * @throws InterruptedException 
 	 * @throws ClassNotFoundException 
 	 */
-	public H2TestDatabase startTestServer() throws SQLException, ClassNotFoundException, InterruptedException {
-		purge();
-		startServer();
+	public H2TestDatabase startTestServer(H2Config config) throws SQLException, ClassNotFoundException, InterruptedException {
+		final Server server = startServer(config);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e1) {
@@ -44,14 +46,18 @@ public class H2TestDatabase extends H2Database {
 				purge();
 			}
 		});
-		runSchemaWizardStartupScript();
-		if(!testConnection()) {
+		Connection connection = getNewConnection();
+		runSchemaWizardStartupScript(connection);
+		if(!testConnection(connection)) {
+			connection.close();
 			throw new SQLException("Server not successfully started.");
 		}
+		populateDatabase(connection);
+		connection.close();
 		return this;
 	}
 
-	public void populateDatabase() {
+	public void populateDatabase(Connection dbConnection) {
 		InputStreamReader isr;
 		String filePath = "/scripts/";
 		String fileName = "populate_database.sql";
@@ -71,38 +77,22 @@ public class H2TestDatabase extends H2Database {
 		}	
 	}
 
-	// Getters and setters
-	/**
-	 * 
-	 * @return The database connection.
-	 */
-	public Connection getDBConnection() {
-		return dbConnection;
-	}
-
 	// Private Methods
 	/**
 	 * Tests if the connection is made.
 	 * @throws SQLException 
 	 */
-	private boolean testConnection() throws SQLException {
+	private boolean testConnection(Connection dbConnection) throws SQLException {
 		try {
 			Thread.sleep(1000);
 			if (dbConnection != null) {
 				return dbConnection.isValid(10);
 			} else {
-				logger.warn("Test server not found... Trying again.");
-				Thread.sleep(5000);
-				if (dbConnection != null) {
-					logger.info("Test connection established.");
-				} else {
-					logger.error("Test connection not made.  Terminating application.");
-				}
-				return false;
+				throw new NullPointerException("Connection tested was null.");
 			}
 		} catch (InterruptedException e) {
 			logger.error(e);
-			e.printStackTrace();
+			dbConnection.close();
 			return false;
 		}
 	}

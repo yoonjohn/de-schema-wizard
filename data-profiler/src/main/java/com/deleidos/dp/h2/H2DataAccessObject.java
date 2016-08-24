@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
 
@@ -52,6 +54,9 @@ public class H2DataAccessObject {
 
 	private H2DataAccessObject(H2Database h2Database) {
 		this.h2Database = h2Database;
+		h2Metrics = new H2MetricsDataAccessObject(this);
+		h2Samples = new H2SampleDataAccessObject(this);
+		h2Schema = new H2SchemaDataAccessObject(this);
 	}
 
 	/**
@@ -65,7 +70,6 @@ public class H2DataAccessObject {
 		if (h2Dao == null) {
 			try {
 				h2Dao = new H2DataAccessObject(new H2Database());
-				h2Dao.initConnection();
 			} catch (IOException e) {
 				logger.error("Could not find configuration file.");
 				logger.error(e);
@@ -119,12 +123,14 @@ public class H2DataAccessObject {
 	 * @throws SQLException
 	 *             Thrown if there is an error in the query.
 	 */
-	public ResultSet query(String sql) throws SQLException {
+	public ResultSet query(Connection dbConnection, String sql) throws SQLException {
 		if (debug) {
-			return queryWithOutput(sql);
+			return queryWithOutput(dbConnection, sql);
 		} else {
-			return getDBConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)
+			ResultSet rs = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)
 					.executeQuery(sql);
+			dbConnection.close();
+			return rs;
 		}
 	}
 
@@ -132,13 +138,13 @@ public class H2DataAccessObject {
 	 * Run a query in H2 and log the output at the debug level.
 	 * 
 	 * @param sql
-	 *            The string of the SQL query.
+	 *            The string of the SQL query.  It is the callers job to close the conneciton.
 	 * @return The result set from executing this query.
 	 * @throws SQLException
 	 *             Thrown if there is an error in the query.
 	 */
-	public ResultSet queryWithOutput(String sql) throws SQLException {
-		ResultSet rs = query(sql);
+	public ResultSet queryWithOutput(Connection dbConnection, String sql) throws SQLException {
+		ResultSet rs = query(dbConnection, sql);
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int c = rsmd.getColumnCount();
 		StringBuilder sb = new StringBuilder();
@@ -155,32 +161,8 @@ public class H2DataAccessObject {
 			logger.info(s.toString());
 		}
 		rs.beforeFirst();
+		dbConnection.close();
 		return rs;
-	}
-
-	public Connection getDBConnection() {
-		// return new connection
-		// call driver once
-		return h2Database.getDbConnection();
-	}
-
-	public H2DataAccessObject initConnection () throws DataAccessException {
-		try {
-			h2Database.connect();
-			h2Metrics = new H2MetricsDataAccessObject(this);
-			h2Samples = new H2SampleDataAccessObject(this);
-			h2Schema = new H2SchemaDataAccessObject(this);
-		} catch(Exception e) {
-			throw new DataAccessException("Could not connect to H2Database.", e);
-		}
-		return this;
-	}
-
-	/**
-	 * Close the connection.
-	 */
-	public void closeConnection() throws SQLException {
-		h2Database.closeConnection();
 	}
 
 	/**
@@ -201,12 +183,16 @@ public class H2DataAccessObject {
 		if (schemaBean.getsVersion() == null) {
 			schemaBean.setsVersion("1.0");
 		}
-//		if (schemaBean.getsLastUpdate() == null) {
-		// Always update timestamp
 		schemaBean.setsLastUpdate(Timestamp.from(Instant.now()));
-//		}
-		h2Schema.addSchema(schemaBean);
-		return schemaBean.getsGuid();
+		try {
+			Connection connection = h2Database.getNewConnection();
+			h2Schema.addSchema(connection, schemaBean);
+			connection.close();
+			return schemaBean.getsGuid();
+		} catch (SQLException e) {
+			logger.error("SQL Exception adding schema.", e);
+			throw new DataAccessException("SQL Exception adding schema.", e);
+		}
 	}
 
 	/**
@@ -231,7 +217,15 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public List<SchemaMetaData> getAllSchemaMetaData() throws DataAccessException {
-		return h2Schema.getAllSchemaMetaData();
+		try {
+			Connection connection = h2Database.getNewConnection();
+			List<SchemaMetaData> schemaMetaData = h2Schema.getAllSchemaMetaData(connection);
+			connection.close();
+			return schemaMetaData;
+		} catch(SQLException e) {
+			logger.error("Error retrieving all schema meta data.", e);
+			throw new DataAccessException("Error retrieving all schema meta data.", e);
+		}
 	}
 
 	/**
@@ -241,7 +235,15 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public List<DataSampleMetaData> getAllSampleMetaData() throws DataAccessException {
-		return h2Samples.getAllSampleMetaData();
+		try {
+			Connection connection = h2Database.getNewConnection();
+			List<DataSampleMetaData> dsMetaData = h2Samples.getAllSampleMetaData(connection);
+			connection.close();
+			return dsMetaData;
+		} catch(SQLException e) {
+			logger.error("Error retrieving all sample meta data.", e);
+			throw new DataAccessException("Error retrieving all sample meta data.", e);
+		}
 	}
 
 	/**
@@ -253,9 +255,17 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public SchemaMetaData getSchemaMetaDataByGuid(String guid) throws DataAccessException {
-		SchemaMetaData schemaMetaData = new SchemaMetaData();
-		schemaMetaData = h2Schema.getSchemaMetaDataByGuid(guid);
-		return schemaMetaData;
+		try {
+			Connection connection = h2Database.getNewConnection();
+			SchemaMetaData schemaMetaData = new SchemaMetaData();
+			schemaMetaData = h2Schema.getSchemaMetaDataByGuid(connection, guid);
+			connection.close();
+			return schemaMetaData;
+		} catch(SQLException e) {
+			logger.error("SQL error deleting schema metadata with guid "+guid+".", e);
+			throw new DataAccessException("SQL error deleting schema metadata with guid "+guid+".", e);
+		}
+
 	}
 
 	/**
@@ -273,25 +283,32 @@ public class H2DataAccessObject {
 		if(guid == null) {
 			return null;
 		}
-		Schema schema = h2Schema.getSchemaByGuid(guid);
+		try {
+			Connection connection = h2Database.getNewConnection();
+			Schema schema = h2Schema.getSchemaByGuid(connection, guid);
 
-		if (!showHistogram) {
-			for (String key : schema.getsProfile().keySet()) {
-				Profile profile = schema.getsProfile().get(key);
-				Detail detail = profile.getDetail();
-				if (detail instanceof NumberDetail) {
-					NumberDetail nm = ((NumberDetail) Profile.getNumberDetail(profile));
-					nm.setFreqHistogram(null);
-				} else if (detail instanceof StringDetail) {
-					StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
-					sm.setTermFreqHistogram(null);
-				} else if (detail instanceof BinaryDetail) {
-					logger.error("Detected as binary in " + getClass().getName() + ".");
+			if (!showHistogram) {
+				for (String key : schema.getsProfile().keySet()) {
+					Profile profile = schema.getsProfile().get(key);
+					Detail detail = profile.getDetail();
+					if (detail instanceof NumberDetail) {
+						NumberDetail nm = ((NumberDetail) Profile.getNumberDetail(profile));
+						nm.setFreqHistogram(null);
+					} else if (detail instanceof StringDetail) {
+						StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
+						sm.setTermFreqHistogram(null);
+					} else if (detail instanceof BinaryDetail) {
+						logger.error("Detected as binary in " + getClass().getName() + ".");
+					}
+					profile.setDetail(detail);
 				}
-				profile.setDetail(detail);
 			}
+			connection.close();
+			return schema;
+		} catch(SQLException e) {
+			logger.error("SQL error getting schema with guid "+guid+".");
+			throw new DataAccessException("SQL error getting schema with guid "+guid+".", e);
 		}
-		return schema;
 	}
 
 	/**
@@ -306,26 +323,34 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public Map<String, Profile> getSchemaFieldByGuid(String guid, boolean showHistogram) throws DataAccessException {
-		Map<String, Profile> map = new HashMap<String, Profile>();
-		map = h2Schema.getSchemaFieldByGuid(guid);
 
-		if (!showHistogram) {
-			for (String key : map.keySet()) {
-				Profile profile = map.get(key);
-				Detail detail = profile.getDetail();
-				if (detail instanceof NumberDetail) {
-					NumberDetail nm = ((NumberDetail) Profile.getNumberDetail(profile));
-					nm.setFreqHistogram(null);
-				} else if (detail instanceof StringDetail) {
-					StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
-					sm.setTermFreqHistogram(null);
-				} else if (detail instanceof BinaryDetail) {
-					logger.error("Detected as binary in " + getClass().getName() + ".");
+		try {
+			Connection connection = h2Database.getNewConnection();
+			Map<String, Profile> map = new HashMap<String, Profile>();
+			map = h2Schema.getSchemaFieldByGuid(connection, guid);
+
+			if (!showHistogram) {
+				for (String key : map.keySet()) {
+					Profile profile = map.get(key);
+					Detail detail = profile.getDetail();
+					if (detail instanceof NumberDetail) {
+						NumberDetail nm = ((NumberDetail) Profile.getNumberDetail(profile));
+						nm.setFreqHistogram(null);
+					} else if (detail instanceof StringDetail) {
+						StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
+						sm.setTermFreqHistogram(null);
+					} else if (detail instanceof BinaryDetail) {
+						logger.error("Detected as binary in " + getClass().getName() + ".");
+					}
+					profile.setDetail(detail);
 				}
-				profile.setDetail(detail);
 			}
+			connection.close();
+			return map;
+		} catch(SQLException e) {
+			logger.error("SQL error getting schema fields for guid "+guid+".", e);
+			throw new DataAccessException("SQL error getting schema fields for guid "+guid+".", e);
 		}
-		return map;
 	}
 
 	/**
@@ -335,8 +360,15 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public void deleteSchemaFromDeletionQueue(String guid) throws DataAccessException {
-		logger.info("Deleting schema " + guid +" from database.");
-		h2Schema.deleteSchemaFromDeletionQueue(guid);
+		try {
+			Connection connection = h2Database.getNewConnection();
+			logger.info("Deleting schema " + guid +" from database.");
+			h2Schema.deleteSchemaFromDeletionQueue(connection, guid);
+			connection.close();
+		} catch(SQLException e) {
+			logger.error("SQL error deleting schema with guid "+guid+".", e);
+			throw new DataAccessException("SQL error deleting schema with guid "+guid+".", e);
+		}
 	}
 
 	/**
@@ -347,7 +379,15 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public String addSample(DataSample sample) throws DataAccessException {
-		return h2Samples.addSample(sample);
+		try {
+			Connection connection = h2Database.getNewConnection();
+			String resultingGuid = h2Samples.addSample(connection, sample);
+			connection.close();
+			return resultingGuid;
+		} catch(SQLException e) {
+			logger.error("Sql error adding sample.", e);
+			throw new DataAccessException("Sql error adding sample.", e);
+		}
 	}
 
 	/**
@@ -357,8 +397,14 @@ public class H2DataAccessObject {
 	 * @return
 	 * @throws DataAccessException 
 	 */
-	public Map<String, String> getExistingSampleNames() throws DataAccessException {
-		return h2Samples.getExistingSampleNames();
+	public Map<String, String> getExistingSampleNames(Connection dbConnection) throws DataAccessException {
+		try {
+			Map<String, String> existingSampleNames = h2Samples.getExistingSampleNames(dbConnection);
+			return existingSampleNames;
+		} catch (SQLException e) {
+			logger.error("Sql error getting existing sample names.", e);
+			throw new DataAccessException("Sql error getting existing sample names.", e);
+		}
 	}
 
 	/**
@@ -371,11 +417,18 @@ public class H2DataAccessObject {
 	 * @throws SQLException
 	 */
 	public List<DataSample> getSamplesByGuids(String[] guids) throws DataAccessException {
-		List<DataSample> samples = new ArrayList<DataSample>();
-		for (String guid : guids) {
-			samples.add(h2Samples.getSampleByGuid(guid));
+		try {
+			Connection connection = h2Database.getNewConnection();
+			List<DataSample> samples = new ArrayList<DataSample>();
+			for (String guid : guids) {
+				samples.add(h2Samples.getSampleByGuid(connection, guid));
+			}
+			connection.close();
+			return samples;
+		} catch(SQLException e) {
+			logger.error("SQL error getting multiple samples.", e);
+			throw new DataAccessException("SQL error getting multiple samples.", e);
 		}
-		return samples;
 	}
 
 	/**
@@ -386,10 +439,16 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public DataSample getSampleByGuid(String guid) throws DataAccessException {
-		DataSample sample = new DataSample();
-
-		sample = h2Samples.getSampleByGuid(guid);
-		return sample;
+		try {
+			Connection connection = h2Database.getNewConnection();
+			DataSample sample = new DataSample();
+			sample = h2Samples.getSampleByGuid(connection, guid);
+			connection.close();
+			return sample;
+		} catch(SQLException e) {
+			logger.error("SQL error getting sample with guid "+guid+".", e);
+			throw new DataAccessException("SQL error getting sample with guid "+guid+".", e);
+		}
 	}
 
 	/**
@@ -400,10 +459,16 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public DataSampleMetaData getSampleMetaDataByGuid(String guid) throws DataAccessException {
-		DataSampleMetaData sampleMetaData;
-
-		sampleMetaData = h2Samples.getDataSampleMetaDataByGuid(guid);
-		return sampleMetaData;
+		try {
+			Connection connection = h2Database.getNewConnection();
+			DataSampleMetaData sampleMetaData;
+			sampleMetaData = h2Samples.getDataSampleMetaDataByGuid(connection, guid);
+			connection.close();
+			return sampleMetaData;
+		} catch(SQLException e) {
+			logger.error("SQL error getting sample metadata for guid "+guid+".", e);
+			throw new DataAccessException("SQL error getting sample metadata for guid "+guid+".", e);
+		}
 	}
 
 	/**
@@ -414,34 +479,56 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public Map<String, Profile> getSampleFieldByGuid(String guid, boolean showHistogram) throws DataAccessException {
-		Map<String, Profile> map = new HashMap<String, Profile>();
-		map = h2Samples.getSampleFieldByGuid(guid);
 
-		if (!showHistogram) {
-			for (String key : map.keySet()) {
-				Profile profile = map.get(key);
-				Detail detail = profile.getDetail();
-				if (detail instanceof NumberDetail) {
-					NumberDetail nm = ((NumberDetail) Profile.getNumberDetail(profile));
-					nm.setFreqHistogram(null);
-				} else if (detail instanceof StringDetail) {
-					StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
-					sm.setTermFreqHistogram(null);
-				} else if (detail instanceof BinaryDetail) {
-					logger.error("Detected as binary in " + getClass().getName() + ".");
+		try {
+			Connection connection = h2Database.getNewConnection();
+			Map<String, Profile> map = new HashMap<String, Profile>();
+			map = h2Samples.getSampleFieldByGuid(connection, guid);
+
+			if (!showHistogram) {
+				for (String key : map.keySet()) {
+					Profile profile = map.get(key);
+					Detail detail = profile.getDetail();
+					if (detail instanceof NumberDetail) {
+						NumberDetail nm = ((NumberDetail) Profile.getNumberDetail(profile));
+						nm.setFreqHistogram(null);
+					} else if (detail instanceof StringDetail) {
+						StringDetail sm = ((StringDetail) Profile.getStringDetail(profile));
+						sm.setTermFreqHistogram(null);
+					} else if (detail instanceof BinaryDetail) {
+						logger.error("Detected as binary in " + getClass().getName() + ".");
+					}
+					profile.setDetail(detail);
 				}
-				profile.setDetail(detail);
 			}
+			connection.close();
+			return map;
+		} catch(SQLException e) {
+			logger.error("SQL error populating profile for sample "+guid+".", e);
+			throw new DataAccessException("SQL error populating profile for sample "+guid+".", e);
 		}
-		return map;
 	}
 
 	public void deleteSchemaByGuid(String guid) throws DataAccessException {
-		h2Schema.deleteSchemaByGuid(guid);
+		try {
+			Connection connection = h2Database.getNewConnection();
+			h2Schema.deleteSchemaByGuid(connection, guid);
+			connection.close();
+		} catch(SQLException e) {
+			logger.error("SQL error deleting schema with guid "+guid+".", e);
+			throw new DataAccessException("SQL error deleting schema with guid "+guid+".", e);
+		}
 	}
 
 	public void deleteSampleByGuid(String guid) throws DataAccessException {
-		h2Samples.deleteSampleByGuid(guid);
+		try {
+			Connection connection = h2Database.getNewConnection();
+			h2Samples.deleteSampleByGuid(connection, guid);
+			connection.close();
+		} catch(SQLException e) {
+			logger.error("SQL error deleting sample with guid " +guid+ ".", e);
+			throw new DataAccessException("SQL error deleting sample with guid " +guid+ ".", e);
+		}
 	}
 
 	/**
@@ -452,21 +539,25 @@ public class H2DataAccessObject {
 	 * @throws DataAccessException 
 	 */
 	public void deleteByGuid(String guid) throws DataAccessException {
-		Schema schema = h2Schema.getSchemaByGuid(guid);
-		DataSample sample = h2Samples.getSampleByGuid(guid);
+		try {
+			Connection connection = h2Database.getNewConnection();
+			Schema schema = h2Schema.getSchemaByGuid(connection, guid);
+			DataSample sample = h2Samples.getSampleByGuid(connection, guid);
 
-		if (schema != null) {
-			h2Schema.deleteSchemaByGuid(guid);
-		} else if (sample != null) {
-			h2Samples.deleteSampleByGuid(guid);
-		} else {
-			logger.error("No such guid exists in the database.");
-			throw new DataAccessException("Error finding guid in H2 database");
+			if (schema != null) {
+				h2Schema.deleteSchemaByGuid(connection, guid);
+			} else if (sample != null) {
+				h2Samples.deleteSampleByGuid(connection, guid);
+			} else {
+				connection.close();
+				logger.error("No such guid exists in the database.");
+				throw new DataAccessException("Error finding guid in H2 database");
+			}
+			connection.close();
+		} catch(SQLException e) {
+			logger.error("Error finding guid in H2 database", e);
+			throw new DataAccessException("Error finding guid in H2 database", e);
 		}
-	}
-	
-	public static H2DataAccessObject getH2DAO() {
-		return h2Dao;
 	}
 
 	public static void setH2DAO(H2DataAccessObject h2dao) {
@@ -485,10 +576,6 @@ public class H2DataAccessObject {
 		return h2Schema;
 	}
 
-	public boolean testConnection() {
-		return testConnection(h2Database.getDbConnection());
-	}
-
 	public boolean testConnection(Connection conn) {
 		try{
 			isLive = conn.isValid(5);
@@ -500,36 +587,6 @@ public class H2DataAccessObject {
 
 	public boolean isLive() {
 		return isLive;
-	}
-
-	/**
-	 * Convenience method to turn a prepared statement into a string. Should not
-	 * be used for anything other than debugging
-	 * 
-	 * @param ppst
-	 * @return
-	 * @throws SQLException
-	 */
-	private static String preparedStatementToString(PreparedStatement ppst) throws SQLException {
-
-		String queryString = ppst.toString();
-		queryString = queryString.substring(queryString.indexOf(':') + 1);
-		if (!queryString.contains("{")) {
-			return queryString;
-		}
-		String[] splits = queryString.split("\\{", 2);
-		queryString = splits[0];
-		String params = "{" + splits[1];
-		String[] values = params.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-		for (int i = 0; i < values.length; i++) {
-			String substitution = values[i].substring(values[i].indexOf(":") + 1);
-			int markIndex = queryString.indexOf("?");
-			queryString = queryString.substring(0, markIndex) + substitution.trim()
-			+ queryString.substring(markIndex + 1);
-		}
-		queryString = queryString.substring(0, queryString.lastIndexOf("}"))
-				+ queryString.substring(queryString.lastIndexOf("}") + 1);
-		return queryString;
 	}
 
 	public H2Database getH2Database() {

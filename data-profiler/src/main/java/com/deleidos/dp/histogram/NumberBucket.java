@@ -25,7 +25,7 @@ public class NumberBucket extends AbstractBucket {
 	private NumberBucket() {
 		super();
 	}
-	
+
 	public static BigDecimal[] parseLabel(String label) {
 		BigDecimal[] minAndMax = new BigDecimal[2];
 		String[] splits = label.split(",", 2);
@@ -89,7 +89,7 @@ public class NumberBucket extends AbstractBucket {
 	public String getLabel() {
 		return generateRawLabel(minBoundary, maxBoundary);
 	}
-	
+
 	@Override
 	public int compareTo(AbstractBucket o) {
 		NumberBucket otherBucket = (NumberBucket)o;
@@ -101,7 +101,7 @@ public class NumberBucket extends AbstractBucket {
 			return this.minBoundary.compareTo(otherBucket.minBoundary);
 		}
 	}
-	
+
 	public static String trimRawLabel(String rawLabel, int cutoffLength) {
 		BigDecimal[] minAndMax = parseLabel(rawLabel);
 		if(minAndMax[1] == null) {
@@ -110,7 +110,7 @@ public class NumberBucket extends AbstractBucket {
 			return "[" + trimLabel(minAndMax[0], cutoffLength) + "," + trimLabel(minAndMax[1], cutoffLength) + ")";
 		}
 	}
-	
+
 	private static String trimLabel(BigDecimal unRangedValue, int cutoffLength) {
 		BigInteger whole = unRangedValue.toBigInteger();
 		String wholeString = whole.toString();
@@ -123,17 +123,18 @@ public class NumberBucket extends AbstractBucket {
 			for(int i = 0; i < wholeString.length()-cutoffLength; i++) {
 				sb.append("0");
 			}
-		} else {
+		} else { // TODO error with length here
 			sb.append(wholeString);
 			int remainingLength = cutoffLength-wholeString.length();
-			remainingLength = (remainingLength > decString.length()-1) ? decString.length()-1 : remainingLength;
+			
+			remainingLength = (remainingLength > decString.length()-1) ? decString.length() : remainingLength;
 			if(remainingLength > 0) {
 				sb.append("." + decString.substring(0, remainingLength));
 			}
 		}
 		return sb.toString();
 	}
-	
+
 	private static String generateRawLabel(BigDecimal min, BigDecimal max) {
 		if(max == null) {
 			return min.toPlainString();
@@ -141,5 +142,5 @@ public class NumberBucket extends AbstractBucket {
 			return "[" + min.toPlainString() + "," + max.toPlainString() + ")";
 		}
 	}
-	
+
 }

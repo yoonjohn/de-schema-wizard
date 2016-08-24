@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.deleidos.dmf.analyzer.workflows.AbstractAnalyzerTestWorkflow;
@@ -21,6 +22,7 @@ import com.deleidos.dmf.exception.AnalyzerException;
 import com.deleidos.dmf.framework.DMFMockUpEnvironmentTest;
 import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.beans.Schema;
+import com.deleidos.dp.deserializors.ConversionUtility;
 import com.deleidos.dp.deserializors.SerializationUtility;
 import com.deleidos.dp.exceptions.DataAccessException;
 
@@ -32,6 +34,13 @@ public class XMLSingleSampleDisplayNamesTest extends DMFMockUpEnvironmentTest {
 	public static void runAnalyzerWorkflow() throws AnalyticsUndetectableTypeException, AnalyticsUnsupportedParserException, IOException, AnalyzerException, DataAccessException {
 		aat = AbstractAnalyzerTestWorkflow.addOrGetStaticWorkflow(new XMLAsdiSampleWorkflow());
 		aat.runAnalysis();
+	}
+	
+	@Ignore
+	@Test
+	public void testProfileConversion() {
+		DataSample ds = SerializationUtility.deserialize(aat.getSingleSourceAnalysis().get(0), DataSample.class);
+		logger.info(SerializationUtility.serialize(ConversionUtility.convertToHeirarchicalList(ds.getDsProfile())));
 	}
 	
 	@Test

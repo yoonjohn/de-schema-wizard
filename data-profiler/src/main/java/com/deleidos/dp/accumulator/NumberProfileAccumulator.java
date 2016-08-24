@@ -2,78 +2,66 @@ package com.deleidos.dp.accumulator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import com.deleidos.dp.beans.Detail;
-import com.deleidos.dp.beans.Histogram;
 import com.deleidos.dp.beans.NumberDetail;
 import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.deleidos.dp.enums.MainType;
 import com.deleidos.dp.exceptions.MainTypeException;
-import com.deleidos.dp.histogram.NumberBucketList;
+import com.deleidos.dp.histogram.DefinedRangesNumberBucketList;
+import com.deleidos.dp.histogram.AbstractNumberBucketList;
 
 public class NumberProfileAccumulator extends AbstractProfileAccumulator {
 	private static Logger logger = Logger.getLogger(NumberProfileAccumulator.class);
-	private NumberDetail numberDetail;
-	private boolean accumulateHashes = true;
-	protected NumberBucketList numberHistogram;
+	protected AbstractNumberBucketList numberHistogram;
 
-	public NumberProfileAccumulator(String key, Object value) {
-		super(key, value);
-		profile.setMainType(MainType.NUMBER.toString());
+	protected NumberProfileAccumulator(String key) {
+		super(key, MainType.NUMBER);
 	}
 	
-	public NumberProfileAccumulator(String key) {
-		super(key);
-		profile.setMainType(MainType.NUMBER.toString());
+	@Override
+	protected void initializeDetailFields(String knownDetailType, Stage resultingStage) {
+		setNumberDetail(new NumberDetail());
+		if(knownDetailType != null) {
+			getNumberDetail().setDetailType(knownDetailType);
+		}
+		getNumberDetail().setWalkingSum(BigDecimal.ZERO);
+		getNumberDetail().setWalkingCount(BigDecimal.ZERO);
+		getNumberDetail().setWalkingSquareSum(BigDecimal.ZERO);
 	}
 
 	public NumberDetail getNumberDetail() {
-		return numberDetail;
+		return Profile.getNumberDetail(profile);
 	}
 
-	private void setNumberDetail(NumberDetail numberDetail) {
-		this.numberDetail = numberDetail;
+	protected void setNumberDetail(NumberDetail numberDetail) {
+		profile.setDetail(numberDetail);
 		accumulateHashes = false;
 	}
 
-	@Override
-	public void accumulate(Object value, boolean accumulatePresence) throws MainTypeException {
-		super.accumulate(value, accumulatePresence);
-		if(value == null) {
-			return;
-		}
-		BigDecimal numValue = new BigDecimal(value.toString());
-		accumulateMin(numValue);
-		accumulateMax(numValue);
-		accumulateWalkingFields(numValue);
-		accumulateDetailType(numValue);
-		accumulateNumDistinctValues(numValue);
-		accumulateBucketCount(value);
-		return;
-	}
-	
 	public void accumulateDetailType(Object value) {
 		detailTypeTracker[MetricsCalculationsFacade.determineNumberDetailType(value).getIndex()]++;
 	}
 
 	public void accumulateMin(BigDecimal value) {
-		if(numberDetail.getMin() == null || value.compareTo(numberDetail.getMin()) == -1) numberDetail.setMin(value);
+		if(value.compareTo(getNumberDetail().getMin()) == -1) getNumberDetail().setMin(value);
 	}
 
 	public void accumulateMax(BigDecimal value) {
-		if(numberDetail.getMax() == null || value.compareTo(numberDetail.getMax()) == 1) numberDetail.setMax(value);
+		if(value.compareTo(getNumberDetail().getMax()) == 1) getNumberDetail().setMax(value);
 	}
 
 	public void accumulateWalkingFields(BigDecimal value) {
-		numberDetail.setWalkingCount(numberDetail.getWalkingCount().add(BigDecimal.ONE));
-		numberDetail.setWalkingSum(numberDetail.getWalkingSum().add(value));
-		numberDetail.setAverage(null);
+		getNumberDetail().setWalkingCount(getNumberDetail().getWalkingCount().add(BigDecimal.ONE));
+		getNumberDetail().setWalkingSum(getNumberDetail().getWalkingSum().add(value));
+		//getNumberDetail().setAverage(null);
 		BigDecimal adderSquare = value.pow(2, MetricsCalculationsFacade.DEFAULT_CONTEXT);
-		numberDetail.setWalkingSquareSum(numberDetail.getWalkingSquareSum().add(adderSquare));
+		getNumberDetail().setWalkingSquareSum(getNumberDetail().getWalkingSquareSum().add(adderSquare));
 	}
 
 	public void accumulateBucketCount(Object value) {
@@ -82,18 +70,7 @@ public class NumberProfileAccumulator extends AbstractProfileAccumulator {
 		}
 	}
 
-	@Override
-	public void initializeFromExistingProfile(Profile profile) {
-		super.initializeFromExistingProfile(profile);
-		this.setNumberDetail(Profile.getNumberDetail(profile));
-		profile.getDetail().getHistogramOptional().ifPresent(x->this.numberHistogram = Histogram.toNumberBucketList(x));
-	}
-
-	@Override
-	public boolean initFirstValue(Object value) throws MainTypeException {
-		if(value == null) {
-			return false;
-		}
+	protected AbstractProfileAccumulator initializeFirstValue(Stage stage, Object value) throws MainTypeException {
 		BigDecimal numValue;
 		try {
 			numValue = new BigDecimal(value.toString());
@@ -101,51 +78,104 @@ public class NumberProfileAccumulator extends AbstractProfileAccumulator {
 			logger.warn("Dropping non-numeric value " + value + ".");
 			throw new MainTypeException("Non-numeric initial value " + value + ".");
 		}
-		
-		numberDetail = new NumberDetail();
-		numberDetail.setMin(numValue);
-		numberDetail.setMax(numValue);
-		numberDetail.setAverage(numValue);
-		numberHistogram = new NumberBucketList();
-		numberHistogram.putValue(numValue);
-		numberDetail.setStdDev(0);
-		numberDetail.setWalkingSum(numValue);
-		numberDetail.setWalkingCount(BigDecimal.ONE);
-		numberDetail.setWalkingSquareSum(numValue.pow(2));
-		
+
+		getNumberDetail().setMin(numValue);
+		getNumberDetail().setMax(numValue);
+		getNumberDetail().setAverage(numValue);
+		getNumberDetail().setStdDev(0);
 		accumulateHashes = true;
-		distinctValues.add(numValue);
-		accumulateDetailType(numValue);
-		presenceCount++;
-		return true;
+		
+		return this;
 	}
-	
+
 	@Override
-	public void finish() {
-		super.finish();
+	protected AbstractProfileAccumulator initializeForSecondPassAccumulation(Profile profile) {
+		//only things needed is histogram stuff
+		numberHistogram = AbstractNumberBucketList.newNumberBucketList(getNumberDetail());
+		return this;
+	}
+
+	@Override
+	protected AbstractProfileAccumulator initializeForSchemaAccumulation(Profile schemaProfile, int schemaRecords, List<Profile> sampleProfiles) throws MainTypeException {
+		NumberDetail schemaNumberDetail = (schemaProfile != null) ? Profile.getNumberDetail(schemaProfile) : null;
+		List<NumberDetail> sampleNumberDetails = new ArrayList<NumberDetail>();
+		for(Profile sampleProfile : sampleProfiles) {
+			Optional<NumberDetail> numberDetailOptional = Profile.getNumberDetailOptional(sampleProfile);
+			if(numberDetailOptional.isPresent()) {
+				sampleNumberDetails.add(numberDetailOptional.get());
+			} else {
+				logger.info("Profile for " + sampleProfile.getDisplayName() + " dropped due to type mismatch.");
+			}	
+		}
+		numberHistogram = AbstractNumberBucketList.newNumberBucketList(
+				schemaNumberDetail, sampleNumberDetails);
+		return this;
+	}
+
+	@Override
+	protected Profile accumulate(Stage accumulationStage, Object value) throws MainTypeException {
+		BigDecimal numValue = new BigDecimal(value.toString());
+		switch(accumulationStage) {
+		case UNITIALIZED: throw new MainTypeException("Accumulator called but has not been initialized.");
+		case SAMPLE_AWAITING_FIRST_VALUE: { 
+			break;
+		}
+		case SCHEMA_AWAITING_FIRST_VALUE: {
+			break;
+		}
+		case SAMPLE_FIRST_PASS: {
+			accumulateMin(numValue);
+			accumulateMax(numValue);
+			accumulateWalkingFields(numValue);
+			accumulateDetailType(numValue);
+			accumulateNumDistinctValues(numValue);
+			break;
+		}
+		case SAMPLE_SECOND_PASS: {
+			accumulateBucketCount(numValue);
+			break;
+		}
+		case SCHEMA_PASS: {
+			accumulateMin(numValue);
+			accumulateMax(numValue);
+			accumulateWalkingFields(numValue);
+			accumulateNumDistinctValues(numValue);
+			accumulateBucketCount(numValue);
+			break;
+		}
+		default: throw new MainTypeException("Accumulator stuck in unknown stage.");
+		}
+		return profile;
+	}
+
+	@Override
+	protected Profile finish(Stage accumulationStage) {
 		if(this.getState().getPresence() < 0) {
-			return;
+			return profile;
 		}
-		BigDecimal average = numberDetail.getWalkingSum().divide(numberDetail.getWalkingCount(), MetricsCalculationsFacade.DEFAULT_CONTEXT);
-		numberDetail.setAverage(average);
 
-		BigDecimal twiceAverage = average.multiply(BigDecimal.valueOf(2), DEFAULT_CONTEXT);
-		BigDecimal summations = numberDetail.getWalkingSquareSum().subtract(twiceAverage.multiply(numberDetail.getWalkingSum(), DEFAULT_CONTEXT), DEFAULT_CONTEXT);
-		BigDecimal finalNumerator = summations.add(numberDetail.getWalkingCount().multiply(average.pow(2), DEFAULT_CONTEXT), DEFAULT_CONTEXT);
-		BigDecimal withDivision = finalNumerator.divide(numberDetail.getWalkingCount(), DEFAULT_CONTEXT);
-		double stdDev = Math.sqrt(withDivision.doubleValue());
-		numberDetail.setStdDev(stdDev);
-		
-		if(accumulateHashes) {
-			numberDetail.setNumDistinctValues(String.valueOf(distinctValues.size()));
+		if(accumulationStage.equals(Stage.SAMPLE_FIRST_PASS) 
+				|| accumulationStage.equals(Stage.SCHEMA_PASS)) {
+			BigDecimal average = getNumberDetail().getWalkingSum().divide(getNumberDetail().getWalkingCount(), MetricsCalculationsFacade.DEFAULT_CONTEXT);
+
+			getNumberDetail().setAverage(average);
+
+
+			BigDecimal twiceAverage = average.multiply(BigDecimal.valueOf(2), DEFAULT_CONTEXT);
+			BigDecimal summations = getNumberDetail().getWalkingSquareSum().subtract(twiceAverage.multiply(getNumberDetail().getWalkingSum(), DEFAULT_CONTEXT), DEFAULT_CONTEXT);
+			BigDecimal finalNumerator = summations.add(getNumberDetail().getWalkingCount().multiply(average.pow(2), DEFAULT_CONTEXT), DEFAULT_CONTEXT);
+			BigDecimal withDivision = finalNumerator.divide(getNumberDetail().getWalkingCount(), DEFAULT_CONTEXT);
+			double stdDev = Math.sqrt(withDivision.doubleValue());
+			getNumberDetail().setStdDev(stdDev);
+
+			if(accumulateHashes) {
+				getNumberDetail().setNumDistinctValues(String.valueOf(distinctValues.size()));
+			}
 		}
-		
-		numberDetail.setHistogram(numberHistogram.asBean());
+		if(getAccumulationStage().equals(Stage.SAMPLE_SECOND_PASS) || 
+				getAccumulationStage().equals(Stage.SCHEMA_PASS)) {
+			getNumberDetail().setFreqHistogram(this.numberHistogram.asBean());
+		}
+		return profile;
 	}
-
-	@Override
-	public Detail getDetail() {
-		return numberDetail;
-	}
-
 }

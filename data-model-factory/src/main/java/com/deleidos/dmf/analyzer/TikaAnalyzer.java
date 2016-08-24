@@ -2,15 +2,19 @@ package com.deleidos.dmf.analyzer;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
+import javax.ws.rs.ProcessingException;
+
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.apache.tika.metadata.Metadata;
 import org.json.JSONArray;
@@ -18,21 +22,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.deleidos.dmf.analyzer.workflows.AbstractAnalyzerTestWorkflow;
+import com.deleidos.dmf.exception.AnalyticsCancelledWorkflowException;
 import com.deleidos.dmf.exception.AnalyticsInitializationRuntimeException;
+import com.deleidos.dmf.exception.AnalyticsInvalidSchemaException;
+import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
 import com.deleidos.dmf.exception.AnalyticsUndetectableTypeException;
 import com.deleidos.dmf.exception.AnalyticsUnsupportedParserException;
 import com.deleidos.dmf.exception.AnalyzerException;
+import com.deleidos.dmf.framework.AbstractAnalyticsParser.ProgressUpdatingBehavior;
 import com.deleidos.dmf.framework.AnalyticsDefaultDetector;
 import com.deleidos.dmf.framework.AnalyticsDefaultParser;
+import com.deleidos.dmf.framework.TikaProfilerParameters;
+import com.deleidos.dmf.framework.TikaProfilerParameters.MostCommonFieldWithWalking;
 import com.deleidos.dmf.framework.TikaSampleAnalyzerParameters;
 import com.deleidos.dmf.framework.TikaSchemaAnalyzerParameters;
 import com.deleidos.dmf.handler.AnalyticsProgressTrackingContentHandler;
-import com.deleidos.dmf.progressbar.ProgressBar;
+import com.deleidos.dmf.progressbar.ProgressBarManager;
 import com.deleidos.dmf.progressbar.ProgressState;
-import com.deleidos.dmf.progressbar.SampleAnalysisProgressUpdater;
-import com.deleidos.dmf.progressbar.SampleSecondPassProgressUpdater;
-import com.deleidos.dmf.progressbar.SchemaAnalysisProgressUpdater;
-import com.deleidos.dmf.web.SchemaWizardWebSocketUtility;
+import com.deleidos.dmf.progressbar.ProgressState.STAGE;
+import com.deleidos.dmf.progressbar.SimpleProgressUpdater;
+import com.deleidos.dmf.web.SchemaWizardSessionUtility;
+import com.deleidos.dp.beans.Attributes;
+import com.deleidos.dmf.web.TimeEstimateProgressUpdater;
 import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.beans.Interpretation;
 import com.deleidos.dp.beans.Schema;
@@ -45,116 +56,87 @@ import com.deleidos.dp.profiler.SampleProfiler;
 import com.deleidos.dp.profiler.SampleSecondPassProfiler;
 import com.deleidos.dp.profiler.SchemaProfiler;
 import com.deleidos.dp.profiler.api.Profiler;
+import com.deleidos.dp.profiler.api.ProfilingProgressUpdateHandler;
 import com.deleidos.hd.h2.H2Database;
 
 public class TikaAnalyzer implements FileAnalyzer {
-	private static String uploadFileDir = null;
 	private static final Logger logger = Logger.getLogger(TikaAnalyzer.class);
-
-	public TikaAnalyzer() {
-		SchemaWizardWebSocketUtility.getInstance();
-		// need to call web socket singleton at initialization time so it is
-		// registered before any methods are called
+	
+	public static TikaSampleAnalyzerParameters generateSampleParameters(String uploadFileDir, String sampleFileName, String domainName, String tolerance,
+			String sessionId, int sampleNumber, int totalNumberSamples) throws IOException {
+		return generateSampleParameters(uploadFileDir, sampleFileName, domainName, tolerance, sessionId, sampleNumber, totalNumberSamples, null);
 	}
 
-	public static TikaSampleAnalyzerParameters generateSampleParameters(String sampleFilePath, String domainName, String tolerance,
-			String sessionId, int sampleNumber, int totalNumberSamples) throws FileNotFoundException {
+	public static TikaSampleAnalyzerParameters generateSampleParameters(String uploadFileDir, String sampleFileName, String domainName, String tolerance,
+			String sessionId, int sampleNumber, int totalNumberSamples, ProgressBarManager existingProgressBar) throws IOException {
 		String guid = Analyzer.generateUUID();
 
-		File uploadFile = new File(sampleFilePath);
-		if(uploadFileDir == null && uploadFile.isFile()) {
-			uploadFileDir = uploadFile.getParent();
+		sampleFileName = new File(sampleFileName).getName();
+		File uploadFile = new File(uploadFileDir + File.separator + sampleFileName);
+		if(!uploadFile.exists()) {
+			throw new IOException("Uploaded file does not exist at " + uploadFile + ".");
 		}
 
-		InputStream is = null;
-		if(uploadFile.exists()) {
-			is = new FileInputStream(uploadFile);
-		} else {
-			is = TikaAnalyzer.class.getResourceAsStream(sampleFilePath);
-			if(is == null) {
-				throw new AnalyticsInitializationRuntimeException("Upload file not found on classpath.");
+		logger.debug("Upload file expected to be " + uploadFile);
+
+		InputStream is = new FileInputStream(uploadFile);
+
+		SampleProfiler sampleProfiler = new SampleProfiler(Tolerance.fromString(tolerance));
+		List<String> namePlaceholders = new ArrayList<String>();
+		for(int i = 0; i < totalNumberSamples; i++) {
+			if(i == sampleNumber) {
+				namePlaceholders.add(sampleFileName);
+			} else {
+				namePlaceholders.add("");
 			}
 		}
-		ProgressBar progressBar = 
-				new ProgressBar(uploadFile.getName(), sampleNumber, totalNumberSamples, ProgressState.detectStage);
-
-		SampleProfiler sampleProfiler = new SampleProfiler(domainName, Tolerance.fromString(tolerance));
-
-		TikaSampleAnalyzerParameters tikaProfilerParams = new TikaSampleAnalyzerParameters(sampleProfiler
-				, new SampleAnalysisProgressUpdater(), uploadFileDir, guid, is, new AnalyticsProgressTrackingContentHandler(), new Metadata());
-		tikaProfilerParams.setPersistInH2(true);
-		tikaProfilerParams.setDoReverseGeocode(true);
+		ProgressBarManager sampleProgressBar = null;
+		if(existingProgressBar == null) {
+			sampleProgressBar = ProgressBarManager.sampleProgressBar(namePlaceholders, sampleNumber);
+		} else {
+			sampleProgressBar = existingProgressBar;
+		}
+		if(!sampleProgressBar.isDuring(STAGE.DETECT)) {
+			sampleProgressBar.jumpToNthIndexStage(sampleNumber, STAGE.DETECT);
+		}
+		SimpleProgressUpdater progressUpdater = 
+				new SimpleProgressUpdater(sessionId, sampleProgressBar, uploadFile.length());
+		TikaSampleAnalyzerParameters tikaProfilerParams = new TikaSampleAnalyzerParameters(sampleProfiler, sampleProgressBar,
+				uploadFileDir, guid, is, new AnalyticsProgressTrackingContentHandler(), new Metadata());
 		tikaProfilerParams.setUploadFileDir(uploadFileDir);
-		tikaProfilerParams.setProgress(progressBar);
 		tikaProfilerParams.setDomainName(domainName);
 		tikaProfilerParams.setNumSamplesUploading(totalNumberSamples);
-		tikaProfilerParams.setSampleFilePath(sampleFilePath);
+		tikaProfilerParams.setSampleFilePath(uploadFile.getAbsolutePath());
 		tikaProfilerParams.setSampleNumber(sampleNumber);
 		tikaProfilerParams.setTolerance(tolerance);
 		tikaProfilerParams.setStream(is);
 		tikaProfilerParams.setSessionId(sessionId);
 		tikaProfilerParams.setStreamLength(uploadFile.length());
 		tikaProfilerParams.set(File.class, uploadFile);
+		tikaProfilerParams.set(ProfilingProgressUpdateHandler.class, progressUpdater);
 		return tikaProfilerParams;
 	}
 
-	public static TikaSchemaAnalyzerParameters generateSchemaParameters(String existingSchemaGuid, 
-			String domainName, JSONArray edittedSourceAnalysis, String sessionId) throws DataAccessException {
-		logger.info("Existing schema guid is " + existingSchemaGuid);
-
-		List<DataSample> sampleList = new ArrayList<DataSample>();
-		for(int i = 0; i < edittedSourceAnalysis.length(); i++) {
-			try {
-				DataSample sample = SerializationUtility.deserialize(edittedSourceAnalysis.get(i).toString(), DataSample.class);
-				sampleList.add(sample);
-			} catch (JSONException e) {
-				logger.error(e);
-				throw new AnalyticsInitializationRuntimeException("Error deserializing into DataSample bean.");
-			}
-		}
-
-		String guid;
-		Schema existingSchema = null;
-		if(existingSchemaGuid == null) {
-			guid = Analyzer.generateUUID();
-		} else {
-			existingSchema = H2DataAccessObject.getInstance().getSchemaByGuid(existingSchemaGuid, true);
-			if(existingSchema == null) {
-				guid = Analyzer.generateUUID();
-			} else {
-				// TODO need to use existing once update methods are ready
-				guid = Analyzer.generateUUID();
-				existingSchema.setsGuid(guid);
-				//guid = existingSchema.getsGuid();
-			}
-		}
-
-		SchemaProfiler schemaProfiler = new SchemaProfiler();
-		schemaProfiler.initExistingSchema(existingSchema);
-
-		TikaSchemaAnalyzerParameters schemaParameters = new TikaSchemaAnalyzerParameters(
-				schemaProfiler, new SchemaAnalysisProgressUpdater(), uploadFileDir, guid, domainName, sampleList);
-		schemaParameters.setSessionId(sessionId);
-		schemaParameters.setExistingSchema(existingSchema);
-
-		return schemaParameters;
-	}
-	
-	public static TikaSchemaAnalyzerParameters generateSchemaParameters(JSONObject schemaAnalysisData, 
-			String domainName, String sessionId) throws DataAccessException {
+	public static TikaSchemaAnalyzerParameters generateSchemaParameters(String uploadFileDir, JSONObject schemaAnalysisData, 
+			String domainName, String sessionId) throws DataAccessException, AnalyticsInvalidSchemaException {
 		Schema schemaFromFrontEnd = null;
 		if(!schemaAnalysisData.isNull("existing-schema")) {
 			schemaFromFrontEnd = 
 					SerializationUtility.deserialize(schemaAnalysisData.getJSONObject("existing-schema"), Schema.class);
 			logger.info("Existing schema guid is " + schemaFromFrontEnd.getsGuid());
 		}
-		
+
 		JSONArray edittedSourceAnalysis = schemaAnalysisData.getJSONArray("data-samples");
 		List<DataSample> sampleList = new ArrayList<DataSample>();
+		List<String> sampleNames = new ArrayList<String>();
+		Map<String, MostCommonFieldWithWalking> mostCommonFieldWithWalkingCount = new HashMap<String, MostCommonFieldWithWalking>();
 		for(int i = 0; i < edittedSourceAnalysis.length(); i++) {
 			try {
 				DataSample sample = SerializationUtility.deserialize(edittedSourceAnalysis.get(i).toString(), DataSample.class);
 				sampleList.add(sample);
+				sampleNames.add(sample.getDsName());
+				MostCommonFieldWithWalking commonField = TikaProfilerParameters.determineProgressRepresentativeField(sample.getDsProfile());
+				mostCommonFieldWithWalkingCount.put(sample.getDsGuid(), commonField);
 			} catch (JSONException e) {
 				logger.error(e);
 				throw new AnalyticsInitializationRuntimeException("Error deserializing into DataSample bean.");
@@ -162,34 +144,26 @@ public class TikaAnalyzer implements FileAnalyzer {
 		}
 
 		String guid = Analyzer.generateUUID();
-		
-		/*else {
-			schemaFromFrontEnd = H2DataAccessObject.getInstance().getSchemaByGuid(schemaFromFrontEnd.getsGuid(), true);
-			if(schemaFromFrontEnd == null) {
-				guid = Analyzer.generateUUID();
-			} else {
-				// TODO need to use existing once update methods are ready
-				guid = Analyzer.generateUUID();
-				schemaFromFrontEnd.setsGuid(guid);
-				//guid = existingSchema.getsGuid();
-			}
-		}*/
-
-		SchemaProfiler schemaProfiler = new SchemaProfiler();
-		schemaProfiler.initExistingSchema(schemaFromFrontEnd);
-
+		SchemaProfiler schemaProfiler = new SchemaProfiler(schemaFromFrontEnd, sampleList);
+		ProgressBarManager schemaProgressBar = ProgressBarManager.schemaProgressBar(sampleNames);
 		TikaSchemaAnalyzerParameters schemaParameters = new TikaSchemaAnalyzerParameters(
-				schemaProfiler, new SchemaAnalysisProgressUpdater(), uploadFileDir, guid, domainName, sampleList);
+				schemaProfiler, schemaProgressBar, uploadFileDir, guid, domainName, sampleList);
 		schemaParameters.setSessionId(sessionId);
 		schemaParameters.setExistingSchema(schemaFromFrontEnd);
-
+		schemaParameters.setMostCommonFieldWithWalkingCount(mostCommonFieldWithWalkingCount);
 		return schemaParameters;
 	}
 
 	public TikaSampleAnalyzerParameters runSampleAnalysis(TikaSampleAnalyzerParameters params)
 			throws IOException, AnalyzerException, DataAccessException {
+		try {
+			SchemaWizardSessionUtility.getInstance().waitForAvailableResources(params.getSessionId(), params.get(File.class));
+		} catch (FileUploadException e) {
+			throw new AnalyticsTikaProfilingException(e);
+		}
+
 		AnalyticsDefaultDetector detector = new AnalyticsDefaultDetector();
-		detector.enableProgressUpdates(params.getSessionId(), params.getProgress());
+		detector.enableProgressUpdates(params.getSessionId(), params.getProgressBar());
 		AnalyticsDefaultParser parser = new AnalyticsDefaultParser(detector, params);
 
 		Profiler profiler = params.get(Profiler.class);
@@ -201,91 +175,100 @@ public class TikaAnalyzer implements FileAnalyzer {
 					"Expected a sample profiler, got a " + params.get(Profiler.class).getClass() + ".");
 		}
 
-		DataSample dataSampleBean = null;
 		params.getMetadata().set(Metadata.CONTENT_LENGTH, String.valueOf(params.getStreamLength()));
-
-		params.getProgress().setCurrentState(ProgressState.detectStage);
-		SchemaWizardWebSocketUtility.getInstance().updateProgress(params.getProgress(), params.getSessionId());
-
+		SchemaWizardSessionUtility.getInstance().updateProgress(params.getProgressBar(), params.getSessionId());
+		
 		parser.runSampleAnalysis(params);
+		
+		params.getProgressBar().goToNextStateIfCurrentIs(ProgressState.STAGE.FIRST_PASS);
+		SchemaWizardSessionUtility.getInstance().updateProgress(params.getProgressBar(), params.getSessionId());
+		DataSample dataSampleBean = sampleProfiler.asBean();
+		if(dataSampleBean.getDsProfile().isEmpty()) {
+			throw new AnalyticsUnsupportedParserException("Parsing finished without an exception, but no keys were extracted.");
+		}
+		
+		int numFields = dataSampleBean.getDsProfile().size();
+		TimeEstimateProgressUpdater timeEstimate = 
+				new TimeEstimateProgressUpdater(params.getSessionId(), params.getProgressBar(), numFields * 50);
+		// show progress estimate based on number of fields (roughly 50 millis per field based on testing)
+		// need to estimate using number of interpretations though
+		// IE is O(n*m)
+		// change the data sample to the appropriate interpretations inline -- side effects
+		new Thread(timeEstimate).start(); 
+		InterpretationEngineFacade.interpretInline(dataSampleBean, params.getDomainName(), null);
+		timeEstimate.setDone();
+		
 		params.setRecordsInSample(sampleProfiler.getRecordsParsed());
-		logger.info("Setting content as extracted.");
+		logger.debug("Setting content as extracted.");
+		
+		params.getProgressBar().goToNextStateIfCurrentIs(ProgressState.STAGE.INTERPRET);
+		SchemaWizardSessionUtility.getInstance().updateProgress(params.getProgressBar(), params.getSessionId());
 
-		params.getProgress().setCurrentState(ProgressState.geocodingStage);
-		SchemaWizardWebSocketUtility.getInstance().updateProgress(params.getProgress(), params.getSessionId());
-
-		dataSampleBean = sampleProfiler.asBean();
+		
 		dataSampleBean.setDsFileType(params.getMetadata().get(Metadata.CONTENT_TYPE));
+		int records = sampleProfiler.getRecordsParsed();
+		params.setRecordsInSample(records);
 
-		if (params.isDoReverseGeocode()) {
-			if (sampleProfiler.getNumGeoSpatialQueries() > 0) {
-				params.setReverseGeocodingPass(true);
-				// second pass will eventually be "conversions" as well as
-				// reverse geocoding
+		try {
+			InputStream secondPassStream = new FileInputStream(params.getSampleFilePath());
+			//params.setReverseGeocodingCallsEstimate(sampleProfiler.getNumGeoSpatialQueries());
 
-				boolean isInterpretationEngineLive = true;
-				try {
-					isInterpretationEngineLive = InterpretationEngineFacade.getInstance().isLive();
-				} catch (DataAccessException e) {
-					logger.error(e);
-					isInterpretationEngineLive = false;
-				}
-				if (!isInterpretationEngineLive) {
-					logger.error("Interpretation Engine is not connected.  Skipping reverse geocoding step.");
-				} else {
-					try {
-						InputStream secondPassStream = new FileInputStream(params.getSampleFilePath());
-						params.setReverseGeocodingCallsEstimate(sampleProfiler.getNumGeoSpatialQueries());
-
-						SampleSecondPassProfiler sampleGeocoder = new SampleSecondPassProfiler();
-						SampleSecondPassProgressUpdater sampleGeocodingUpdater = new SampleSecondPassProgressUpdater();
-
-						sampleGeocoder.initializeWithSampleBean(dataSampleBean);
-
-						params.set(Profiler.class, sampleGeocoder);
-						params.set(AnalyzerProgressUpdater.class, sampleGeocodingUpdater);
-						params.setStream(secondPassStream);
-						params.setHandler(new AnalyticsProgressTrackingContentHandler());
-						parser.getExtractor().setAreContentsExtracted(false);
-
-						dataSampleBean = parser.runSampleAnalysis(params).getProfilerBean();
-					} catch (IOException e) {
-						logger.error(e);
-						logger.error(
-								"There was an error retrieving the file for a second pass.  Returning results from first pass.");
-					}
-				}
+			SampleSecondPassProfiler sampleGeocoder = new SampleSecondPassProfiler(dataSampleBean);
+			SimpleProgressUpdater secondPassProgressUpdater = null;
+			ProgressUpdatingBehavior progressUpdatingBehavior = ProgressUpdatingBehavior.BY_CHARACTERS_READ;
+			MostCommonFieldWithWalking commonField = TikaProfilerParameters.determineProgressRepresentativeField(dataSampleBean.getDsProfile());
+			if(commonField != null && sampleGeocoder.getAccumulatorMapping().containsKey(commonField.getFieldName())) {
+				progressUpdatingBehavior = ProgressUpdatingBehavior.BY_COMMON_FIELD_OCCURANCES;
+				// progress callbacks must come from accumulator
+				secondPassProgressUpdater =  new SimpleProgressUpdater(params.getSessionId(), 
+						params.getProgressBar(), commonField.getWalkingCount());
+				sampleGeocoder.getAccumulatorMapping().get(commonField.getFieldName()).setCallback(secondPassProgressUpdater, true);
 			} else {
-				// when there is no reverse geocoding, show a fake smooth progress bar
-				params.getProgress().setCurrentState(ProgressState.geocodingStage);
-				final long fakeUpdateDelay = 100;
-				final int fakeUpdates = 5;
-				final float fakeUpdateProgressInterval = (float) params.getProgress().getCurrentState().rangeLength()
-						/ (float) fakeUpdates;
-				for (int i = 0; i < fakeUpdates; i++) {
-					params.getProgress()
-					.updateCurrentSampleNumerator(params.getProgress().getCurrentState().getStartValue()
-							+ (int) (fakeUpdateProgressInterval * i));
-					SchemaWizardWebSocketUtility.getInstance().updateProgress(params.getProgress(),
-							params.getSessionId());
-					try {
-						Thread.sleep(fakeUpdateDelay);
-					} catch (InterruptedException e) {
-						logger.error("Mock geocoding progress Bar thread interrupted.");
-					}
-				}
+				secondPassProgressUpdater = new SimpleProgressUpdater(params.getSessionId(), 
+							params.getProgressBar(), dataSampleBean.getRecordsParsedCount());
+				progressUpdatingBehavior = ProgressUpdatingBehavior.BY_RECORD_COUNT;
 			}
+			params.setProgressUpdatingBehavior(progressUpdatingBehavior);
+			params.set(Profiler.class, sampleGeocoder);
+			params.set(ProfilingProgressUpdateHandler.class, secondPassProgressUpdater);
+			params.setStream(secondPassStream);
+			params.setHandler(new AnalyticsProgressTrackingContentHandler());
+			parser.getExtractor().setAreContentsExtracted(false);
+			dataSampleBean = parser.runSampleAnalysis(params).getProfilerBean();
+
+		} catch (IOException e) {
+			logger.error(e);
+			logger.error(
+					"There was an error retrieving the file for a second pass.  Returning results from first pass.");
+			throw new IOException("Error during second pass", e);
 		}
 
 		logger.debug("Sample " + params.getSampleFilePath() + " complete.");
-		params.getProgress().setCurrentState(ProgressState.complete);
-		SchemaWizardWebSocketUtility.getInstance().updateProgress(params.getProgress(), params.getSessionId());
+		params.getProgressBar().goToNextStateIfCurrentIs(ProgressState.STAGE.SECOND_PASS);
+		SchemaWizardSessionUtility.getInstance().updateProgress(params.getProgressBar(), params.getSessionId());
 
 		for (String key : dataSampleBean.getDsProfile().keySet()) {
 			Interpretation interpretation = dataSampleBean.getDsProfile().get(key).getInterpretation();
 			if (interpretation != null && !(Interpretation.isUnknown(interpretation))) {
 				logger.info("Field \"" + key + "\" interpretted to be " + interpretation.getInterpretation() + ".");
 			}
+			
+			Attributes attribute = dataSampleBean.getDsProfile().get(key).getAttributes();
+			if (attribute != null && !attribute.isUnknown(attribute)) {
+				dataSampleBean.getDsProfile().get(key).setAttributes(attribute);
+			} 
+//			TODO this is for testing. The above code block largely should remain
+//			unchanged - the object sent back from the Interpretation Engine should be
+//			used for the setting of the attributes
+//			else {
+//				Attributes at = new Attributes();
+//				at.setCategorical("test");
+//				at.setIdentifier("test");
+//				at.setOrdinal("test");
+//				at.setQuantitative("test");
+//				at.setRelational("test");
+//				dataSampleBean.getDsProfile().get(key).setAttributes(at);
+//			}
 		}
 
 		if (params.isPersistInH2()) {
@@ -300,6 +283,10 @@ public class TikaAnalyzer implements FileAnalyzer {
 		} else {
 			logger.info("Profile set by parameters to not be persisted.");
 		}
+		
+		params.getProgressBar().goToNextStateIfCurrentIs(STAGE.SECOND_PASS);
+		SchemaWizardSessionUtility.getInstance().updateProgress(params.getProgressBar(), params.getSessionId());
+		
 		return params;
 	}
 
@@ -308,7 +295,6 @@ public class TikaAnalyzer implements FileAnalyzer {
 			throws IOException, AnalyzerException, DataAccessException {
 
 		AnalyticsDefaultDetector detector = new AnalyticsDefaultDetector();
-		detector.enableProgressUpdates(params.getSessionId(), params.getProgress());
 		AnalyticsDefaultParser parser = new AnalyticsDefaultParser(detector, params);
 
 		List<DataSample> userModifiedSampleList = params.getUserModifiedSampleList();
@@ -326,118 +312,142 @@ public class TikaAnalyzer implements FileAnalyzer {
 			throw new AnalyticsInitializationRuntimeException(
 					"Expected a schema profiler, got a " + params.get(Profiler.class).getClass() + ".");
 		}
-		SchemaAnalysisProgressUpdater schemaProgress = new SchemaAnalysisProgressUpdater();
 
-		int i = 0;
 		for (DataSample sample : userModifiedSampleList) {
-
 			Metadata metadata = new Metadata();
+			metadata.set(Metadata.CONTENT_TYPE, sample.getDsFileType());
 			File file = new File(uploadFileDir, sample.getDsFileName());
-
-			if (file != null) {
-				params.set(File.class, file);
-			}
-
-			schemaProfiler.setCurrentDataSample(sample);
-
 			FileInputStream fis = new FileInputStream(file);
+			
+			schemaProfiler.setCurrentDataSampleGuid(sample.getDsGuid());
+			schemaProfiler.getFieldMapping().forEach((k,v)->v.removeCallback());
+
+			SimpleProgressUpdater progressUpdater = null;
+			ProgressUpdatingBehavior progressUpdatingBehavior = ProgressUpdatingBehavior.BY_CHARACTERS_READ;
+			
+			MostCommonFieldWithWalking mostCommon = params.getMostCommonFieldWithWalkingCount().get(sample.getDsGuid());
+			if(mostCommon != null && schemaProfiler.getFieldMapping().containsKey(mostCommon.getFieldName())) {
+				progressUpdatingBehavior = ProgressUpdatingBehavior.BY_COMMON_FIELD_OCCURANCES;
+				// progress callbacks must come from accumulator
+				progressUpdater =  new SimpleProgressUpdater(params.getSessionId(), 
+						params.getProgressBar(), mostCommon.getWalkingCount());
+				schemaProfiler.getFieldMapping().get(mostCommon.getFieldName()).setCallback(progressUpdater, true);
+			} else {
+				progressUpdater = new SimpleProgressUpdater(params.getSessionId(), 
+							params.getProgressBar(), sample.getRecordsParsedCount());
+				progressUpdatingBehavior = ProgressUpdatingBehavior.BY_RECORD_COUNT;
+			}
+			params.setProgressUpdatingBehavior(progressUpdatingBehavior);
+			params.set(ProfilingProgressUpdateHandler.class, progressUpdater);
+			params.set(File.class, file);
 			params.setHandler(new AnalyticsProgressTrackingContentHandler());
 			params.setMetadata(metadata);
 			params.setStream(fis);
 			if(sample.getDsExtractedContentDir() != null) {
 				params.setExtractedContentDir(sample.getDsExtractedContentDir());
 			}
-			params.set(AnalyzerProgressUpdater.class, schemaProgress);
-			params.setProgress(new ProgressBar(sample.getDsFileName(), i, userModifiedSampleList.size(), ProgressState.schemaProgress));
-			params.getProgress().setCurrentState(ProgressState.schemaProgress);
-			SchemaWizardWebSocketUtility.getInstance().updateProgress(params.getProgress(), params.getSessionId());
+
+			SchemaWizardSessionUtility.getInstance().updateProgress(params.getProgressBar(), params.getSessionId());
+
+			//params.setProgress(new ProgressBar(sample.getDsFileName(), i, userModifiedSampleList.size(), ProgressState.schemaProgress));
+			//params.getProgress().setCurrentState(ProgressState.schemaProgress);
+
 			params.set(Profiler.class, schemaProfiler);
 
+			try {
+				SchemaWizardSessionUtility.getInstance().waitForAvailableResources(params.getSessionId(), params.get(File.class));
+			} catch (FileUploadException e) {
+				throw new AnalyticsTikaProfilingException(e);
+			}
+
 			parser.runSchemaAnalysis(params);
-
-			params.getProgress().setCurrentState(ProgressState.complete);
-			SchemaWizardWebSocketUtility.getInstance().updateProgress(params.getProgress(), params.getSessionId());
-
+			
+			params.getProgressBar().goToNextStateIfCurrentIs(STAGE.SCHEMA_PASS);
 			logger.info("Schema analysis successfully completed for " + sample.getDsFileName() + ".");
-			i++;
 		}
+
+		params.getProgressBar().goToNextStateIfCurrentIs(ProgressState.STAGE.SCHEMA_PASS);
+		SchemaWizardSessionUtility.getInstance().updateProgress(params.getProgressBar(), params.getSessionId());
 		return params;
 	}
 
 	@Override
-	public String analyzeSample(String sampleFilePath, String domainName, String tolerance,
-			String sessionId, int sampleNumber, int totalNumberSamples) 
-					throws IOException, AnalyzerException, DataAccessException {
-		TikaSampleAnalyzerParameters params = generateSampleParameters(sampleFilePath, domainName, 
-				tolerance, sessionId, sampleNumber, totalNumberSamples);
+	public String analyzeSample(String uploadFileDir, String sampleFilePath, String domainName, String tolerance,
+			String sessionId, int sampleNumber, int totalNumberSamples, ProgressBarManager progressBar) 
+					throws AnalyticsCancelledWorkflowException {
 		try {
-			DataSample sampleBean = runSampleAnalysis(params).getProfilerBean();
-			if(sampleNumber == totalNumberSamples - 1) {
-				ProgressBar matchingProgressBar = new ProgressBar("Sample Upload Completed", 0, 1, ProgressState.matching);
-				SchemaWizardWebSocketUtility.getInstance().updateProgress(matchingProgressBar, sessionId);
+ 			TikaSampleAnalyzerParameters params = generateSampleParameters(uploadFileDir, sampleFilePath, domainName, 
+					tolerance, sessionId, sampleNumber, totalNumberSamples, progressBar);
+			try {
+				return runSampleAnalysis(params).getProfilerBean().getDsGuid();
+			} catch (AnalyticsCancelledWorkflowException e) {
+				throw e;
+			} catch (DataAccessException e) {
+				logger.error("Data Access Exception processing sample " +sampleFilePath +".",e);
+				return H2Database.DATA_ERROR_GUID;
+			} catch (AnalyticsUndetectableTypeException e) {
+				logger.error("Sample "+sampleFilePath+" was determined to be undetectable.",e);
+				return H2Database.UNDETECTABLE_SAMPLE_GUID;
+			} catch (AnalyticsUnsupportedParserException e) {
+				logger.error("Sample " +sampleFilePath+ " was determined to not have a supported parser.", e);
+				return H2Database.UNSUPPORTED_PARSER_GUID;
+			} catch (ProcessingException e) {
+				throw new ProcessingException(e.getMessage());
+			} catch (Exception e) {
+				if(SchemaWizardSessionUtility.getInstance().isCancelled(sessionId)) {
+					logger.info("An "+e.getClass()+" exception was caught after workflow was cancelled.");
+					logger.debug("Exception caught from cancelled workflow", e);
+				} else {
+					logger.error("Unexpected exception while processing " + sampleFilePath +".", e);
+				}
+				return H2Database.UNDETERMINED_ERROR_GUID;
+			} finally {
+				params.getStream().close();
 			}
-			
-			return sampleBean.getDsGuid();
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("IOException processing sample " + sampleFilePath + ".", e);
 			return H2Database.IO_ERROR_GUID;
-		} catch (DataAccessException e) {
-			logger.error(e);
-			return H2Database.DATA_ERROR_GUID;
-		} catch (AnalyticsUndetectableTypeException e) {
-			logger.error(e);
-			return H2Database.UNDETECTABLE_SAMPLE_GUID;
-		} catch (AnalyticsUnsupportedParserException e) {
-			logger.error(e);
-			return H2Database.UNSUPPORTED_PARSER_GUID;
+		}
+	}
+
+	@Override
+	public JSONObject analyzeSchema(String uploadFileDir, JSONObject schemaAnalysisData, String domainName, String sessionId)
+			throws AnalyticsCancelledWorkflowException {
+		try {
+			TikaSchemaAnalyzerParameters params = generateSchemaParameters(uploadFileDir, schemaAnalysisData, domainName, sessionId);
+			try {
+				Schema schemaBean = runSchemaAnalysis(params).getProfilerBean();
+				String currentVersion = schemaBean.getsVersion();
+				if (currentVersion != null) {
+					double newVersion = Double.parseDouble(currentVersion);
+					newVersion += 0.01;
+					String newStringVersion = new DecimalFormat("#0.00").format(newVersion);
+					schemaBean.setsVersion(newStringVersion);
+				} else {
+					schemaBean.setsVersion("1.00");
+				}
+				return new JSONObject(SerializationUtility.serialize(schemaBean));
+			} catch (AnalyticsCancelledWorkflowException e) {
+				logger.error("Schema workflow cancelled - session " + sessionId +".");
+				throw e;
+			} finally {
+				params.getStream().close();
+			}
+		} catch(IOException e) {
+			logger.error("IOException during schema pass.", e);
+			return new JSONObject();
+		} catch(AnalyticsCancelledWorkflowException e) {
+			logger.error("Workflow cancelled during schema analysis.", e);
+			throw e;
 		} catch (Exception e) {
-			logger.error(e);
-			return H2Database.UNDETERMINED_ERROR_GUID;
+			if(SchemaWizardSessionUtility.getInstance().isCancelled(sessionId)) {
+				logger.info("An "+e.getClass()+" exception was caught after workflow was cancelled.");
+				logger.debug("Exception caught from cancelled workflow", e);
+			} else {
+				logger.error("Unexpected exception while processing schema.", e);
+			}
+			return new JSONObject();
 		}
-	}
-
-	@Override
-	public JSONObject analyzeSchema(String existingSchemaGuid, String domainName, JSONArray edittedSourceAnalysis, String sessionId) 
-			throws IOException, AnalyzerException, DataAccessException {
-		TikaSchemaAnalyzerParameters params = 
-				generateSchemaParameters(existingSchemaGuid, domainName, edittedSourceAnalysis, sessionId);
-		Schema schemaBean = runSchemaAnalysis(params).getProfilerBean();
-		String currentVersion = schemaBean.getsVersion();
-		if (currentVersion != null) {
-			double newVersion = Double.parseDouble(currentVersion);
-			newVersion += 0.01;
-			String newStringVersion = new DecimalFormat("#0.00").format(newVersion);
-			schemaBean.setsVersion(newStringVersion);
-		} else {
-			schemaBean.setsVersion("1.00");
-		}
-		return new JSONObject(SerializationUtility.serialize(schemaBean));
-	}
-	
-	@Override
-	public JSONObject analyzeSchema(JSONObject schemaAnalysisData, String domainName, String sessionId)
-			throws IOException, AnalyzerException, DataAccessException {
-		TikaSchemaAnalyzerParameters params = 
-				generateSchemaParameters(schemaAnalysisData, domainName, sessionId);
-		Schema schemaBean = runSchemaAnalysis(params).getProfilerBean();
-		String currentVersion = schemaBean.getsVersion();
-		if (currentVersion != null) {
-			double newVersion = Double.parseDouble(currentVersion);
-			newVersion += 0.01;
-			String newStringVersion = new DecimalFormat("#0.00").format(newVersion);
-			schemaBean.setsVersion(newStringVersion);
-		} else {
-			schemaBean.setsVersion("1.00");
-		}
-		return new JSONObject(SerializationUtility.serialize(schemaBean));
-	}
-
-	public static void setUploadFileDir(String uploadFileDir) {
-		TikaAnalyzer.uploadFileDir = uploadFileDir;
-	}
-
-	public static String getUploadFileDir() {
-		return TikaAnalyzer.uploadFileDir;
 	}
 
 	public static void main(String[] args)

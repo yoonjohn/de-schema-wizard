@@ -1,0 +1,93 @@
+<div ng-controller="treeTableController" style="width: 100%; margin: 2px 6px;">
+    <div id="sampleMask" class="full-size"
+         style="color: white; background-color: black; opacity: 0.8;
+                font-family: 'Cambria', Cambria, sans-serif; font-size: 24px;
+				z-index: 999; text-align: center; display: none;">
+        <p style="position: absolute; left: 200px; top:200px; right: 200px;">
+            If the data sample contains structured fields then it may take up to 30 seconds to load.
+        </p>
+        <p style="position: absolute; left: 200px; top:300px; right: 200px;">
+            If the browser warns about a 'busy' script then respond to allow more time.
+        </p>
+    </div>
+    <div id="sampleDetailsContainer"
+         class="panel-primary container"
+         style="width:99%; padding:6px; min-width: 1660px; white-space: nowrap; overflow-x: hidden; overflow-y: hidden">
+        <div class="row" style="margin-bottom: 6px; padding-bottom: 0px;">
+            <div class="col-xs-8 panel-group"
+                 style="margin-bottom: 0px; min-width: 1120px; white-space: nowrap; overflow-x: auto;">
+                <div class="panel panel-info" style="white-space: nowrap; overflow-x: auto;">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            Data Sample Details - {{currentSample.dsName}} ({{currentSample.dsFileType}})
+                            <img style="float: right; margin-top:-2px;"
+                                src="assets/img/blue-tour-bus-22x22.png"
+                                uib-tooltip="Take a tour of the Data Samples Page"
+                                tooltip-placement="bottom"
+                                ng-click="tour.startAt('900')"
+                                tour-step-template-url="'schema-wizard/schema-wizard.tour-first-step.template.html'"
+                                tour-step="900"
+                                tour-step-title="Welcome to this data sample in the catalog"
+                                tour-step-order="900"
+                                tour-step-content="From here you are able to view a data sample that has been previously uploaded and view any statistics or graphs that correlate to the field in the sample"
+                                tour-step-prevStep="900"
+                                tour-step-orphan="true"
+                                tour-step-backdrop="false">
+
+                        </h3>
+                    </div>
+                    <div id="sampleDetailsPanelBody" class="panel-body"
+                         style="height: 530px; width: 100%; white-space: nowrap; overflow-x: auto; overflow-y: hidden; border: thin solid gray;">
+                        <div ng-repeat="col in columns track by $index"
+                             class="tree-table-grid"
+                             style="float: left; height: 500px; border-bottom: thin solid gray;">
+                            <div class="tree-table-heading">
+                                <div class="tree-table-cell">
+                                    <p>{{col.name}}</p>
+                                </div>
+                            </div>
+                            <div id="{{getColumnId($index, $last)}}"
+                                 style="{{getColumnStyle($last)}}">
+                                <div class="tree-table-row">
+                                    <div class="tree-table-cell" style="border-bottom: 2px solid lightgrey;">
+                                        <div style="display: inline-block;"
+                                             ng-style="($middle || $last) && { 'display': 'inline-block', 'text-align': 'center' }"
+                                             data-angular-tree-table="true"
+                                             data-tree-table-id="treeTable"
+                                             data-tree-table-grid=treeTable.data
+                                             data-link-data=currentSample
+                                             data-node-id="id"
+                                             data-node-label1="{{col.property1}}"
+                                             data-node-label2="{{col.property2}}"
+                                             data-node-children="children"
+                                             data-tree-depth="0"
+                                             data-column-is-tree="{{$first}}"
+                                             data-cell-min-width="{{col.name.length * columnSizingFactor}}"
+                                             data-tree-cell-directive="{{col.tree.directive}}"
+                                             data-other-tree-data="{{col.tree.data}}"
+                                             data-tree-cell-method1="{{col.tree.method1}}"
+                                             data-tree-cell-method2="{{col.tree.method2}}"
+                                             data-table-cell-directive="{{col.table.directive}}"
+                                             data-other-table-data={{col.table.data}}
+                                             data-table-cell-method1="{{col.table.method1}}"
+                                             data-table-cell-method2="{{col.table.method2}}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-4 panel-group" style="margin-left: -6px; margin-bottom: 0px; padding-left: 0px;">
+                <div details-panel panel-index="" detail-models-panel="detailPanel"></div>
+            </div>
+        </div>
+        <ng-include src="'schema-wizard/schema-wizard.legend.html'"></ng-include>
+        <button class="btn btn-primary" style="float: right;  margin-left: 7px; margin-top: -24px;"
+                uib-tooltip="Return to catalog" tooltip-placement="left"
+                ng-click="rtnMethod(rtnParm)">
+            Ok
+        </button>
+    </div>
+</div>

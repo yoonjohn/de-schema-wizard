@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -26,9 +26,7 @@ import com.deleidos.dp.interpretation.InterpretationEngine;
 import com.deleidos.dp.interpretation.InterpretationEngineFacade;
 
 /**
- * Service layer for the Schema Wizard. All calls from the Schema Wizard are
- * router through this class which makes calls to the database using Data Access
- * Objects.
+ * Service layer for Schema Wizard.
  * 
  * @author yoonj1
  *
@@ -68,6 +66,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 		} catch (JSONException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
+		}  catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
@@ -88,6 +89,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 		try {
 			JSONObject jObject = interpretationEngine.getInterpretationListByDomainGuid(domainGuid);
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
@@ -108,6 +112,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 		try {
 			JSONObject jObject = interpretationEngine.createDomain(domainJson);
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
@@ -128,6 +135,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 		try {
 			JSONObject jObject = interpretationEngine.createInterpretation(interpretationJson);
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		}  catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
@@ -148,7 +158,10 @@ public class ServiceLayerAccessor implements ServiceLayer {
 		try {
 			JSONObject jObject = interpretationEngine.updateDomain(domainJson);
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
-		} catch (DataAccessException e) {
+		}  catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
+		}  catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
 		} catch (Exception e) {
@@ -168,6 +181,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 		try {
 			JSONObject jObject = interpretationEngine.updateInterpretation(interpretationJson);
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
@@ -188,6 +204,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 		try {
 			JSONObject jObject = interpretationEngine.deleteDomain(domainJson);
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
@@ -208,6 +227,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 		try {
 			JSONObject jObject = interpretationEngine.deleteInterpretation(interpretationJson);
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);
@@ -230,6 +252,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 			JSONObject iIdJson = new JSONObject();
 			JSONObject jObject = interpretationEngine.validatePythonScript(iIdJson.put("iId", iId));
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			JSONObject json = new JSONObject();
@@ -259,6 +284,9 @@ public class ServiceLayerAccessor implements ServiceLayer {
 			JSONObject iIdJson = new JSONObject();
 			JSONObject jObject = interpretationEngine.testPythonScript(iIdJson.put("iId", iId));
 			return generatedResponse(Status.ACCEPTED, jObject.toString());
+		} catch (ProcessingException e) {
+			logger.error(e.toString());
+			return generatedEmptyJsonErrorResponse(Status.GATEWAY_TIMEOUT);
 		} catch (DataAccessException e) {
 			logger.error(e.toString());
 			return generatedEmptyJsonErrorResponse(Status.SERVICE_UNAVAILABLE);

@@ -50,6 +50,16 @@ public class ModifyExistingSchemaWorkflow {
 
 		@Override
 		public JSONObject performMockSchemaInlineEdittingStep(JSONObject schemaAnalysis) {
+			schemaAnalysis.put("sName", getClass().getName());
+			JSONObject profile = schemaAnalysis.getJSONObject("sProfile");
+			JSONObject newProfileEntry = new JSONObject();
+			newProfileEntry.put("main-type", "number");
+			newProfileEntry.put("presence", -1.0);
+			JSONObject detail = new JSONObject();
+			detail.put("detail-type", "integer");
+			newProfileEntry.put("detail", detail);
+			profile.put("new-field", newProfileEntry);
+			schemaAnalysis.put("sProfile", profile);
 			return schemaAnalysis;
 		}
 
@@ -57,8 +67,8 @@ public class ModifyExistingSchemaWorkflow {
 	
 	public static class OneSimpleCSVFileWorkflow extends AbstractAnalyzerTestWorkflow {
 		
-		public OneSimpleCSVFileWorkflow(String existingSchemaGuid) {
-			this.setExistingSchemaGuid(existingSchemaGuid);
+		public OneSimpleCSVFileWorkflow(Schema existingSchema) {
+			this.setExistingSchema(existingSchema);
 		}
 
 		@Override
@@ -78,6 +88,49 @@ public class ModifyExistingSchemaWorkflow {
 			Iterator<String> it = existingSchema.getsProfile().keySet().iterator();
 			while(it.hasNext()) {
 				key = it.next();
+				if(existingSchema.getsProfile().get(key).getPresence() < 0) {
+					continue;
+				}
+				simulateMerge(sampleObject, key, key);
+			}
+			retrieveSourceAnalysisResult.put(0, sampleObject);
+			return retrieveSourceAnalysisResult;
+		}
+
+		@Override
+		public JSONObject performMockSchemaInlineEdittingStep(JSONObject schemaAnalysis) {
+			return schemaAnalysis;
+		}
+		
+	}
+	
+public static class OneSimpleCSVFileWithFieldDeleteWorkflow extends AbstractAnalyzerTestWorkflow {
+		
+		public OneSimpleCSVFileWithFieldDeleteWorkflow(Schema existingSchema, String deleteKey) {
+			existingSchema.getsProfile().remove(deleteKey);
+			this.setExistingSchema(existingSchema);
+		}
+
+		@Override
+		public void addNecessaryTestFiles() {
+			addResourceTestFile("/sample4.csv");
+		}
+
+		@Override
+		public String[] performMockVerificationStep(String[] generatedSampleGuids) {
+			return generatedSampleGuids;
+		}
+
+		@Override
+		public JSONArray performMockMergeSamplesStep(Schema existingSchema, JSONArray retrieveSourceAnalysisResult) {
+			JSONObject sampleObject = retrieveSourceAnalysisResult.getJSONObject(0);
+			String key;
+			Iterator<String> it = existingSchema.getsProfile().keySet().iterator();
+			while(it.hasNext()) {
+				key = it.next();
+				if(existingSchema.getsProfile().get(key).getPresence() < 0) {
+					continue;
+				}
 				simulateMerge(sampleObject, key, key);
 			}
 			retrieveSourceAnalysisResult.put(0, sampleObject);

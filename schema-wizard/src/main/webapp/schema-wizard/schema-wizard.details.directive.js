@@ -4,8 +4,7 @@
 
     schemaWizardApp.directive('detailsPanel', function () {
         var linker = function (scope, element, attrs) {
-                        scope.$watch('detailModelsPanel', function() {
-                        })
+                        scope.$watch('detailModelsPanel', function() {})
         };
         return {
             restrict: "A",

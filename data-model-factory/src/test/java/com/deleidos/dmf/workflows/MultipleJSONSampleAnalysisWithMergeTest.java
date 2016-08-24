@@ -1,4 +1,4 @@
-package com.deleidos.dmf.analyzer;
+package com.deleidos.dmf.workflows;
 
 import static org.junit.Assert.assertTrue;
 
@@ -17,6 +17,7 @@ import com.deleidos.dmf.exception.AnalyzerException;
 import com.deleidos.dmf.framework.DMFMockUpEnvironmentTest;
 import com.deleidos.dmf.workflows.TwoJsonSamplesMergedCoordinatesWorkflow;
 import com.deleidos.dp.beans.RegionData;
+import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.deleidos.dp.deserializors.SerializationUtility;
 import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.interpretation.builtin.BuiltinLatitudeInterpretation;
@@ -114,18 +115,43 @@ public class MultipleJSONSampleAnalysisWithMergeTest extends DMFMockUpEnvironmen
 			logger.info("Alias Name objects present in schema.");
 		}
 	}
+	
+	@Test
+	public void verifyCorrectMergedMinAndMax() {
+		double min = aat.getSchemaAnalysis().getJSONObject("sProfile").getJSONObject("waypoints"+DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER+"lat").getJSONObject("detail").getDouble("min");
+		double max = aat.getSchemaAnalysis().getJSONObject("sProfile").getJSONObject("waypoints"+DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER+"lat").getJSONObject("detail").getDouble("max");
+		assertTrue(Math.abs(min - -58.51385) < .1);
+		assertTrue(Math.abs(max - 87.78863) < .1);
+	}
+	
+	@Test
+	public void verifyCorrectNumDistinctValues() {
+		String numDistinctString = aat.getSchemaAnalysis().getJSONObject("sProfile").getJSONObject("waypoints"+DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER+"lat").getJSONObject("detail").getString("num-distinct-values");
+		Integer num = MetricsCalculationsFacade.stripNumDistinctValuesChars(numDistinctString);
+		assertTrue(num == 4552);
+	}
 
 	@Test
 	public void verifySumOfWalkingCountsIsCorrect() {
 		long count1 = aat.getSingleSourceAnalysis().get(0).getJSONObject("dsProfile").getJSONObject("waypoints"+DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER+"lat").getJSONObject("detail").getLong("walkingCount");
 		long count2 = aat.getSingleSourceAnalysis().get(1).getJSONObject("dsProfile").getJSONObject("lat").getJSONObject("detail").getLong("walkingCount");
 		long combinedCount = aat.getSchemaAnalysis().getJSONObject("sProfile").getJSONObject("waypoints"+DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER+"lat").getJSONObject("detail").getLong("walkingCount");
-		assertTrue(count1 > 0 && count2 > 0 && Math.abs((count1 + count2) - combinedCount) < 100);
+		try {
+			assertTrue(count1 > 0 && count2 > 0 && Math.abs((count1 + count2) - combinedCount) < 100);
+		} catch (AssertionError e) {
+			logger.error(count1 + " + " + count2 + " - " + combinedCount + " >= 100");
+			throw e;
+		}
 		logger.info("\"lat\" and \"waypoints.lat\" successfully merged.");
 		count1 = aat.getSingleSourceAnalysis().get(0).getJSONObject("dsProfile").getJSONObject("waypoints"+DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER+"lon").getJSONObject("detail").getLong("walkingCount");
 		count2 = aat.getSingleSourceAnalysis().get(1).getJSONObject("dsProfile").getJSONObject("lon").getJSONObject("detail").getLong("walkingCount");
 		combinedCount = aat.getSchemaAnalysis().getJSONObject("sProfile").getJSONObject("waypoints"+DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER+"lon").getJSONObject("detail").getLong("walkingCount");
-		assertTrue(count1 > 0 && count2 > 0 && Math.abs((count1 + count2) - combinedCount) < 100);
+		try {
+			assertTrue(count1 > 0 && count2 > 0 && Math.abs((count1 + count2) - combinedCount) < 100);		
+		} catch (AssertionError e) {
+			logger.error(count1 + " + " + count2 + " - " + combinedCount + " >= 100");
+			throw e;
+		}
 		logger.info("\"lon\" and \"waypoints.lon\" successfully merged.");
 	}
 

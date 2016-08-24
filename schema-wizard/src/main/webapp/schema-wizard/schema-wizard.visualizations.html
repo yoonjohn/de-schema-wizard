@@ -3,22 +3,31 @@
     <div class="viz-select"
          style="margin-left: 6px; line-height: 10px;">
         <form name="panel1VizSelect">
-            <label for="hbcBtn" style="margin-right: 1px;">Horizontal Bar Chart</label>
+            <label for="hbcBtn" ng-disabled="profile['detail']['detail-type'] == 'text'"  style="margin-right: 1px;">Horizontal Bar Chart</label>
             <input id="hbcBtn" type="radio" style="margin-right: 10px;" value="hbc"
                    ng-model="currentSample.viz"
+                   ng-disabled="profile['detail']['detail-type'] == 'text'"
                    onclick="this.blur();">
-            <label for="vbcBtn" style="margin-right: 1px;">Vertical Bar Chart</label>
+            <label for="vbcBtn" ng-disabled="profile['detail']['detail-type'] == 'text'" style="margin-right: 1px;">Vertical Bar Chart</label>
             <input id="vbcBtn" type="radio" style="margin-right: 10px;" value="vbc"
                    ng-model="currentSample.viz"
+                   ng-disabled="profile['detail']['detail-type'] == 'text'"
                    onclick="this.blur();">
-            <label for="gphBtn" style="margin-right: 1px;">Graph</label>
+            <label for="gphBtn" ng-disabled="profile['detail']['detail-type'] == 'text'" style="margin-right: 1px;">Line Chart</label>
             <input id="gphBtn" type="radio" style="margin-right: 10px;" value="gph"
                    ng-model="currentSample.viz"
+                   ng-disabled="profile['detail']['detail-type'] == 'text'"
                    onclick="this.blur();">
             <label ng-show="profile['detail']['freq-histogram']['region-data']"
                    for="mapBtn" style="margin-right: 1px;">Map</label>
             <input id="mapBtn" type="radio" style="margin-right: 20px;" value="map"
                    ng-show="profile['detail']['freq-histogram']['region-data']"
+                   ng-model="currentSample.viz"
+                   onclick="this.blur();">
+            <label for="example" style="margin-right: 1px;">Example Data</label>
+            <input id="example" type="radio" style="margin-right: 20px;" value="example"
+                   ng-click="profile['detail']['detail-type'] == 'text'"
+                   ng-checked="profile['detail']['detail-type'] == 'text'"
                    ng-model="currentSample.viz"
                    onclick="this.blur();">
             <label ng-show="currentSample.viz == 'hbc'">
@@ -29,18 +38,20 @@
                 Frequency vs. Values
             </label>
         </form>
+        <div style="background-color: floralwhite; min-width: 700px; padding: 5px; margin-left: -8px">{{placeHolderForLongFieldName}}</div>
     </div>
     <div class="col-xs-12 well"
          style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
                 max-height: 480px; overflow-y: auto;"
+         ng-mouseover="logFieldNameFromRepeat(field)"
          ng-show="currentSample.viz == 'hbc'">
-        <canvas id="panel1base" class="chart-base" height="400px"
-                chart-type="'horizontalbar'"
+        <canvas canvas id="base" class="chart-horizontal-bar" height="400px"
                 chart-labels="profile['detail']['freq-histogram'].labels"
                 chart-data="[profile['detail']['freq-histogram'].data]"
-                chart-legend="false"
                 chart-colours="['#008080']"
+                chart-hover="hoverLongFieldName"
                 chart-legend="false"/>
+        <!--Hover for long field names-->
     </div>
     <div class="col-xs-12 well"
          style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
@@ -51,17 +62,19 @@
                 chart-labels="profile['detail']['freq-histogram'].labels"
                 chart-data="[profile['detail']['freq-histogram'].data]"
                 chart-colours="['#008080']"
+                chart-hover="hoverLongFieldName"
                 chart-legend="false"/>
     </div>
     <div class="col-xs-12 well"
          style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
                 max-height: 480px; overflow-y: auto;"
          ng-show="currentSample.viz == 'gph'">
-        <canvas id="panel1line" class="chart-line"  height="229px"
+        <canvas id="panel1line" class="chart-line" height="229px"
                 chart-series="[profile['detail']['freq-histogram'].series]"
                 chart-labels="profile['detail']['freq-histogram'].labels"
                 chart-data="[profile['detail']['freq-histogram'].data]"
                 chart-colours="['#008080']"
+                chart-hover="hoverLongFieldName"
                 chart-legend="false"/>
     </div>
     <div class="col-xs-12 well"
@@ -73,6 +86,18 @@
              ng-show="currentSample.viz == 'map'"
              google-chart
              chart="createMap(700, 450, ['#00FF00'], profile['detail']['freq-histogram']['region-data'])"/>
-        </div>
+    </div>
+    <div class="col-xs-12 well"
+         style="margin-bottom: 6px; padding: 3px; padding-left: 0px;
+                max-height: 480px; overflow-y: auto;"
+         ng-show="currentSample.viz == 'example'"
+         ng-click="profile['detail']['detail-type'] == 'text'">
+        <ul>
+            <li ng-repeat="examples in profile.exampleValues"
+                style="background-color: floralwhite; resize: none; white-space: normal; margin-top: 0px; border: none;">
+                {{examples}}
+            </li>
+        </ul>
     </div>
 </div>
+

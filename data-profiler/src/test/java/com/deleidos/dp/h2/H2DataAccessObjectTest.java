@@ -4,15 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,7 +25,6 @@ import com.deleidos.dp.beans.SchemaMetaData;
 import com.deleidos.dp.deserializors.SerializationUtility;
 import com.deleidos.dp.environ.DPMockUpEnvironmentTest;
 import com.deleidos.dp.exceptions.DataAccessException;
-import com.deleidos.hd.h2.H2TestDatabase;
 
 /**
  * Tests the various functionalities of the H2 Data Access Object. These same

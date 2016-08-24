@@ -2,7 +2,6 @@ package com.deleidos.dp.beans;
 
 import java.math.BigDecimal;
 
-import com.deleidos.dp.histogram.NumberBucketList;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**

@@ -5,6 +5,7 @@ import java.math.MathContext;
 import java.nio.ByteBuffer;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,8 @@ import com.deleidos.dp.enums.MainType;
 import com.deleidos.dp.enums.Tolerance;
 import com.deleidos.dp.exceptions.MainTypeException;
 import com.deleidos.dp.profiler.DefaultProfilerRecord;
-import com.deleidos.dp.profiler.SampleProfiler;
+import com.deleidos.dp.profiler.DisplayNameHelper;
+import com.deleidos.dp.profiler.api.ProfilingProgressUpdateHandler;
 
 /**
  * Utility class to drive most of the "thinking" that needs to be done for metrics
@@ -40,11 +42,11 @@ public class MetricsCalculationsFacade {
 	public static final MathContext SIMILARITY_CONTEXT = MathContext.DECIMAL32;
 	private static final Logger logger = Logger.getLogger(MetricsCalculationsFacade.class);
 
-	public static DetailType getDetailTypeFromDistribution(String mainType, int[] distribution) {
+	public static DetailType getDetailTypeFromDistribution(String mainType, int[] distribution) throws MainTypeException {
 		return getDetailTypeFromDistribution(MainType.fromString(mainType), distribution);
 	}
 
-	public static DetailType getDetailTypeFromDistribution(MainType mainType, int[] distribution) {
+	public static DetailType getDetailTypeFromDistribution(MainType mainType, int[] distribution) throws MainTypeException {
 		int m = -1;
 		for(int i = 0; i < distribution.length; i++) {
 			if(m > -1) {
@@ -63,7 +65,8 @@ public class MetricsCalculationsFacade {
 			}
 			return DetailType.getTypeByIndex(m);
 		} else {
-			return null;
+			throw new MainTypeException(
+					"Distribution could not be used to determine detail type for " + mainType.toString() + ".");
 		}
 	}
 
@@ -109,7 +112,7 @@ public class MetricsCalculationsFacade {
 		}
 		return type;
 	}
-	
+
 	public static Number createNumberWithDoublePrecisionOrLower(Object value) throws MainTypeException {
 		String stringValue = value.toString();
 		if(NumberUtils.isNumber(stringValue)) {
@@ -122,7 +125,7 @@ public class MetricsCalculationsFacade {
 				} else {
 					return d;
 				}
-				
+
 			} catch (NumberFormatException e) {
 				throw new MainTypeException("Value " + stringValue + " is too precise for metrics accumulation.");
 			}
@@ -130,8 +133,8 @@ public class MetricsCalculationsFacade {
 			throw new MainTypeException("Value "+stringValue+" is non-numeric.");
 		}
 	}
-	
-	
+
+
 
 	public static boolean isPossiblyNumeric(String stringValue) throws NumberFormatException {
 		if(stringValue.isEmpty()) {
@@ -164,6 +167,10 @@ public class MetricsCalculationsFacade {
 		return false;
 	}
 
+	public static List<MainType> determineProbableDataTypes(Object value) {
+		return determineProbableDataTypes(value, .3f);
+	}
+
 	/**
 	 * Determine the data types that a value <i>probably</i> is.
 	 * @param value The object being evaluated.
@@ -171,6 +178,9 @@ public class MetricsCalculationsFacade {
 	 * @return a list of possible types, either binary or number and string.
 	 */
 	public static List<MainType> determineProbableDataTypes(Object value, float binaryPercentageCutoff) {
+		if(value == null) {
+			return Arrays.asList(MainType.NULL);
+		}
 		ArrayList<MainType> typeList = new ArrayList<MainType>();
 		String stringValue = value.toString();
 		if(value instanceof ByteBuffer) {
@@ -186,15 +196,18 @@ public class MetricsCalculationsFacade {
 			if(isPossiblyNumeric(stringValue)) {
 				typeList.add(MainType.NUMBER);
 			}
+		} else if(value instanceof List) {
+			typeList.add(MainType.ARRAY);
+			return typeList;
+		} else if(value instanceof Map) {
+			typeList.add(MainType.OBJECT);
+			return typeList;
 		}
-
 		typeList.add(MainType.STRING);
-
-
 		return typeList;
 	}
 
-	public static MainType determineDataType(Object value) {
+	/*public static MainType determineDataType(Object value) {
 		MainType type = MainType.STRING;
 		if(value.toString().isEmpty()) return MainType.STRING;
 		if(value instanceof Number) {
@@ -216,7 +229,7 @@ public class MetricsCalculationsFacade {
 			return MainType.ARRAY;
 		}
 		return type;
-	}
+	}*/
 
 	public static DetailType determineStringDetailType(Object object) {
 		String stringValue = object.toString();
@@ -226,8 +239,15 @@ public class MetricsCalculationsFacade {
 		if(dateMatcher.matches()) {
 			return DetailType.DATE_TIME;
 		} 
-		if(stringValue.contains(" ")) {
-			return DetailType.PHRASE;
+		if(stringValue.equals(DefaultProfilerRecord.EMPTY_FIELD_VALUE_INDICATOR)) {
+			return DetailType.TERM;
+		} else if(stringValue.contains(" ")) {
+			// TODO Adjust if necessary
+			if (stringValue.split(" ").length > 5) {
+				return DetailType.TEXT;
+			} else {
+				return DetailType.PHRASE;
+			}
 		} else {
 			String booleanRegex = "(TRUE|FALSE|true|false|T|F|t|f|yes|no|YES|NO|Yes|No|True|False)";
 			Pattern bPattern = Pattern.compile(booleanRegex);
@@ -235,7 +255,6 @@ public class MetricsCalculationsFacade {
 			if(bMatcher.matches()) return DetailType.BOOLEAN;
 			return DetailType.TERM;
 		}
-
 	}
 
 	public static DetailType determineNumberDetailType(Object object) {
@@ -426,7 +445,7 @@ public class MetricsCalculationsFacade {
 				return 0;
 			}
 			}
-			
+
 			BigDecimal normalizedMax = v1.get(MIN);
 			BigDecimal normalizedMin = v1.get(MIN);
 
@@ -434,12 +453,12 @@ public class MetricsCalculationsFacade {
 				normalizedMax = value.compareTo(normalizedMax) > 0 ? value : normalizedMax;
 				normalizedMin = value.compareTo(normalizedMin) < 0 ? value : normalizedMin;
 			}
-			
+
 			for(BigDecimal value : v2) {
 				normalizedMax = value.compareTo(normalizedMax) > 0 ? value : normalizedMax;
 				normalizedMin = value.compareTo(normalizedMin) < 0 ? value : normalizedMin;
 			}
-			
+
 			normalizedMax = normalizedMax.divide(BigDecimal.valueOf(disimilarityRate), SIMILARITY_CONTEXT);
 			normalizedMin = normalizedMin.divide(BigDecimal.valueOf(disimilarityRate), SIMILARITY_CONTEXT);
 
@@ -473,77 +492,53 @@ public class MetricsCalculationsFacade {
 		}
 
 	}
-	
+
 	public static Integer stripNumDistinctValuesChars(String numDistinctValues) {
-		if(numDistinctValues.startsWith(">=")) {
-			return Integer.valueOf(numDistinctValues.substring(2));
-		} else {
-			return Integer.valueOf(numDistinctValues);
+		try {
+			if(numDistinctValues.startsWith(">=")) {
+				return Double.valueOf(numDistinctValues.substring(2)).intValue();
+			} else {
+				return Double.valueOf(numDistinctValues).intValue();
+			}
+		} catch (NumberFormatException e) {
+			logger.error(e);
+			logger.error("Could not get number of distinct values.");
+			return 0;
 		}
 	}
-	
-	public static List<DataSample> matchFieldsAcrossSamplesAndSchema(Schema schema, List<DataSample> samples) {
-		return matchFieldsAcrossSamplesAndSchema(schema, samples, new HashSet<String>());
+
+	public static List<DataSample> matchFieldsAcrossSamplesAndSchema(Schema schema, List<DataSample> samples, 
+			ProfilingProgressUpdateHandler progressCallback) {
+		return matchFieldsAcrossSamplesAndSchema(schema, samples, new HashSet<String>(), progressCallback);
 	}
 
-	public static List<DataSample> matchFieldsAcrossSamplesAndSchema(Schema schema, List<DataSample> samples, Set<String> ignoreGuids) {
-		//samples.removeIf(x->ignoreGuids.contains(x.getDsGuid()));
-
+	public static List<DataSample> matchFieldsAcrossSamplesAndSchema(Schema schema, List<DataSample> samples, 
+			Set<String> ignoreGuids, ProfilingProgressUpdateHandler progressCallback) {
+		if(progressCallback == null) {
+			progressCallback = new ProfilingProgressUpdateHandler() {
+				@Override
+				public void handleProgressUpdate(long progress) {
+					return;
+				}
+			};
+		}
+		int progress = 0;
 		List<String> usedFieldNames = new ArrayList<String>();
+
 		if(schema != null) {
 			for(String schemaKey : schema.getsProfile().keySet()) {
 				usedFieldNames.add(schemaKey);
 				for(DataSample otherSample : samples) {
-					if(ignoreGuids.contains(otherSample.getDsGuid())) {
-						continue;
-					}
-					for(String otherKey : otherSample.getDsProfile().keySet()) {
-						String p1Name = schemaKey;
-						Profile p1 = schema.getsProfile().get(p1Name);
-						String p2Name = otherKey;
-						Profile p2 = otherSample.getDsProfile().get(otherKey);
-
-						double similarity = match(p1Name, p1, p2Name, p2);
-						if(similarity > .8) {
-							logger.debug("Match detected between " + p1Name + " in " + otherSample.getDsFileName() + " and " + p2Name + " in schema " + schema.getsName() + " with " + similarity + " confidence.");
-							MatchingField altName = new MatchingField();
-							List<MatchingField> altNames = p2.getMatchingFields();
-							altName.setMatchingField(p1Name);
-							altName.setConfidence((int)(similarity*100));
-							altNames.add(altName);
-							altNames.sort((MatchingField a1, MatchingField a2)->a2.getConfidence()-a1.getConfidence());
-							p2.setMatchingFields(altNames);
-						}
-					}
-				}
-			}
-		}
-
-		for(DataSample sample : samples) {
-			if(ignoreGuids.contains(sample.getDsGuid())) {
-				continue;
-			}
-			for(String key : sample.getDsProfile().keySet()) {
-				if(!usedFieldNames.contains(key)) {
-					sample.getDsProfile().get(key).setUsedInSchema(true);
-					usedFieldNames.add(key);
-				} else {
-					continue; // seed value is already defined, skip analysis of this key
-				}
-				for(DataSample otherSample : samples) {
-					if(ignoreGuids.contains(otherSample.getDsGuid()) || sample.equals(otherSample)) {
-						continue; // skip same sample
-					} else {
+					if(!ignoreGuids.contains(otherSample.getDsGuid())) {
 						for(String otherKey : otherSample.getDsProfile().keySet()) {
-							String p1Name = key;
-							Profile p1 = sample.getDsProfile().get(p1Name);
+							String p1Name = schemaKey;
+							Profile p1 = schema.getsProfile().get(p1Name);
 							String p2Name = otherKey;
 							Profile p2 = otherSample.getDsProfile().get(otherKey);
 
 							double similarity = match(p1Name, p1, p2Name, p2);
-
 							if(similarity > .8) {
-								logger.debug("Match detected between " + p1Name + " in " + sample.getDsFileName() + " and " + p2Name + " in " + otherSample.getDsFileName() + " with " + similarity + " confidence.");
+								logger.debug("Match detected between " + p1Name + " in " + otherSample.getDsFileName() + " and " + p2Name + " in schema " + schema.getsName() + " with " + similarity + " confidence.");
 								MatchingField altName = new MatchingField();
 								List<MatchingField> altNames = p2.getMatchingFields();
 								altName.setMatchingField(p1Name);
@@ -554,12 +549,56 @@ public class MetricsCalculationsFacade {
 							}
 						}
 					}
+					progress++;
+					progressCallback.handleProgressUpdate(progress);
+				}
+			}
+		}
+
+		for(DataSample sample : samples) {
+			// dont analyze the error sample guids
+			if(!ignoreGuids.contains(sample.getDsGuid())) {
+				for(String key : sample.getDsProfile().keySet()) {
+					if(!usedFieldNames.contains(key)) {
+						sample.getDsProfile().get(key).setUsedInSchema(true);
+						usedFieldNames.add(key);
+					} else {
+						progress++;
+						continue; // seed value is already defined, skip analysis of this key
+					}
+					for(DataSample otherSample : samples) {
+						if(ignoreGuids.contains(otherSample.getDsGuid()) || sample.equals(otherSample)) {
+							continue; // skip same sample
+						} else {
+							for(String otherKey : otherSample.getDsProfile().keySet()) {
+								String p1Name = key;
+								Profile p1 = sample.getDsProfile().get(p1Name);
+								String p2Name = otherKey;
+								Profile p2 = otherSample.getDsProfile().get(otherKey);
+
+								double similarity = match(p1Name, p1, p2Name, p2);
+
+								if(similarity > .8) {
+									logger.debug("Match detected between " + p1Name + " in " + sample.getDsFileName() + " and " + p2Name + " in " + otherSample.getDsFileName() + " with " + similarity + " confidence.");
+									MatchingField altName = new MatchingField();
+									List<MatchingField> altNames = p2.getMatchingFields();
+									altName.setMatchingField(p1Name);
+									altName.setConfidence((int)(similarity*100));
+									altNames.add(altName);
+									altNames.sort((MatchingField a1, MatchingField a2)->a2.getConfidence()-a1.getConfidence());
+									p2.setMatchingFields(altNames);
+								}
+								progress++;
+								progressCallback.handleProgressUpdate(progress);
+							}
+						}
+					}
 				}
 			}
 		}
 		return samples;
 	}
-	
+
 	public static double match(String name1, Profile p1, String name2, Profile p2) {
 		String algId = System.getenv("SCHWIZ_MATCHING_ALG");
 		// temporarily allow environment to specify matching algorithm
@@ -567,7 +606,7 @@ public class MetricsCalculationsFacade {
 			return 0.0;
 		}
 
-		if(name1.equals(SampleProfiler.EMPTY_FIELD_NAME) || name2.equals(SampleProfiler.EMPTY_FIELD_NAME)) {
+		if(name1.equals(DefaultProfilerRecord.EMPTY_FIELD_NAME_INDICATOR) || name2.equals(DefaultProfilerRecord.EMPTY_FIELD_NAME_INDICATOR)) {
 			if(!name1.equals(name2)) {
 				return 0.0; 
 			}
@@ -579,7 +618,7 @@ public class MetricsCalculationsFacade {
 			name2 = name2.substring(name2.lastIndexOf(DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER)+1, name2.length());
 		}
 
-		
+
 		final double nameWeight = .20;
 		if("1".equals(algId)) {
 			return match(name1, p1, name2, p2, nameWeight);
@@ -594,11 +633,11 @@ public class MetricsCalculationsFacade {
 			return match(name1, p1, name2, p2, defaultDisimilarityRate, defaultSimilarityArc, nameWeight);
 		}
 	}
-	
+
 	public static double match(String name1, Profile p1, String name2, Profile p2, double nameWeight) {
 		return MetricsCalculationsFacade.similarityAlgorithm1(name1, p1, name2, p2, nameWeight);
 	}
-	
+
 	public static double match(String name1, Profile p1, String name2, Profile p2, double disimilarityRate, double similarityArc, double nameWeight) {
 		return MetricsCalculationsFacade.similarityAlgorithm2(name1, p1, name2, p2, disimilarityRate, similarityArc, nameWeight);
 	}

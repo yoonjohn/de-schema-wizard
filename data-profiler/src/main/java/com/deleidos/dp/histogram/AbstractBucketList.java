@@ -1,6 +1,5 @@
 package com.deleidos.dp.histogram;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,27 +37,5 @@ public abstract class AbstractBucketList implements BucketList {
 		histogram.setData(data);
 		return histogram;
 	}
-	
-	/*public static AbstractBucketList finish(AbstractBucketList unfinishedHistogram) {
-		List<AbstractBucket> bucketList = unfinishedHistogram.getOrderedBuckets();
-		List<String> longLabels =  new ArrayList<String>();
-		List<String> labels = new ArrayList<String>();
-		List<Integer> data = new ArrayList<Integer>();
-		for(int i = 0; i < bucketList.size(); i++) {
-			AbstractBucket a = bucketList.get(i);
-			if(a instanceof NumberBucket) {
-				NumberBucket numberBucket = (NumberBucket) a;
-				labels.add(NumberBucket.trimLabelLength(numberBucket.getLabel(), TEMP_DEFAULT_BUCKET_DISPLAY_CUTOFF));
-			} else {
-				labels.add("".equals(a.getLabel()) ? AbstractBucket.EMPTY_STRING_INDICATOR : a.getLabel());
-			}
-			longLabels.add("".equals(a.getLabel()) ? AbstractBucket.EMPTY_STRING_INDICATOR : a.getLabel());
-			data.add(a.getCount().intValue());
-		}
-		unfinishedHistogram.setLabels(labels);
-		unfinishedHistogram.setLongLabels(longLabels);
-		unfinishedHistogram.setData(data);
-		return unfinishedHistogram;
-	}*/
 
 }

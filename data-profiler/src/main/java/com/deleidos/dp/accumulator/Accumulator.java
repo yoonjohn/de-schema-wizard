@@ -14,13 +14,7 @@ public interface Accumulator<T> {
 	 * required (e.g. don't calculate the average until it is required)
 	 * @param value The value to accumulate into the metric.
 	 */
-	public void accumulate(Object value, boolean accumulatePresence) throws MainTypeException;
-	
-	/**
-	 * 
-	 * @param value
-	 */
-	public boolean initFirstValue(Object value) throws MainTypeException;
+	public T accumulate(Object value, boolean accumulatePresence) throws MainTypeException;
 	
 	/**
 	 * Get a copy of the current state of the metric.  Do all calculations in this method.
@@ -30,6 +24,7 @@ public interface Accumulator<T> {
 	
 	/**
 	 * Clean up and finish the accumulation of fields.
+	 * @throws MainTypeException 
 	 */
-	public void finish();
+	public T finish() throws MainTypeException;
 }

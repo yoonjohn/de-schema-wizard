@@ -1,12 +1,19 @@
 package com.deleidos.dp.deserializors;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.deleidos.dp.beans.DataSample;
 import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.Schema;
+import com.deleidos.dp.profiler.DefaultProfilerRecord;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -35,7 +42,7 @@ public class SerializationUtility {
 	public static void setObjectMapper(ObjectMapper objectMapper) {
 		SerializationUtility.objectMapper = objectMapper;
 	}
-	
+
 	public static <T> T deserialize(Object json, TypeReference<T> object) {
 		try {
 			return objectMapper.readValue(json.toString(), object);

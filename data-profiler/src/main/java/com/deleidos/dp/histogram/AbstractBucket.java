@@ -2,7 +2,7 @@ package com.deleidos.dp.histogram;
 
 import java.math.BigInteger;
 
-import com.deleidos.dp.beans.Histogram;
+import com.deleidos.dp.profiler.DefaultProfilerRecord;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class AbstractBucket implements Bucket, Comparable<AbstractBucket> {
-	public static final String EMPTY_STRING_INDICATOR = "(Blank Value)";
+	public static final String EMPTY_STRING_INDICATOR = DefaultProfilerRecord.EMPTY_FIELD_VALUE_INDICATOR;
 	protected BigInteger count;
 	
 	protected AbstractBucket() {
@@ -32,5 +32,4 @@ public abstract class AbstractBucket implements Bucket, Comparable<AbstractBucke
 	public void incrementCount() {
 		count = count.add(BigInteger.ONE);
 	}
-	
 }

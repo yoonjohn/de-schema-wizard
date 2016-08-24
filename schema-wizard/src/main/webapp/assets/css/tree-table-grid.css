@@ -1,0 +1,78 @@
+.tree-table-grid {
+    display: table;
+    font-family: 'courier','monospace';
+}
+
+.tree-table-title {
+    display: table-caption;
+    text-align: center;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.tree-table-heading {
+    display: table-row;
+    line-height: 1em;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    background: linear-gradient(#f8f8f8, #e8e8e8);
+    box-sizing: border-box;
+}
+
+.tree-table-heading .tree-table-cell {
+    /*border: thin solid gray;*/
+    border: none;
+}
+
+.tree-table-heading .tree-table-cell p {
+    margin: 0px;
+    padding: 0px;
+}
+
+.tree-table-tbody {
+    overflow: auto;
+    height: 400px;
+}
+
+.tree-table-row {
+    display: table-row;
+}
+
+.tree-table-cell {
+    display: table-cell;
+    line-height: 22px;
+    border: thin solid lightgrey;
+    /* left/right removes all vertical cell dividers */
+    /* they are not easily shown since they get 'thicker' at each depth */
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+}
+
+.tree-table-cell .tree-table-expanded {
+    padding: 1px 10px;
+    vertical-align: bottom;
+    background-image: url(../img/minus-sign-16x16.png);
+    background-repeat: no-repeat;
+    cursor: hand;
+}
+
+.tree-table-cell .tree-table-collapsed {
+    padding: 1px 10px;
+    vertical-align: bottom;
+    background-image: url(../img/plus-sign-16x16.png);
+    background-repeat: no-repeat;
+    cursor: hand;
+}
+
+.tree-table-cell .tree-table-selected {
+    background-color: rgb(225,250,255);
+    font-weight: bold;
+}
+
+.tree-table-grid span {
+    border: none;
+}
+

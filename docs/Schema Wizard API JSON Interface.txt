@@ -119,6 +119,14 @@
         "used-in-schema"      : <boolean>,
         "merged-into-schema"  : <boolean>
     }
+	
+<schema-analysis-data> ::=
+	{
+		"existing-schema" : <schema>
+		"data-samples" : [
+			<data-sample>
+		]
+	}
 
 <domain> ::=
     {

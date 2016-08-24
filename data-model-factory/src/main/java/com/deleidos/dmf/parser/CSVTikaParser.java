@@ -96,7 +96,6 @@ public class CSVTikaParser extends AbstractAnalyticsParser {
 			CSVReader lReader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(nextSplit.getBytes())), separator);
 			String[] splits = lReader.readNext();
 			EmptyStringsAreNullsProfilerRecords record = loadFieldsWithHeaderTemplate(headerFields, splits);
-			record.setRecordProgress(context.getCharsRead());
 			return record;
 		} catch (IOException e) {
 			throw new AnalyticsTikaProfilingException(e);

@@ -12,21 +12,19 @@
                           $index % 2 === 1 && {'background-color': '#f9f9f9'}">
                 <!-- repeat the style on the cell and the span to get the same effect anywhere in the cell -->
                 <td style="width: 19%; margin: 2px; padding: 0px;"
-                    ng-style="profile['shown-in-details'] == true && {'background-color': 'gold', 'cursor': 'pointer'} ||
-                              profile['shown-in-details'] == false && profile['main-type'] == 'string' && profile['detail']['detail-type'] == 'phrase' && {'background-color': 'transparent', 'cursor': 'not-allowed'} ||
+                    ng-style="detailsRow == 'false' && profile['shown-in-details'] == true && {'background-color': 'gold', 'cursor': 'pointer'} ||
                               profile['shown-in-details'] == false && {'background-color': 'transparent', 'cursor': 'pointer'}"
                     ng-click="showInDetails(currentSample, field)">
                     <span class="btn-property"
                           uib-tooltip="{{field}}"
                           tooltip-placement="right"
-                          ng-style="profile['shown-in-details'] == true && {'background-color': 'gold', 'cursor': 'pointer'} ||
-                              profile['shown-in-details'] == false && profile['main-type'] == 'string' && profile['detail']['detail-type'] == 'phrase' && {'background-color': 'transparent', 'cursor': 'not-allowed'} ||
+                          ng-style="detailsRow == 'false' && profile['shown-in-details'] == true && {'background-color': 'gold', 'cursor': 'pointer'} ||
                               profile['shown-in-details'] == false && {'background-color': 'transparent', 'cursor': 'pointer'}">
                         <b>{{profile["display-name"]}}</b>
                         <button style="border: none; background-color: transparent;" uib-dropdown-toggle
                                 ng-click="isCollapsed = !isCollapsed;" onclick="this.blur();"
                                 ng-init="isCollapsed = true; currentSample.viz = 'hbc'"
-                                ng-hide="detailsRow == 'false' || profile['main-type'] == 'string' && profile['detail']['detail-type'] == 'phrase'">
+                                ng-hide="detailsRow == 'false'">
                             <span ng-show="isCollapsed" class="caret"></span>
                             <span ng-show="!isCollapsed" class="inverted-caret"></span>
                         </button>

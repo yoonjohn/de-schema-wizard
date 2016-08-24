@@ -3,7 +3,8 @@ package com.deleidos.dmf.parser;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -12,15 +13,12 @@ import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.xml.sax.ContentHandler;
 
+import com.deleidos.dmf.exception.AnalyticsParsingRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
 import com.deleidos.dmf.framework.AbstractAnalyticsParser;
 import com.deleidos.dmf.framework.TikaProfilerParameters;
-import com.deleidos.dp.accumulator.AbstractProfileAccumulator;
-import com.deleidos.dp.accumulator.BinaryProfileAccumulator;
-import com.deleidos.dp.accumulator.BundleProfileAccumulator;
+import com.deleidos.dp.enums.DetailType;
 import com.deleidos.dp.profiler.BinaryProfilerRecord;
-import com.deleidos.dp.profiler.SampleProfiler;
-import com.deleidos.dp.profiler.api.Profiler;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
 
 /**
@@ -35,6 +33,9 @@ public class BinaryParser extends AbstractAnalyticsParser {
 	private String name;
 	private boolean binaryParsingEnabled = false;
 	private final static String ENABLE_BINARY_PARSING = "ENABLE_BINARY_PARSING";
+	
+
+	private final static Map<MediaType, DetailType> types = new HashMap<MediaType, DetailType>();
 
 	@Override
 	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata,
@@ -68,7 +69,10 @@ public class BinaryParser extends AbstractAnalyticsParser {
 			int numBytesRead = stream.read(bytes);
 			context.setCharsRead(numBytesRead);
 			if(numBytesRead > 0) {
-				BinaryProfilerRecord binaryRecord = new BinaryProfilerRecord(name, byteBuffer);
+				if(!types.containsKey(mediaType)) {
+					throw new AnalyticsParsingRuntimeException("Required media type was not set for binary parser.", this);
+				}
+				BinaryProfilerRecord binaryRecord = new BinaryProfilerRecord(name, types.get(mediaType), byteBuffer);
 				return binaryRecord;
 			} else {
 				return null;
@@ -81,23 +85,13 @@ public class BinaryParser extends AbstractAnalyticsParser {
 	@Override
 	public void postParse(ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		super.postParse(handler, metadata, context);
-		if(binaryParsingEnabled) {
-			Profiler profiler = context.get(Profiler.class);
-			if(profiler instanceof SampleProfiler) {
-				SampleProfiler sampleProfiler = (SampleProfiler) profiler;
-				AbstractProfileAccumulator apa = sampleProfiler.getMetricsBundle(name).getState().get(BundleProfileAccumulator.BINARY_METRICS_INDEX);
-				BinaryProfileAccumulator binaryAccumulator = (BinaryProfileAccumulator) apa;
-				binaryAccumulator.setMediaType(mediaType);
-			}
-		}
 	}
 
 	@Override
 	public Set<MediaType> getSupportedTypes(ParseContext context) {
-		Set<MediaType> types = new HashSet<MediaType>();
-		types.add(MediaType.image("jpeg"));
-		types.add(MediaType.image("png"));
-		return types;
+		types.put(MediaType.image("jpeg"), DetailType.IMAGE);
+		types.put(MediaType.image("png"), DetailType.IMAGE);
+		return types.keySet();
 	}
 
 	public String getMediaType() {

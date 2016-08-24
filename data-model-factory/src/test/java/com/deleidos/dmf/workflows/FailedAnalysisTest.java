@@ -53,12 +53,10 @@ public class FailedAnalysisTest extends DMFMockUpEnvironmentTest {
 	public void doesH2ReturnExpectedErrorBeans() throws DataAccessException {
 		DataSample sample = H2DataAccessObject.getInstance().getSampleByGuid(H2Database.UNDETECTABLE_SAMPLE_GUID);
 		assertTrue(sample.getDsGuid().equals(H2Database.UNDETECTABLE_SAMPLE_GUID) && 
-				sample.getDsDescription().equals(H2DataAccessObject.getInstance()
-						.getH2Database().getFailedAnalysisMapping().get(H2Database.UNDETECTABLE_SAMPLE_GUID)));
+				sample.getDsDescription().equals(H2Database.getFailedAnalysisMapping().get(H2Database.UNDETECTABLE_SAMPLE_GUID)));
 		DataSample sample2 = H2DataAccessObject.getInstance().getSampleByGuid(H2Database.UNSUPPORTED_PARSER_GUID);
 		assertTrue(sample2.getDsGuid().equals(H2Database.UNSUPPORTED_PARSER_GUID) && 
-				sample2.getDsDescription().equals(H2DataAccessObject.getInstance()
-						.getH2Database().getFailedAnalysisMapping().get(H2Database.UNSUPPORTED_PARSER_GUID)));
+				sample2.getDsDescription().equals(H2Database.getFailedAnalysisMapping().get(H2Database.UNSUPPORTED_PARSER_GUID)));
 	}
 
 	private static class UndetectableTypeWorkflow extends AbstractAnalyzerTestWorkflow {

@@ -1,6 +1,10 @@
 package com.deleidos.dp.h2;
 
-import java.io.IOException;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -8,13 +12,19 @@ import org.junit.Test;
 import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.integration.DataProfilerIntegrationEnvironment;
 
-public class H2DataAccessStartupIT extends DataProfilerIntegrationEnvironment{
-	private static final Logger logger = Logger.getLogger(H2DataAccessStartupIT.class);
+public class H2DataAccessStartupIT extends DataProfilerIntegrationEnvironment {
 
 	@Test
-	public void testStartup() throws IOException, DataAccessException {
-		if(!H2DataAccessObject.getInstance().testConnection()) {
-			throw new DataAccessException("Integration Environment not correctly initialized.");
+	public void testStartup() throws SQLException, DataAccessException {
+		for(int i = 0; i < 100; i++) {
+			Connection connection = H2DataAccessObject.getInstance().getH2Database().getNewConnection();
+			try {
+				assertTrue(H2DataAccessObject.getInstance().testConnection(connection));
+				connection.close();
+			} catch(AssertionError e) {
+				connection.close();
+				fail("Connection test failed.");
+			}
 		}
 	}
 

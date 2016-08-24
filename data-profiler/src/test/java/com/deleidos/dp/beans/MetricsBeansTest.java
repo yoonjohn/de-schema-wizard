@@ -8,8 +8,10 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import com.deleidos.dp.accumulator.AbstractProfileAccumulator;
 import com.deleidos.dp.accumulator.NumberProfileAccumulator;
 import com.deleidos.dp.deserializors.SerializationUtility;
+import com.deleidos.dp.exceptions.MainTypeException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -18,10 +20,11 @@ public class MetricsBeansTest {
 	Logger logger = Logger.getLogger(MetricsBeansTest.class);
 	
 	@Test
-	public void numberDetailToJsonTest() throws JsonProcessingException {
-		NumberProfileAccumulator nma = new NumberProfileAccumulator("test-field", 10);
-		nma.accumulate(11);
-		nma.accumulate(12);
+	public void numberDetailToJsonTest() throws JsonProcessingException, MainTypeException {
+		NumberProfileAccumulator nma = AbstractProfileAccumulator.generateNumberProfileAccumulator("test-field");
+		nma.accumulate(10, true);
+		nma.accumulate(11,true);
+		nma.accumulate(12,true);
 		nma.finish();
 		NumberDetail nd = Profile.getNumberDetail(nma.getState());
 		String result = SerializationUtility.serialize(nd);

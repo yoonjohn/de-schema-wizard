@@ -1,6 +1,8 @@
 package com.deleidos.dp.beans;
 
+import java.sql.Connection;
 import java.sql.Timestamp;
+import java.util.Set;
 
 import com.deleidos.dp.deserializors.SerializationUtility;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -114,5 +116,36 @@ public class DataSampleMetaData {
 
 	public void setDsFileSize(int dsFileSize) {
 		this.dsFileSize = dsFileSize;
+	}
+	
+
+	/**
+	 * Get a new sample name based on an existing set of sample names.
+	 * Concatenates a counter to the end of the file name.
+	 * 
+	 * @param name
+	 *            The name of the file without a path or extension
+	 * @param existingSampleNames
+	 * @return
+	 */
+	public static String generateNewSampleName(String name, Set<String> existingSampleNames) {
+		String baseName = String.copyValueOf(name.toCharArray());
+		if (existingSampleNames.contains(name)) {
+			int sampleNumber = 1;
+			String sampleName = baseName + "(" + sampleNumber + ")";
+			boolean alreadyExists = false;
+			do {
+				if (existingSampleNames.contains(sampleName)) {
+					sampleNumber++;
+					sampleName = baseName + "(" + sampleNumber + ")";
+					alreadyExists = true;
+				} else {
+					alreadyExists = false;
+				}
+			} while (alreadyExists);
+			return sampleName;
+		} else {
+			return name;
+		}
 	}
 }

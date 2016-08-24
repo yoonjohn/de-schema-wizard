@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.deleidos.dp.histogram.AbstractBucket;
 import com.deleidos.dp.histogram.CharacterBucketList;
-import com.deleidos.dp.histogram.TermBucketList;
+import com.deleidos.dp.histogram.ShortStringBucketList;
 
 public class StringBucketListTest {
 	private Logger logger = Logger.getLogger(StringBucketListTest.class);
@@ -20,7 +20,7 @@ public class StringBucketListTest {
 	
 	@Test
 	public void testTermBucketAdd() {
-		TermBucketList tbl = new TermBucketList();
+		ShortStringBucketList tbl = new ShortStringBucketList();
 		for(int i = 0; i < 201; i++) {
 			tbl.putValue("user" + String.valueOf(i));
 			int totalCount = 0;

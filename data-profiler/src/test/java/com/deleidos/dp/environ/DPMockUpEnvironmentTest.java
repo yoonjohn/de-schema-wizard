@@ -20,9 +20,9 @@ public abstract class DPMockUpEnvironmentTest {
 		if(!running) {
 			InterpretationEngineFacade.setInstance(IEConfig.BUILTIN_CONFIG);
 			logger.info("Setting up built-in Interpretation Engine.");
-			H2TestDatabase h2Test = new H2TestDatabase().startTestServer();
-			h2Test.populateDatabase();
-			H2DataAccessObject.setInstance(h2Test).initConnection();
+			H2TestDatabase h2Test = new H2TestDatabase();
+			h2Test.startTestServer(h2Test.getConfig());
+			H2DataAccessObject.setInstance(h2Test);
 			running = true;
 		}
 	}

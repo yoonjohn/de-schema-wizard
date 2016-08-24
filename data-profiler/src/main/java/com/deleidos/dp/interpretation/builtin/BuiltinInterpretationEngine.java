@@ -53,7 +53,7 @@ public class BuiltinInterpretationEngine implements InterpretationEngine {
 	}
 
 	@Override
-	public Map<String, Profile> interpret(String domainGuid, Map<String, Profile> profileMap) {
+	public Map<String, Profile> interpret(String domainGuid, Map<String, Profile> profileMap, int timeout) {
 		for(String key : profileMap.keySet()) {
 			String comparisonName = key;
 			if(key.contains(String.valueOf(DefaultProfilerRecord.STRUCTURED_OBJECT_APPENDER))) {

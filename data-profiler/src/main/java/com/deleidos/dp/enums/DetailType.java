@@ -1,7 +1,7 @@
 package com.deleidos.dp.enums;
 
 public enum DetailType {
-	INTEGER, DECIMAL, EXPONENT, DATE_TIME, BOOLEAN, TERM, PHRASE, IMAGE, VIDEO_FRAME, AUDIO_SEGMENT;
+	INTEGER, DECIMAL, EXPONENT, DATE_TIME, BOOLEAN, TERM, PHRASE, IMAGE, VIDEO_FRAME, AUDIO_SEGMENT, TEXT;
 	
 	public void incrementCount(int[] detailTypeTracker) {
 		detailTypeTracker[ordinal()]++;
@@ -39,6 +39,9 @@ public enum DetailType {
 		case 9: {
 			return AUDIO_SEGMENT;
 		}
+		case 10: {
+			return TEXT;
+		}
 		default : {
 			return null;
 		}
@@ -49,6 +52,7 @@ public enum DetailType {
 		case INTEGER: return MainType.NUMBER; case DECIMAL: return MainType.NUMBER; case EXPONENT: return MainType.NUMBER;
 		case DATE_TIME: return MainType.STRING; case BOOLEAN: return MainType.STRING; case TERM: return MainType.STRING; case PHRASE: return MainType.STRING;
 		case IMAGE: return MainType.BINARY; case VIDEO_FRAME: return MainType.BINARY; case AUDIO_SEGMENT: return MainType.BINARY;
+		case TEXT: return MainType.STRING;
 		default: return null;
 		}
 	}
@@ -82,6 +86,8 @@ public enum DetailType {
 			return VIDEO_FRAME;
 		} else if(string.equals("audio_segment")) {
 			return AUDIO_SEGMENT;
+		} else if(string.equals("text")) {
+			return TEXT;
 		} else {
 			return null;
 		}

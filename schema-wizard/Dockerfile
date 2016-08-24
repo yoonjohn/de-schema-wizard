@@ -19,5 +19,5 @@ RUN ["touch", "/logs/sw.log"]
 # Giving Jetty access permissions
 RUN chown -R jetty:jetty /uploads /logs /var/lib/jetty
 
-# Run Jetty
-RUN java -jar "$JETTY_HOME/start.jar" --add-to-startd=jmx,stats --module=resources --list-classpath
+# Display the classpath of Jetty
+# RUN java -jar "$JETTY_HOME/start.jar" --add-to-startd=jmx,stats --module=resources --list-classpath

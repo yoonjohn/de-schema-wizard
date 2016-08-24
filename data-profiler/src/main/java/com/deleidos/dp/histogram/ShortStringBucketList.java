@@ -9,12 +9,12 @@ import org.json.JSONObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class TermBucketList extends AbstractCoalescingBucketList {
-	public static final TermBucketList EMPTY = new TermBucketList();
+public class ShortStringBucketList extends AbstractCoalescingBucketList {
+	public static final ShortStringBucketList EMPTY = new ShortStringBucketList();
 	LinkedList<TermBucket> bucketList;
 	private boolean uniqueBucketStage = true;
 
-	public TermBucketList() {
+	public ShortStringBucketList() {
 		bucketList = new LinkedList<TermBucket>();
 	}
 

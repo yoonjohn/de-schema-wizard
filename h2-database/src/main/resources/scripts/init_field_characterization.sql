@@ -187,10 +187,10 @@ CREATE TABLE IF NOT EXISTS data_sample_field
 
 CREATE TABLE IF NOT EXISTS schema_alias_mapping
 (
-	schema_field_id integer,
-	data_sample_field_id integer,
-	FOREIGN KEY (data_sample_field_id) REFERENCES data_sample_field(data_sample_field_id) ON DELETE CASCADE,
-    FOREIGN KEY (schema_field_id) REFERENCES schema_field(schema_field_id) ON DELETE CASCADE
+		schema_field_id integer,
+		data_sample_field_id integer,
+		FOREIGN KEY (data_sample_field_id) REFERENCES data_sample_field(data_sample_field_id) ON DELETE CASCADE,
+	    FOREIGN KEY (schema_field_id) REFERENCES schema_field(schema_field_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS interpretation_field_mapping
@@ -209,4 +209,24 @@ CREATE TABLE IF NOT EXISTS deletion_queue
        guid varchar(36) NOT NULL UNIQUE,
        last_update date,
        in_progress boolean
+);
+
+CREATE TABLE IF NOT EXISTS data_sample_example_value
+(
+		dsev_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+		dsf_id INTEGER NOT NULL,
+		example_value varchar(1024) NOT NULL,
+		FOREIGN KEY (dsf_id) REFERENCES data_sample_field(data_sample_field_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS field_attributes
+(
+		fa_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+		dsf_id INTEGER NOT NULL,
+		identifier varchar(24),
+		categorical varchar(24),
+		quantitative varchar(24),
+		relational varchar(24),
+		ordinal varchar(24),
+		FOREIGN KEY (dsf_id) REFERENCES data_sample_field(data_sample_field_id) ON DELETE CASCADE
 );

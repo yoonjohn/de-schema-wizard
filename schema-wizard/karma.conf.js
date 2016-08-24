@@ -18,8 +18,6 @@ module.exports = function (config) {
             'src/main/webapp/bower_components/angular-animate/angular-animate.js',
             'src/main/webapp/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
             'src/main/webapp/bower_components/angular-cookies/angular-cookies.js',
-            'src/main/webapp/bower_components/Chart.js/Chart.js',
-            'src/main/webapp/bower_components/angular-chart.js/dist/angular-chart.js',
             'src/main/webapp/bower_components/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js',
             'src/main/webapp/bower_components/angular-resource/angular-resource.js',
             'src/main/webapp/bower_components/angular-route/angular-route.js',

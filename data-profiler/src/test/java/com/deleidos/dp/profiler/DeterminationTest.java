@@ -1,7 +1,9 @@
 package com.deleidos.dp.profiler;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -13,7 +15,6 @@ import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.deleidos.dp.enums.DetailType;
 import com.deleidos.dp.enums.MainType;
-import com.deleidos.dp.profiler.api.Profiler;
 
 
 public class DeterminationTest {
@@ -132,68 +133,66 @@ public class DeterminationTest {
 
 	@Test
 	public void testDetermineString() {
-		MainType t = MetricsCalculationsFacade.determineDataType("hello");
+		MainType t = MetricsCalculationsFacade.determineProbableDataTypes("hello").get(0);
 		assertTrue(t == MainType.STRING);
 		logger.info("String successfully detected.");
 	}
 
 	@Test
 	public void testDetermineNumber() {
-		MainType t = MetricsCalculationsFacade.determineDataType(123);
-		assertTrue(t == MainType.NUMBER);
+		List<MainType> t = MetricsCalculationsFacade.determineProbableDataTypes(123);
+		assertTrue(t.contains(MainType.NUMBER));
 		logger.info("Number successfully detected.");
 	}
 
 	@Test
 	public void testDetermineExponentAsNumber() {
-		MainType t = MetricsCalculationsFacade.determineDataType("400E51");
-		assertTrue(t == MainType.NUMBER);
+		List<MainType> t = MetricsCalculationsFacade.determineProbableDataTypes("400E51");
+		assertTrue(t.contains(MainType.NUMBER));
 		logger.info("Number successfully detected.");
 	}
 
 	@Test
 	public void testDetermineNumberInString() {
-		MainType t = MetricsCalculationsFacade.determineDataType("12544362");
-		assertTrue(t == MainType.NUMBER);
+		List<MainType> t = MetricsCalculationsFacade.determineProbableDataTypes("12544362");
+		assertTrue(t.contains(MainType.NUMBER));
 		logger.info("Number in string format successfully detected.");
 	}
 
 	@Test
 	public void testDetermineNumberWithDecimalInString() {
-		MainType t = MetricsCalculationsFacade.determineDataType("12544362.3");
-		DetailType dt = MetricsCalculationsFacade.determineDetailType(t, "12544362.3");
-		assertTrue(t == MainType.NUMBER && dt == DetailType.DECIMAL);
+		List<MainType> t = MetricsCalculationsFacade.determineProbableDataTypes("12544362.3");
+		DetailType dt = MetricsCalculationsFacade.determineDetailType(MainType.NUMBER, "12544362.3");
+		assertTrue(t.contains(MainType.NUMBER) && dt == DetailType.DECIMAL);
 		logger.info("Decimal in string format successfully detected.");
 	}
 
 	@Test
 	public void testDetermineNumberWithMultipleDecimalInString() {
-		MainType t = MetricsCalculationsFacade.determineDataType("1254436243563.4563456345.3");
-		assertTrue(t == MainType.STRING);
+		List<MainType> t = MetricsCalculationsFacade.determineProbableDataTypes("1254436243563.4563456345.3");
+		assertTrue(t.contains(MainType.STRING));
 		logger.info("Invalid number successfully detected as string.");
 	}
 
 	@Test
 	public void testDetermineNumberWithExponentInString() {
-		MainType t = MetricsCalculationsFacade.determineDataType("125443624356e43");
-		assertTrue(t == MainType.NUMBER);
+		List<MainType> t = MetricsCalculationsFacade.determineProbableDataTypes("125443624356e43");
+		assertTrue(t.contains(MainType.NUMBER));
 		logger.info("Possible exponent number as string successfully detected.");
 	}
 
 	@Test
 	public void testDetermineObject() {
-
-		JSONObject o = new JSONObject();
+		Map<String, Object> o = new HashMap<String, Object>();
 		o.put("h", "hi");
-		MainType t = MetricsCalculationsFacade.determineDataType(o);
-		assertTrue(t == MainType.OBJECT);
+		List<MainType> t = MetricsCalculationsFacade.determineProbableDataTypes(o);
+		assertTrue(t.contains(MainType.OBJECT));
 	}
 
 	@Test
-	public void testDetermineMap() {
-		JSONArray a = new JSONArray();
-		a.put("hi");
-		MainType t = MetricsCalculationsFacade.determineDataType(a);
-		assertTrue(t == MainType.ARRAY);
+	public void testDetermineArray() {
+		List<Object> a = Arrays.asList("hi");
+		List<MainType> t = MetricsCalculationsFacade.determineProbableDataTypes(a);
+		assertTrue(t.contains(MainType.ARRAY));
 	}
 }

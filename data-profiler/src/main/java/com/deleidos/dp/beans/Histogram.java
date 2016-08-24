@@ -1,16 +1,8 @@
 package com.deleidos.dp.beans;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.deleidos.dp.exceptions.MainTypeException;
-import com.deleidos.dp.histogram.ByteBucket;
-import com.deleidos.dp.histogram.ByteBucketList;
-import com.deleidos.dp.histogram.NumberBucket;
-import com.deleidos.dp.histogram.NumberBucketList;
-import com.deleidos.dp.histogram.TermBucket;
-import com.deleidos.dp.histogram.TermBucketList;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Histogram {
@@ -97,7 +89,7 @@ public class Histogram {
 		this.yaxis = yaxis;
 	}
 	
-	public static ByteBucketList toByteBucketList(Histogram histogram) {
+	/*public static ByteBucketList toByteBucketList(Histogram histogram) {
 		ByteBucketList byteBucketList = new ByteBucketList();
 		for(int i = 0; i < histogram.getLabels().size(); i++) {
 			String definition = histogram.getLongLabels().get(i);
@@ -121,16 +113,17 @@ public class Histogram {
 	}
 	
 	public static NumberBucketList toNumberBucketList(Histogram histogram) {
-		NumberBucketList numberBucketList = new NumberBucketList();
+		LinkedList<NumberBucket> bucketList = new LinkedList<NumberBucket>();
 		for(int i = 0; i < histogram.getLabels().size(); i++) {
 			String shortDef = histogram.getLabels().get(i);
 			String longDef = histogram.getLongLabels().get(i);
 			int count = histogram.getData().get(i);
 			NumberBucket nb = new NumberBucket(longDef, shortDef, BigInteger.valueOf(count));
-			numberBucketList.getBucketList().add(nb);
+			bucketList.add(nb);
 		}
+		NumberBucketList numberBucketList = new NumberBucketList(bucketList);
 		return numberBucketList;
-	}
+	}*/
 	
 
 }

@@ -22,11 +22,13 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import com.deleidos.dmf.analyzer.TikaAnalyzer;
+import com.deleidos.dmf.analyzer.workflows.AbstractAnalyzerTestWorkflow;
 import com.deleidos.dmf.analyzer.workflows.DefinedTestResource;
 import com.deleidos.dmf.framework.AbstractAnalyticsParser;
 import com.deleidos.dmf.framework.AnalyticsDefaultDetector;
 import com.deleidos.dmf.framework.AnalyticsDefaultParser;
 import com.deleidos.dmf.framework.AnalyticsEmbeddedDocumentExtractor;
+import com.deleidos.dmf.framework.DMFMockUpEnvironmentTest;
 import com.deleidos.dmf.framework.TikaSampleAnalyzerParameters;
 import com.deleidos.dmf.handler.AnalyticsProgressTrackingContentHandler;
 import com.deleidos.dmf.loader.ResourceLoader;
@@ -37,10 +39,11 @@ import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.h2.H2DataAccessObject;
 import com.deleidos.dp.interpretation.IEConfig;
 import com.deleidos.dp.interpretation.InterpretationEngineFacade;
+import com.deleidos.dp.profiler.SampleProfiler;
 import com.deleidos.hd.h2.H2TestDatabase;
 import com.deleidos.dmf.exception.AnalyzerException;
 
-public abstract class ParserTest extends ResourceLoader {
+public abstract class ParserTest extends DMFMockUpEnvironmentTest {
 	private static final Logger logger = Logger.getLogger(ParserTest.class);
 	protected AbstractAnalyticsParser parser;
 	protected DataSample dataSample;
@@ -75,7 +78,7 @@ public abstract class ParserTest extends ResourceLoader {
 				continue;
 			}			
 
-			TikaSampleAnalyzerParameters params = TikaAnalyzer.generateSampleParameters(ds.getFilePath(), "transportation", Tolerance.STRICT.toString(), "test-session-id", 0, 1);
+			TikaSampleAnalyzerParameters params = generateTestSampleParameters(ds, 0, 1);
 			if(new File(ds.getFilePath()).exists()) {
 				params.set(File.class, new File(ds.getFilePath()));
 			}

@@ -26,7 +26,7 @@
                 'shagstrom.angular-split-pane'
             ])
             .constant("baseUrl", "/schwiz/")
-            .constant("version", "3.0.0-beta1")
+            .constant("version", "3.0.0-beta2")
 
             .factory("LogoPage", function () {
                 var alreadyUsed = false;
@@ -52,9 +52,7 @@
                             }
                         }
                         return true;
-
                     }
-
                 }
             })
 
@@ -191,9 +189,16 @@
             .factory('statusCodesFactory', function ($resource) {
                 return $resource('schema-wizard/schema-wizard.messages-rest.json')
             })
+
             .factory('guidedTourStepFactory', function ($resource) {
                 return $resource('schema-wizard/schema-wizard.messages-tour.json')
             })
+
+            .config(['ChartJsProvider', function (ChartJsProvider) {
+                // Configure all charts
+                ChartJsProvider.setOptions({
+                });
+            }])
 
             .config(["$routeProvider", "$locationProvider", "$compileProvider", 'TourConfigProvider',
                 function ($routeProvider, $locationProvider, $compileProvider, TourConfigProvider) {
@@ -204,9 +209,6 @@
                     TourConfigProvider.set('onStart', function () {
                         console.log('Started Tour');
                     });
-                    //TourConfigProvider.set('onNext', function () {
-                    //    console.log('Moving on...');
-                    //});
 
                     $routeProvider.when("/catalog", {
                             templateUrl: "catalog/catalog.lists.html",
@@ -233,7 +235,9 @@
                         })
 
                         .when("/sampleData/:sampleId", {
-                            templateUrl: "catalog/catalog.sample.details.html",
+/*TODO: deleteme and associated files*/
+/*                            templateUrl: "catalog/catalog.sample.details.html",*/
+                            templateUrl: "catalog/catalog.sample.details-tree-table-grid.html",
                             controller: "sampleDetailsCtrl",
                             resolve: {
                                 sampleData: function ($route, sampleDataResource) {
@@ -265,7 +269,9 @@
                         })
 
                         .when("/wizardInspectSamples", {
-                            templateUrl: "wizard/wizard.inspect.samples.html"
+/*TODO: deleteme and associated files*/
+/*                            templateUrl: "wizard/wizard.inspect.samples.html",*/
+                            templateUrl: "wizard/wizard.inspect.samples-tree-table-grid.html",
                         })
 
                         .when("/wizardMatchFields", {

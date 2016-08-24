@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
+import com.deleidos.dp.deserializors.ConversionUtility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -26,6 +27,8 @@ public class DataSample {
 	private String dsDescription;
 	private int recordsParsedCount;
 	private Map<String, Profile> DsProfile;
+	private List<StructuredNode> dsStructuredProfile;
+	private boolean dsContainsStructuredData;
 
 	@JsonProperty("data-sample-id")
 	public int getDataSampleId() {
@@ -115,6 +118,14 @@ public class DataSample {
 	@JsonProperty("dsProfile")
 	public void setDsProfile(Map<String, Profile> DsProfile) {
 		this.DsProfile = DsProfile;
+		this.dsStructuredProfile = ConversionUtility.convertToHeirarchicalList(DsProfile);
+		for(StructuredNode node : dsStructuredProfile) {
+			if(node.getChildren().size() > 0) {
+				dsContainsStructuredData = true;
+				return;
+			}
+		}
+		dsContainsStructuredData = false;
 	}
 
 	@JsonProperty("dsNumbRecords")
@@ -144,4 +155,17 @@ public class DataSample {
 	public void setDsFileSize(int dsFileSize) {
 		this.dsFileSize = dsFileSize;
 	}
+
+	public List<StructuredNode> getDsStructuredProfile() {
+		return dsStructuredProfile;
+	}
+
+	public boolean isDsContainsStructuredData() {
+		return dsContainsStructuredData;
+	}
+
+	public void setDsContainsStructuredData(boolean dsContainsStructuredData) {
+		this.dsContainsStructuredData = dsContainsStructuredData;
+	}
+
 }

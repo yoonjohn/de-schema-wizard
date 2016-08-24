@@ -7,21 +7,21 @@ import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
-import org.json.JSONObject;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.deleidos.dmf.analyzer.AnalyzerProgressUpdater;
+import com.deleidos.dmf.exception.AnalyticsCancelledWorkflowException;
 import com.deleidos.dmf.exception.AnalyticsInitializationRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsParsingRuntimeException;
 import com.deleidos.dmf.exception.AnalyticsTikaProfilingException;
 import com.deleidos.dmf.exception.AnalyzerException;
-import com.deleidos.dp.profiler.DefaultProfilerRecord;
+import com.deleidos.dmf.web.SchemaWizardSessionUtility;
 import com.deleidos.dp.profiler.SampleProfiler;
 import com.deleidos.dp.profiler.SampleSecondPassProfiler;
 import com.deleidos.dp.profiler.SchemaProfiler;
 import com.deleidos.dp.profiler.api.Profiler;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
+import com.deleidos.dp.profiler.api.ProfilingProgressUpdateHandler;
 
 /**
  * The Analytics implementation of Tika Parsers.  This class is a protective abstract class that handles all loading 
@@ -40,11 +40,15 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 	private static final long serialVersionUID = -463118690334548751L;
 	private static final Logger logger = Logger.getLogger(AbstractAnalyticsParser.class);
 	public static final int RECORD_LIMIT = 1000000;
-	public static final long UPDATE_FREQUENCY_IN_MILLIS = 500;
 	private boolean interrupt = false;
 	private Profiler profiler;
-	private AnalyzerProgressUpdater progressUpdater;
 	private TikaProfilerParameters params;
+	private ProgressUpdatingBehavior progressBehavior;
+	private ProfilingProgressUpdateHandler progressUpdater;
+
+	public enum ProgressUpdatingBehavior {
+		BY_CHARACTERS_READ, BY_RECORD_COUNT, BY_COMMON_FIELD_OCCURANCES
+	}
 
 	/**
 	 *  Parse method implemented for all Analytics parsers.  Subclasses' getNextProfilerRecord() methods will be called until
@@ -61,7 +65,6 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 
 		try {
 			ProfilerRecord record = null;
-			long startTime = System.currentTimeMillis();	
 
 			for(int i = 0; i < RECORD_LIMIT; i++) {
 				record = getNextProfilerRecord(stream, handler, metadata, params);
@@ -73,9 +76,15 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 				} 
 				loadToProfiler(record);
 
-				if(System.currentTimeMillis() - startTime > UPDATE_FREQUENCY_IN_MILLIS) {
-					progressUpdater.updateProgress();
-					startTime = System.currentTimeMillis();
+				if(SchemaWizardSessionUtility.getInstance().isCancelled(params.getSessionId())) {
+					return; // cancel has occurred, but cant throw exception here
+				}
+				// only update progress at this level during the first pass (accumulators handle additional updates)
+				// eventually we add progress updater callback to parser api
+				switch(progressBehavior) {
+				case BY_CHARACTERS_READ: progressUpdater.handleProgressUpdate(params.getCharsRead()); break;
+				case BY_RECORD_COUNT: progressUpdater.handleProgressUpdate(i); break;
+				case BY_COMMON_FIELD_OCCURANCES: break; // progress is handled in accumulators
 				}
 			}
 		} catch (AnalyticsTikaProfilingException e) {
@@ -83,7 +92,8 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 		} 
 	}
 
-	public void initializeGlobalVariables(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) {
+	public void initializeGlobalVariables(InputStream stream, ContentHandler handler, 
+			Metadata metadata, ParseContext context) {
 
 		profiler = context.get(Profiler.class);
 		if(profiler == null) {
@@ -94,12 +104,15 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 			throw new AnalyticsInitializationRuntimeException("Context is not an instance of TikaProfilerParameters.");
 		}
 		params = (TikaProfilerParameters) context;
+		progressBehavior = params.getProgressUpdatingBehavior();
+		if(progressBehavior == null) {
+			progressBehavior = ProgressUpdatingBehavior.BY_CHARACTERS_READ;
+		}
 
-		progressUpdater = context.get(AnalyzerProgressUpdater.class);
+		progressUpdater = context.get(ProfilingProgressUpdateHandler.class);
 		if(progressUpdater == null) {
 			throw new AnalyticsInitializationRuntimeException("Progress updater not defined in context.");
 		} else {
-			progressUpdater.init(params);
 			if(profiler instanceof SampleProfiler) {
 				((SampleProfiler)profiler).setProgressUpdateListener(progressUpdater);
 			} else if(profiler instanceof SampleSecondPassProfiler) {
@@ -126,7 +139,7 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 	public void preParse(InputStream inputStream, ContentHandler handler, Metadata metadata, TikaProfilerParameters context) throws AnalyticsTikaProfilingException {
 		return;
 	}
-	
+
 	private void profileAllRecords(TikaProfilerParameters profilableParameters) throws AnalyticsTikaProfilingException, SAXException, IOException {
 		InputStream inputStream = profilableParameters.getStream();
 		ContentHandler handler = profilableParameters.getHandler();
@@ -136,15 +149,21 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 		try {
 			initializeGlobalVariables(inputStream, handler, metadata, profilableParameters);
 
-			preParse(inputStream, handler, metadata, profilableParameters);			
+			preParse(inputStream, handler, metadata, profilableParameters);
 
 			parse(inputStream, handler, metadata, profilableParameters);
+			if(SchemaWizardSessionUtility.getInstance().isCancelled(profilableParameters.getSessionId())) {
+				throw new AnalyticsCancelledWorkflowException("Workflow cancelled during parsing.");
+			}
 
 			postParse(handler, metadata, profilableParameters);
-			
+
 			long t2 = System.currentTimeMillis();
 			logger.debug("Parsing for " + getSupportedTypes(profilableParameters) + " took " + (t2 - t1) + " millis.");	
 		} catch (TikaException e) {
+			if(SchemaWizardSessionUtility.getInstance().isCancelled(profilableParameters.getSessionId())) {
+				throw new AnalyticsCancelledWorkflowException("Workflow cancelled during parsing.");
+			}
 			long t2 = System.currentTimeMillis();
 			logger.error("Parsing for " + getSupportedTypes(profilableParameters) + " failed after " + (t2 - t1) + " millis.");
 			throw new AnalyticsTikaProfilingException(e);
@@ -199,11 +218,11 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 		this.profiler = profiler;
 	}
 
-	public AnalyzerProgressUpdater getProgressUpdater() {
+	public ProfilingProgressUpdateHandler getProgressUpdater() {
 		return progressUpdater;
 	}
 
-	public void setProgressUpdater(AnalyzerProgressUpdater progressUpdater) {
+	public void setProgressUpdater(ProfilingProgressUpdateHandler progressUpdater) {
 		this.progressUpdater = progressUpdater;
 	}
 
@@ -244,4 +263,6 @@ public abstract class AbstractAnalyticsParser implements TikaProfilableParser {
 		} 
 		return schemaProfilableParams;
 	}
+
+
 }

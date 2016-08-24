@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,7 +17,9 @@ import com.deleidos.dmf.analyzer.workflows.AbstractAnalyzerTestWorkflow;
 import com.deleidos.dmf.exception.AnalyticsUndetectableTypeException;
 import com.deleidos.dmf.exception.AnalyticsUnsupportedParserException;
 import com.deleidos.dmf.exception.AnalyzerException;
+import com.deleidos.dmf.framework.TestingWebSocketUtility;
 import com.deleidos.dmf.integration.DataModelFactoryIntegrationEnvironment;
+import com.deleidos.dmf.web.SchemaWizardSessionUtility;
 import com.deleidos.dmf.workflows.ModifyExistingSchemaWorkflow;
 import com.deleidos.dp.beans.DataSampleMetaData;
 import com.deleidos.dp.beans.NumberDetail;
@@ -24,6 +27,7 @@ import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.Schema;
 import com.deleidos.dp.deserializors.SerializationUtility;
 import com.deleidos.dp.exceptions.DataAccessException;
+import com.deleidos.dp.h2.H2DataAccessObject;
 
 public class ModifyExistingSchemaMergeAllIT extends DataModelFactoryIntegrationEnvironment {
 	private static final Logger logger = Logger.getLogger(ModifyExistingSchemaMergeAllIT.class);
@@ -37,8 +41,9 @@ public class ModifyExistingSchemaMergeAllIT extends DataModelFactoryIntegrationE
 		aat1.setOutput(true);
 		aat1.runAnalysis();
 		
+		Schema existingSchema = H2DataAccessObject.getInstance().getSchemaByGuid(aat1.getGeneratedSchemaGuid(), true);
 		aat2 = AbstractAnalyzerTestWorkflow.addOrGetStaticWorkflow(
-				new ModifyExistingSchemaWorkflow.OneSimpleCSVFileWorkflow(aat1.getGeneratedSchemaGuid()));
+				new ModifyExistingSchemaWorkflow.OneSimpleCSVFileWorkflow(existingSchema));
 		aat2.setOutput(true);
 		aat2.runAnalysis();
 	}

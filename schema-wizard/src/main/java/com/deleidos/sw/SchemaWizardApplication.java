@@ -5,7 +5,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import com.deleidos.analytics.websocket.WebSocketServlet;
 import com.deleidos.dmf.accessor.ServiceLayerAccessor;
 import com.deleidos.dmf.analyzer.TikaAnalyzer;
-import com.deleidos.dmf.web.SchemaWizardWebSocketUtility;
 
 /**
  * Implementation of Glassfish's default web application class.  Instantiates SchemaWizardController and WebSocketServlet.

@@ -50,7 +50,7 @@ public class DisplayNameHelper {
 		this.proposed = dropPathPrefix(original, --pathDepth);
 	}
 
-	private String dropPathPrefix(String originalName, int numPathQualifiersToDrop) {
+	public String dropPathPrefix(String originalName, int numPathQualifiersToDrop) {
 		String tmpName = originalName;
 		for(int i = 0; i < numPathQualifiersToDrop; i++) {
 			int index = tmpName.indexOf(splitter);
@@ -63,7 +63,7 @@ public class DisplayNameHelper {
 		return tmpName;
 	}
 
-	private static int countChar(String sep, String s) {
+	public static int countChar(String sep, String s) {
 		return StringUtils.countMatches(s,  sep);
 	}
 

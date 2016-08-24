@@ -201,7 +201,6 @@ public class CEFTikaParser extends AbstractAnalyticsParser {
 		if(split == null) return null;
 		context.setCharsRead(context.getCharsRead()+split.length());
 		DefaultProfilerRecord profilerRecord = new DefaultProfilerRecord();
-		profilerRecord.setRecordProgress(context.getCharsRead());
 		CEFObject cef = breakDownLine(split);
 		for(String key : cef.getHeaderMapping().keySet()) {
 			profilerRecord.put(key, cef.getHeaderMapping().get(key));

@@ -11,7 +11,14 @@
          class="panel-primary container" style="float: left; width:100%; margin: 0 auto; padding:6px;">
         <div class="row" style="margin-bottom: 6px; padding-bottom: 0px;">
             <div class="col-xs-8 panel-group" style="margin-right: 0px; margin-bottom: 0px;">
-                <div class="panel panel-info">
+                <div class="panel panel-info"
+                     tour-step
+                     tour-step-title={{inspectionTour.step3.title}}
+                     tour-step-content={{inspectionTour.step3.message}}
+                     tour-step-order="311"
+                     tour-step-placement="left"
+                     tour-step-orphan="true"
+                     tour-step-backdrop="false">
                     <div class="panel-heading"
                          tour-step
                          tour-step-title={{inspectionTour.step2.title}}
@@ -40,15 +47,7 @@
                     </div>
                     <table id="data-sources-table-title" class="table drag-drop header-fixed">
                         <tr>
-                            <th style="width: 20%;"
-                                tour-step
-                                tour-step-title={{inspectionTour.step3.title}}
-                                tour-step-content={{inspectionTour.step3.message}}
-                                tour-step-order="320"
-                                tour-step-placement="right"
-                                tour-step-orphan="false"
-                                tour-step-backdrop="false">Field
-                            </th>
+                            <th style="width: 20%;"></th>
                             <th style="width: 6%;">Main Type</th>
                             <th style="width: 6%;">Detail Type</th>
                             <th style="width: 10%; text-align: center;">Min</th>

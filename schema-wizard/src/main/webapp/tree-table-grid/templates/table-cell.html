@@ -1,0 +1,12 @@
+<span style="display: inline-block; width: 100%;">
+    <span style="display: inline-block; width: 100%;" ng-show="node.children.length > 0">&nbsp;</span>
+    <span style="display: inline-block; width: 100%;"
+          ng-show="node.children.length == 0"
+          ng-style="justify == 'left' && { 'text-align': 'left' } ||
+                    justify == 'center' && { 'text-align': 'center' } ||
+                    justify == 'right' && { 'text-align': 'right' }"
+          ng-click="internalMethod1(node, nodeLabel1)">
+        {{nodeLabel1}}<span ng-show="nodeLabel2"
+                            ng-click="internalMethod1(node, nodeLabel1)">&thinsp;/&thinsp;{{nodeLabel2}}</span>
+    </span>
+</span>

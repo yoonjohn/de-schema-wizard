@@ -70,6 +70,7 @@ public class XMLTikaParser extends AbstractAnalyticsParser {
 		int tempChar = 0;
 
 		try {
+			int i = 0;
 			while ((tempChar = inputStream.read()) != -1) {
 				builder.append((char) tempChar);
 			}

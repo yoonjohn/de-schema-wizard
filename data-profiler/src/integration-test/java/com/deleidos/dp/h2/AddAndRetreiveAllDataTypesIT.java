@@ -7,7 +7,11 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -21,13 +25,16 @@ import com.deleidos.dp.beans.DataSampleMetaData;
 import com.deleidos.dp.beans.Profile;
 import com.deleidos.dp.beans.Schema;
 import com.deleidos.dp.deserializors.SerializationUtility;
+import com.deleidos.dp.enums.DetailType;
 import com.deleidos.dp.enums.Tolerance;
 import com.deleidos.dp.exceptions.DataAccessException;
+import com.deleidos.dp.exceptions.MainTypeException;
 import com.deleidos.dp.integration.DataProfilerIntegrationEnvironment;
 import com.deleidos.dp.profiler.BinaryProfilerRecord;
 import com.deleidos.dp.profiler.DefaultProfilerRecord;
 import com.deleidos.dp.profiler.SampleProfiler;
 import com.deleidos.dp.profiler.SchemaProfiler;
+import com.deleidos.dp.profiler.api.ProfilerRecord;
 
 public class AddAndRetreiveAllDataTypesIT extends DataProfilerIntegrationEnvironment {
 	private static final Logger logger = Logger.getLogger(AddAndRetreiveAllDataTypesIT.class);
@@ -38,64 +45,38 @@ public class AddAndRetreiveAllDataTypesIT extends DataProfilerIntegrationEnviron
 	private static String guid2;
 
 	@Before
-	public void allTypesTest() throws IOException {
+	public void allTypesTest() throws IOException, MainTypeException, DataAccessException {
 		guid1 = UUID.randomUUID().toString();
 		guid2 = UUID.randomUUID().toString();
-		SampleProfiler sampleProfiler = new SampleProfiler("Transportation", Tolerance.STRICT);
-
+		SampleProfiler sampleProfiler = new SampleProfiler(Tolerance.STRICT);
+		
+		List<ProfilerRecord> records = new ArrayList<ProfilerRecord>();
 		DefaultProfilerRecord defaultRecord1 = new DefaultProfilerRecord();
 		defaultRecord1.put("a", Arrays.asList(1,2,3));
 		defaultRecord1.put("b", Arrays.asList("hi","hello","hey"));
 
-		sampleProfiler.load(defaultRecord1);
-
-		// copy-pasting binary into eclipse doesn't really go too well..
-
 		InputStream inputStream = getClass().getResourceAsStream(imageResource);
-
+		records.add(defaultRecord1);
+		
 		byte[] bytes = new byte[1024];
 		ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
 		int numRead = 0;
 		while((numRead = inputStream.read(bytes)) > -1) {
-			BinaryProfilerRecord binaryRecord = new BinaryProfilerRecord(imageResource.substring(1), byteBuffer);
-			sampleProfiler.load(binaryRecord);
+			BinaryProfilerRecord binaryRecord = new BinaryProfilerRecord(imageResource.substring(1), DetailType.IMAGE, byteBuffer);
+			records.add(binaryRecord);
 		}
-		((BinaryProfileAccumulator)sampleProfiler
-				.getMetricsBundle(imageResource.substring(1)).getState()
-				.get(BundleProfileAccumulator.BINARY_METRICS_INDEX)).setMediaType("image/ico");
 
-		sample = sampleProfiler.asBean();
-		sample.setDsDescription("test");
-		sample.setDsExtractedContentDir(null);
-		sample.setDsName("testname");
-		sample.setDsFileName("testfilename");
-		sample.setDsFileType("testfiletype");
-		sample.setDsGuid(guid1);
-		sample.setDsVersion("1.0");
-		sample.setDsLastUpdate(Timestamp.from(Instant.now()));
+		sample = SampleProfiler.generateDataSampleFromProfilerRecords("Transportation", Tolerance.STRICT, records);
 
 		for(String key : sample.getDsProfile().keySet()) {
 			sample.getDsProfile().get(key).setUsedInSchema(true);
 		}
 
-		SchemaProfiler schemaProfiler = new SchemaProfiler();
-		schemaProfiler.setCurrentDataSample(sample);
-		schemaProfiler.load(defaultRecord1);
+		Map<String, List<ProfilerRecord>> sampleToRecordsMapping = new HashMap<String, List<ProfilerRecord>>();
+		sampleToRecordsMapping.put(sample.getDsGuid(), records);
+		schema = SchemaProfiler.generateSchema(Arrays.asList(sample), sampleToRecordsMapping);
+		
 
-		inputStream = getClass().getResourceAsStream(imageResource);
-
-		bytes = new byte[1024];
-		byteBuffer = ByteBuffer.wrap(bytes);
-		while((numRead = inputStream.read(bytes)) > -1) {
-			BinaryProfilerRecord binaryRecord = new BinaryProfilerRecord(imageResource.substring(1), byteBuffer);
-			schemaProfiler.load(binaryRecord);
-		}
-		schema = schemaProfiler.asBean();
-		schema.setsGuid(guid2);
-		schema.setsName("test-name");
-		schema.setsVersion("1.0");
-		schema.setsLastUpdate(Timestamp.from(Instant.now()));
-		schema.setsDescription("test description");
 		DataSampleMetaData dsmd = new DataSampleMetaData();
 		dsmd.setDataSampleId(sample.getDataSampleId());
 		dsmd.setDsDescription(sample.getDsDescription());
@@ -130,13 +111,7 @@ public class AddAndRetreiveAllDataTypesIT extends DataProfilerIntegrationEnviron
 		final int expectedFieldCount = 3;
 		String guid = H2DataAccessObject.getInstance().addSample(sample);
 		DataSample sample = H2DataAccessObject.getInstance().getSampleByGuid(guid);
-		int size = sample.getDsProfile().get(imageResource.substring(1)).getDetail().getHistogramOptional().get().getLabels().size();
-		try {
-			assertTrue(size == 256);
-		} catch (AssertionError e) {
-			logger.error("Size was " + size + " when it should have been 256.");
-			assertTrue(false);
-		}
+		assertTrue(Profile.getBinaryDetail(sample.getDsProfile().get(imageResource.substring(1))).getByteHistogram().getLabels().size() == 256);
 
 		boolean sampleProfileSizeAssertion = schema.getsProfile().keySet().size() == expectedFieldCount;
 		if(sampleProfileSizeAssertion) {

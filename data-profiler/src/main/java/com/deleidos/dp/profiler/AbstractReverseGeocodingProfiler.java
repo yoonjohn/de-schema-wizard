@@ -2,30 +2,28 @@ package com.deleidos.dp.profiler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.deleidos.dp.accumulator.AbstractProfileAccumulator;
 import com.deleidos.dp.beans.RowEntry;
 import com.deleidos.dp.enums.GroupingBehavior;
 import com.deleidos.dp.exceptions.DataAccessException;
 import com.deleidos.dp.profiler.api.Profiler;
 import com.deleidos.dp.profiler.api.ProfilerRecord;
-import com.deleidos.dp.profiler.api.ProfilingProgressUpdateListener;
+import com.deleidos.dp.profiler.api.ProfilingProgressUpdateHandler;
+import com.deleidos.dp.reversegeocoding.CoordinateProfile;
 import com.deleidos.dp.reversegeocoding.ReverseGeocoder;
 import com.deleidos.dp.reversegeocoding.ReverseGeocoder.ReverseGeocoderCallbackListener;
 
 public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, ReverseGeocoderCallbackListener {
 	protected GroupingBehavior groupingBehavior = GroupingBehavior.GROUP_ARRAY_VALUES;
 	private static final Logger logger = Logger.getLogger(AbstractReverseGeocodingProfiler.class);
-	//private Map<List<String>, List<Double[]>> latLngBuffer;
-	//protected Map<List<String>, Map<String, Integer>> frequencyMapping;
+	protected Map<String, AbstractProfileAccumulator> accumulatorMapping;
 	protected List<CoordinateProfile> coordinateProfiles;
-	private ProfilingProgressUpdateListener progressUpdateListener;
 	protected ReverseGeocoder reverseGeocoder;
-	//protected boolean geocoderReady = false;
 	protected volatile int numberASynchronousReverseGeocodingCallbacks = 0;
 	protected volatile int reverseGeocodingAnswers = 0;
 	protected int unaffiliatedGeoCount = 0;
@@ -55,9 +53,6 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 	protected boolean isOtherIndexNull(String[] coordinatePair, int index) {
 		return true;
 	}
-
-	@Override
-	public abstract void load(ProfilerRecord record); 
 
 	protected void sendCoordinateProfileBatchesToReverseGeocoder() throws DataAccessException {
 		waitForCallbacks();
@@ -110,9 +105,6 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 		if(numberASynchronousReverseGeocodingCallbacks > 0) {
 			numberASynchronousReverseGeocodingCallbacks--;
 		}
-		if(progressUpdateListener != null) {
-			progressUpdateListener.handleProgressUpdate(reverseGeocodingAnswers);
-		}
 	}
 
 	@Override
@@ -125,16 +117,8 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 			logger.error(e);
 			logger.error("Lost "+bufferedQueries+" reverse geocoding queries due to a connection timeout.");
 		}
-		logger.info(reverseGeocodeQueries + " total reverse geocoding queries executed.");
-		return null;
-	}
-
-	protected List<RowEntry> rowsFromMapping(Map<String, Integer> singleFieldFrequencyMapping) {
-		List<RowEntry> rows = new ArrayList<RowEntry>();
-		for(String key : singleFieldFrequencyMapping.keySet()) {
-			rows.add(new RowEntry(key, singleFieldFrequencyMapping.get(key)));
-		}
-		return rows;
+		logger.debug(reverseGeocodeQueries + " total reverse geocoding queries executed.");
+		return getBean();
 	}
 
 	public int getReverseGeocodeQueries() {
@@ -150,7 +134,6 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 	}
 
 	protected CoordinateProfile getCoordinateProfile(List<CoordinateProfile> coordinateProfiles, String latitudeKey, String longitudeKey) {
-		// O(n)
 		for(CoordinateProfile coordinateProfile : coordinateProfiles) {
 			if(coordinateProfile.getLatitude().equals(latitudeKey) && coordinateProfile.getLongitude().equals(longitudeKey)) {
 				return coordinateProfile;
@@ -171,67 +154,12 @@ public abstract class AbstractReverseGeocodingProfiler<B> implements Profiler, R
 		return reverseGeocodingAnswers;
 	}
 
-	public ProfilingProgressUpdateListener getProgressUpdateListener() {
-		return progressUpdateListener;
+	public Map<String, AbstractProfileAccumulator> getAccumulatorMapping() {
+		return accumulatorMapping;
 	}
 
-	public void setProgressUpdateListener(ProfilingProgressUpdateListener progressUpdateListener) {
-		this.progressUpdateListener = progressUpdateListener;
+	public void setAccumulatorMapping(Map<String, AbstractProfileAccumulator> accumulatorMapping) {
+		this.accumulatorMapping = accumulatorMapping;
 	}
 
-	protected class CoordinateProfile {
-		private int index;
-		private String latitude;
-		private String longitude;
-		private List<Double[]> undeterminedCoordinateBuffer;
-		private Map<String, Integer> countryFrequencyMapping;
-
-		public CoordinateProfile(String latKey, String lngKey) {
-			latitude = latKey;
-			longitude = lngKey;
-			undeterminedCoordinateBuffer = new ArrayList<Double[]>();
-			countryFrequencyMapping = new HashMap<String, Integer>();
-		}
-
-		public List<Double[]> getUndeterminedCoordinateBuffer() {
-			return undeterminedCoordinateBuffer;
-		}
-
-		public void setUndeterminedCoordinateBuffer(List<Double[]> undeterminedCoordinateBuffer) {
-			this.undeterminedCoordinateBuffer = undeterminedCoordinateBuffer;
-		}
-
-		public Map<String, Integer> getCountryFrequencyMapping() {
-			return countryFrequencyMapping;
-		}
-
-		public void setCountryFrequencyMapping(Map<String, Integer> countryFrequencyMapping) {
-			this.countryFrequencyMapping = countryFrequencyMapping;
-		}
-
-		public int getIndex() {
-			return index;
-		}
-
-		public void setIndex(int index) {
-			this.index = index;
-		}
-
-		public String getLatitude() {
-			return latitude;
-		}
-
-		public void setLatitude(String latitude) {
-			this.latitude = latitude;
-		}
-
-		public String getLongitude() {
-			return longitude;
-		}
-
-		public void setLongitude(String longitude) {
-			this.longitude = longitude;
-		}
-
-	}
 }

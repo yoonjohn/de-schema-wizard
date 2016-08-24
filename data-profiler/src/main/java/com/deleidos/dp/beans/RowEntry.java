@@ -30,6 +30,16 @@ public class RowEntry {
 		return Integer.valueOf(this.c.get(1).getV().toString());
 	}
 	
+	@JsonIgnore
+	public void setKey(String name) {
+		this.c.get(0).setV(name);
+	}
+	
+	@JsonIgnore
+	public void setValue(Integer value) {
+		this.c.get(1).setV(value);
+	}
+	
 	public RowEntry(List<CEntry> c) {
 		this.c = c;
 	}

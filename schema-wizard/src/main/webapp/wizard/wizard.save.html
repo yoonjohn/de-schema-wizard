@@ -30,10 +30,12 @@
                     </fieldset>
                     <fieldset>
                         <label for="sVersion" style="width:400px;">Schema Version:</label>
-                        <input id="sVersion" name="sVersion" type="text"
+                        <input id="sVersion" name="sVersion" type="text" valid-number
                                style="width: 400px;"
                                ng-model="currentSchema.sVersion"
-                               value="{{currentSchema.sVersion}}"/>
+                               value="{{currentSchema.sVersion}}"
+                               placeholder="Required"
+                               required/>
                         <br><br>
                     </fieldset>
                     <fieldset ng-repeat="ds in currentSchema.sDataSamples track by $index">

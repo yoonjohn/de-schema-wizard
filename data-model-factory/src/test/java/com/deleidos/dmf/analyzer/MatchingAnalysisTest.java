@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,9 +16,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.deleidos.dp.beans.DataSample;
+import com.deleidos.dp.beans.DataSampleMetaData;
 import com.deleidos.dp.calculations.MetricsCalculationsFacade;
 import com.deleidos.dp.deserializors.SerializationUtility;
-import com.deleidos.dp.h2.H2SampleDataAccessObject;
+import com.deleidos.dp.exceptions.DataAccessException;
 
 public class MatchingAnalysisTest {
 	private Logger logger = Logger.getLogger(MatchingAnalysisTest.class);
@@ -35,12 +37,13 @@ public class MatchingAnalysisTest {
 	}
 	
 	@Test
-	public void testSampleNameIncrement() {
+	public void testSampleNameIncrement() throws SQLException, DataAccessException {
 		Set<String> existing = new HashSet<String>();
 		existing.add("sample");
 		existing.add("sample(1)");
 		existing.add("sample(2)");
-		assertTrue(H2SampleDataAccessObject.generateNewSampleName("sample", existing).equals("sample(3)"));
+		String s = DataSampleMetaData.generateNewSampleName("sample", existing);
+		assertTrue("sample(3)".equals(s));
 	}
 	
 	@Test
@@ -51,7 +54,7 @@ public class MatchingAnalysisTest {
 			DataSample sample = SerializationUtility.deserialize(array.get(i).toString(), DataSample.class);
 			samples.add(sample);
 		}
-		JSONArray analysisArray = new JSONArray(SerializationUtility.serialize(MetricsCalculationsFacade.matchFieldsAcrossSamplesAndSchema(null, samples)));
+		JSONArray analysisArray = new JSONArray(SerializationUtility.serialize(MetricsCalculationsFacade.matchFieldsAcrossSamplesAndSchema(null, samples, null)));
 
 		logger.debug("Retrieve source analysis from multiple source guids: " + analysisArray);
 		
