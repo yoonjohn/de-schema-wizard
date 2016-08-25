@@ -10,7 +10,7 @@
 3.0.0-beta2
 
 ## About
-Schema Wizard is an automation driven, human verified data modelling tool.
+Schema Wizard is an automation driven, human verified data modeling tool.
 * Provide data samples
 * Verify automated analysis
 * Merge similar fields 
@@ -20,15 +20,16 @@ Schema Wizard is an automation driven, human verified data modelling tool.
 
 Requirements - 
 * Linux environment
-* Docker 1.11
 * AppArmor
+* Docker 1.11
+* Docker Compose 1.7.1
 
-From the project root directory:
+Install [docker-compose][docker-compose] and clone this repository.  Then, from the project root directory run:
 
     sudo apparmor_parser -r -W sw-script-profile
     sudo docker-compose up
 
-We recommend you start with the example files in this project: **examples files**.  When you start up Schema Wizard, a guided tour will help you through your first schema creation.  And remember, always check the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") and ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") for guidance!
+We recommend you start with the [example files](docs/example-data) in this project.  When you start up Schema Wizard, a guided tour will help you through your first schema creation.  And remember, always check the ![Bus](/docs/readme-ext/blue-tour-bus.jpg "Tour Bus") and ![Help](/docs/readme-ext/blueQuestionMark_whiteCalloutBg.jpg "Help Button") for guidance!
     
 ## Use
 
@@ -111,6 +112,7 @@ Schema Wizard is licensed for use under the Apache 2.0 license.
    [bower]: <https://bower.io/>
    [grunt]: <http://gruntjs.com/>
    [ace]: <https://ace.c9.io/>
+   [docker-compose]: <https://docs.docker.com/compose/>
    
    [geodata]: <http://thematicmapping.org>
    [ogre]: <http://ogre.adc4gis.com/>
