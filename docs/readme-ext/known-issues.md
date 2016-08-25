@@ -20,3 +20,4 @@ Schema Wizard is not configured to use SSL.  Sensitive material should not be pr
 | D-02671 | Field ordering is random. | N/A |
 | D-02713 | Long names throw off field header/data alignment | N/A |
 | D-02731 | Progress bar does not start at 0 after a failed upload. | N/A |
+| D-02771 | Small files may fail the analysis. |  Make a duplicate of the file and upload the two files simultaneously. |
